@@ -1,0 +1,17 @@
+.react-international-phone-input-container {
+  height: 45px;
+}
+.react-international-phone-country-selector-button {
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+  height: 100% !important;
+}
+.react-international-phone-input {
+  height: 100% !important;
+}
+.react-international-phone-country-selector-button__button-content
+  .react-international-phone-flag-emoji {
+  margin: 0 8px;
+  margin-right: 16px;
+}

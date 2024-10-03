@@ -1,0 +1,104 @@
+<StyledAutocomplete
+                  open={isOpen}
+                  onOpen={() => setIsOpen(true)}
+                  onClose={() => setIsOpen(false)}
+                  options={cityOptions}
+                  isOptionEqualToValue={(option, value) =>
+                    option.label === value.label
+                  }
+                  getOptionLabel={(option) => option.label}
+                  loading={loading}
+                  disableClearable
+                  blurOnSelect
+                  value={selected}
+                  onChange={(e, newValue) => {
+                    console.log(e, newValue);
+
+                    setSelected(newValue);
+                    setCityOptions(
+                      newValue ? [newValue, ...cityOptions] : cityOptions
+                    );
+                    const searchData = { search: newValue?.label ?? "" };
+                    navigate("/event/list", { state: searchData });
+                  }}
+                  inputValue={inputValue}
+                  autoComplete
+                  // includeInputInList
+                  // filterSelectedOptions
+                  onInputChange={(e, newInputValue) => {
+                    console.log(e, newInputValue);
+                    // if (e.type === "change") {
+
+                    setInputValue(newInputValue);
+                  }}
+                  filterOptions={(x) => x}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      sx={customStyles.inputRoot}
+                      placeholder="Events, activities, etc..."
+                      // onChange={handleInputChange}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {loading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            <InputAdornment position="end">
+                              <div
+                                className="absolute d-flex items-center justify-center h-full single-field bg-primary text-white input-btn"
+                                style={{ cursor: "pointer" }}
+                                onMouseDown={(e) => e.preventDefault()}
+                              >
+                                <i
+                                  className="fas fa-search text-14 px-15"
+                                  onClick={() => {
+                                    console.log(selected);
+                                    const searchData = {
+                                      search: selected?.label ?? "",
+                                    };
+                                    navigate("/event/list", {
+                                      state: searchData,
+                                    });
+                                  }}
+                                ></i>
+                              </div>
+                            </InputAdornment>
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                  renderOption={(props, option, { selected, inputValue }) => (
+                    <li {...props} style={customStyles.option} id={option.id}>
+                      <CustomOption
+                        option={option}
+                        isFocused={props["aria-selected"]}
+                        isSelected={selected}
+                      />
+                    </li>
+                  )}
+                  PaperComponent={(props) => (
+                    <Paper {...props} style={customStyles.paper} />
+                  )}
+                  freeSolo
+                  // onOpen={() => {
+                  //   console.log("Opne");
+                  //   setIsOpen(true);
+                  // }}
+                  // onClose={(event, option, reason, details) => {
+                  //   if (option && event.key === "Enter") {
+                  //     setInputValue(highlightedInput);
+                  //   }
+                  //   setIsOpen(false);
+                  // }}
+                  // includeInputInList
+                  // onHighlightChange={(event, option, reason) => {
+                  //   if (option && reason === "keyboard") {
+                  //     setHighlightedInput(option);
+                  //   }
+                  // }}
+                />
