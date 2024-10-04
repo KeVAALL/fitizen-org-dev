@@ -749,7 +749,7 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     borderBottom: "2px solid #BEBEBE",
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 400,
     fontFamily: '"Inter", sans-serif',
     color: "#535B62",

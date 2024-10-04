@@ -6031,7 +6031,10 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
 .mr-24 {
   margin-right: 24px !important;
 }
-
+.py-25 {
+  padding-top: 25px !important;
+  padding-bottom: 25px !important;
+}
 .py-28 {
   padding-top: 28px !important;
   padding-bottom: 28px !important;
@@ -9962,7 +9965,9 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
 .bg-green {
   background-color: var(--color-green);
 }
-
+.bg-skin {
+  background-color: #fffbee;
+}
 .text-white {
   color: var(--color-white) !important;
 }
@@ -11142,7 +11147,7 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
   max-width: 100%;
 }
 .w-300 {
-  width: 300px;
+  width: 300px !important;
   max-width: 100%;
 }
 .w-350 {
@@ -13769,6 +13774,12 @@ input:-webkit-autofill::first-line {
   width: 400px !important;
   margin: auto !important;
   margin-top: 16px !important;
+}
+.pie-chart-report {
+  height: 207px !important;
+}
+.pie-chart-report svg {
+  width: initial !important;
 }
 .boxes {
   display: flex;

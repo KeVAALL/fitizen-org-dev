@@ -22,6 +22,7 @@ import BIBExpo from "./components/authenticated/BIBExpo";
 import Discount from "./components/authenticated/Discount";
 import Polls from "./components/authenticated/Polls";
 import Reviews from "./components/authenticated/Reviews";
+import Reports from "./components/authenticated/Reports";
 
 const theme = createTheme({
   breakpoints: {
@@ -68,7 +69,7 @@ const appLayout = createBrowserRouter([
       },
       {
         path: "reports",
-        element: <AllEvents />,
+        element: <Reports />,
       },
     ],
   },
