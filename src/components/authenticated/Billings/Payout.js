@@ -1,5 +1,5 @@
 import React from "react";
-import Event5 from "../../assets/img/events/event5.png";
+import Event5 from "../../../assets/img/events/event5.png";
 
 function Payout({ setShowPayout }) {
   return (

@@ -178,7 +178,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                   <div className="sidebar__button">
                     <a
                       href="/dashboard/all-events"
-                      className={`d-flex items-center text-13 lh-1${
+                      className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/dashboard/all-events")
                           ? " active-link"
                           : ""
@@ -199,7 +199,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                     <div className="sidebar__button">
                       <a
                         href="/dashboard/all-events"
-                        className={`d-flex items-center text-13 lh-1${
+                        className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/dashboard/all-events")
                             ? " active-link"
                             : ""
@@ -216,7 +216,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                   <div className="sidebar__button">
                     <a
                       href={`/event/dashboard/${event_id}`}
-                      className={`d-flex items-center text-13 lh-1${
+                      className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/event/dashboard") ? " active-link" : ""
                       }`}
                     >
@@ -231,7 +231,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                     <div className="sidebar__button">
                       <a
                         href={`/event/dashboard/${event_id}`}
-                        className={`d-flex items-center text-13 lh-1${
+                        className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/event/dashboard")
                             ? " active-link"
                             : ""
@@ -248,7 +248,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                   <div className="sidebar__button">
                     <a
                       href={`/event/participants/${event_id}`}
-                      className={`d-flex items-center text-13 lh-1${
+                      className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/event/participants")
                           ? " active-link"
                           : ""
@@ -269,7 +269,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                     <div className="sidebar__button">
                       <a
                         href={`/event/participants/${event_id}`}
-                        className={`d-flex items-center text-13 lh-1${
+                        className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/event/participants")
                             ? " active-link"
                             : ""
@@ -284,7 +284,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
               {open ? (
                 <div className="sidebar__item">
                   <div className="sidebar__button">
-                    <a href="#" className="d-flex items-center text-13 lh-1">
+                    <a href="#" className="d-flex items-center text-14 lh-1">
                       <i className="fas fa-edit mr-15"></i>
                       Edit Event
                     </a>
@@ -294,7 +294,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                 <HtmlLightTooltip arrow title="Edit Event" placement="right">
                   <div className="sidebar__item">
                     <div className="sidebar__button">
-                      <a href="#" className="d-flex items-center text-13 lh-1">
+                      <a href="#" className="d-flex items-center text-14 lh-1">
                         <i className="fas fa-edit mr-15"></i>
                       </a>
                     </div>
@@ -306,7 +306,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                   <div className="sidebar__button">
                     <a
                       href={`/event/billings/${event_id}`}
-                      className={`d-flex items-center text-13 lh-1${
+                      className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/event/billings") ? " active-link" : ""
                       }`}
                     >
@@ -321,7 +321,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                     <div className="sidebar__button">
                       <a
                         href={`/event/billings/${event_id}`}
-                        className={`d-flex items-center text-13 lh-1${
+                        className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/event/billings") ? " active-link" : ""
                         }`}
                       >
@@ -336,7 +336,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                   <div className="sidebar__button">
                     <a
                       href={`/event/bib-expo/${event_id}`}
-                      className={`d-flex items-center text-13 lh-1${
+                      className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/event/bib-expo") ? " active-link" : ""
                       }`}
                     >
@@ -351,7 +351,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                     <div className="sidebar__button">
                       <a
                         href={`/event/bib-expo/${event_id}`}
-                        className={`d-flex items-center text-13 lh-1${
+                        className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/event/bib-expo") ? " active-link" : ""
                         }`}
                       >
@@ -366,7 +366,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                   <div className="sidebar__button">
                     <a
                       href={`/event/discount/${event_id}`}
-                      className={`d-flex items-center text-13 lh-1${
+                      className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/event/discount") ? " active-link" : ""
                       }`}
                     >
@@ -381,7 +381,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                     <div className="sidebar__button">
                       <a
                         href={`/event/discount/${event_id}`}
-                        className={`d-flex items-center text-13 lh-1${
+                        className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/event/discount") ? " active-link" : ""
                         }`}
                       >
@@ -396,7 +396,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                   <div className="sidebar__button">
                     <a
                       href={`/event/polls/${event_id}`}
-                      className={`d-flex items-center text-13 lh-1${
+                      className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/event/polls") ? " active-link" : ""
                       }`}
                     >
@@ -411,7 +411,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                     <div className="sidebar__button">
                       <a
                         href={`/event/polls/${event_id}`}
-                        className={`d-flex items-center text-13 lh-1${
+                        className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/event/polls") ? " active-link" : ""
                         }`}
                       >
@@ -426,7 +426,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                   <div className="sidebar__button">
                     <a
                       href={`/event/reviews/${event_id}`}
-                      className={`d-flex items-center text-13 lh-1${
+                      className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/event/reviews") ? " active-link" : ""
                       }`}
                     >
@@ -441,7 +441,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                     <div className="sidebar__button">
                       <a
                         href={`/event/reviews/${event_id}`}
-                        className={`d-flex items-center text-13 lh-1${
+                        className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/event/reviews") ? " active-link" : ""
                         }`}
                       >

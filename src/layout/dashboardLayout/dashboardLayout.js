@@ -108,6 +108,10 @@ const Header = ({ open, handleDrawerToggle }) => {
 const ReactSidebar = ({ open, menu, navigate }) => {
   console.log(menu);
 
+  const location = useLocation();
+
+  const isCurrentPage = (url) => location.pathname.includes(url);
+
   return (
     <>
       <Sidebar
@@ -170,7 +174,11 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                   <div className="sidebar__button">
                     <a
                       href="/dashboard/all-events"
-                      className="d-flex items-center text-13 lh-1"
+                      className={`d-flex items-center text-14 lh-1${
+                        isCurrentPage("/dashboard/all-events")
+                          ? " active-link"
+                          : ""
+                      }`}
                     >
                       <i className="fas fa-trophy mr-15"></i>
                       All Events
@@ -183,7 +191,11 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                     <div className="sidebar__button">
                       <a
                         href="/dashboard/all-events"
-                        className="d-flex items-center text-13 lh-1"
+                        className={`d-flex items-center text-14 lh-1${
+                          isCurrentPage("/dashboard/all-events")
+                            ? " active-link"
+                            : ""
+                        }`}
                       >
                         <i className="fas fa-trophy mr-15"></i>
                       </a>
@@ -194,7 +206,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
               {open ? (
                 <div className="sidebar__item">
                   <div className="sidebar__button ">
-                    <a href="#" className="d-flex items-center text-13 lh-1">
+                    <a href="#" className="d-flex items-center text-14 lh-1">
                       <i className="fas fa-volume-up mr-15"></i>
                       Promote Event
                     </a>
@@ -204,7 +216,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 <HtmlLightTooltip arrow title="Promote Event" placement="right">
                   <div className="sidebar__item">
                     <div className="sidebar__button ">
-                      <a href="#" className="d-flex items-center text-13 lh-1">
+                      <a href="#" className="d-flex items-center text-14 lh-1">
                         <i className="fas fa-volume-up mr-15"></i>
                       </a>
                     </div>
@@ -216,7 +228,11 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                   <div className="sidebar__button ">
                     <a
                       href="/dashboard/reports"
-                      className="d-flex items-center text-13 lh-1"
+                      className={`d-flex items-center text-14 lh-1${
+                        isCurrentPage("/dashboard/reports")
+                          ? " active-link"
+                          : ""
+                      }`}
                     >
                       <i className="fas fa-poll-h mr-15"></i>
                       Reports
@@ -229,7 +245,11 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                     <div className="sidebar__button ">
                       <a
                         href="/dashboard/reports"
-                        className="d-flex items-center text-13 lh-1"
+                        className={`d-flex items-center text-14 lh-1${
+                          isCurrentPage("/dashboard/reports")
+                            ? " active-link"
+                            : ""
+                        }`}
                       >
                         <i className="fas fa-poll-h mr-15"></i>
                       </a>
@@ -240,7 +260,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
               {open ? (
                 <div className="sidebar__item">
                   <div className="sidebar__button ">
-                    <a href="#" className="d-flex items-center text-13 lh-1">
+                    <a href="#" className="d-flex items-center text-14 lh-1">
                       <i className="fas fa-phone-alt mr-15"></i>
                       Support
                     </a>
@@ -250,7 +270,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 <HtmlLightTooltip arrow title="Support" placement="right">
                   <div className="sidebar__item">
                     <div className="sidebar__button ">
-                      <a href="#" className="d-flex items-center text-13 lh-1">
+                      <a href="#" className="d-flex items-center text-14 lh-1">
                         <i className="fas fa-phone-alt mr-15"></i>
                       </a>
                     </div>
@@ -262,7 +282,11 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                   <div className="sidebar__button ">
                     <a
                       href="/dashboard/profile"
-                      className="d-flex items-center text-13 lh-1"
+                      className={`d-flex items-center text-14 lh-1${
+                        isCurrentPage("/dashboard/profile")
+                          ? " active-link"
+                          : ""
+                      }`}
                     >
                       <i className="far fa-user-circle mr-15"></i>
                       Profile
@@ -275,7 +299,11 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                     <div className="sidebar__button ">
                       <a
                         href="/dashboard/profile"
-                        className="d-flex items-center text-13 lh-1"
+                        className={`d-flex items-center text-14 lh-1${
+                          isCurrentPage("/dashboard/profile")
+                            ? " active-link"
+                            : ""
+                        }`}
                       >
                         <i className="far fa-user-circle mr-15"></i>
                       </a>
@@ -286,7 +314,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
               {open ? (
                 <div className="sidebar__item">
                   <div className="sidebar__button">
-                    <a href="#" className="d-flex items-center text-13 lh-1">
+                    <a href="#" className="d-flex items-center text-14 lh-1">
                       <i className="fas fa-sign-out-alt mr-15"></i>
                       Sign Out
                     </a>
@@ -296,7 +324,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 <HtmlLightTooltip arrow title="Sign Out" placement="right">
                   <div className="sidebar__item">
                     <div className="sidebar__button">
-                      <a href="#" className="d-flex items-center text-13 lh-1">
+                      <a href="#" className="d-flex items-center text-14 lh-1">
                         <i className="fas fa-sign-out-alt mr-15"></i>
                       </a>
                     </div>

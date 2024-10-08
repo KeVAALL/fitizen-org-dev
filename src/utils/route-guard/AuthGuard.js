@@ -44,6 +44,7 @@ const AuthGuard = ({ children }) => {
       if (!verifyToken(token)) {
         dispatch(clearProfile());
         navigate("/sign-in", { replace: true });
+        window.location.reload();
       } else {
         setIsVerified(true); // Token is valid, allow rendering
       }

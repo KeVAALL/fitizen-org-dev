@@ -5711,6 +5711,11 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
   margin-right: 0px !important;
 }
 
+.py-3 {
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
 .py-4 {
   padding-top: 4px !important;
   padding-bottom: 4px !important;
@@ -10652,6 +10657,11 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
 .w-150 {
   width: 150px;
 }
+
+.w-170 {
+  width: 170px;
+}
+
 
 .w-220 {
   width: 220px;

@@ -82,6 +82,7 @@ export const customRoundedStyles = {
   container: (provided) => ({
     ...provided,
     width: "100%",
+    height: "40px",
   }),
   // Style the control (the main wrapper)
   control: (provided, state) => ({
@@ -89,7 +90,8 @@ export const customRoundedStyles = {
     border: state.isFocused ? "1px solid #eb6400" : "1px solid #BEBEBE",
     boxShadow: state.isFocused ? "0 0 0 2px rgba(235, 100, 0, 0.25)" : "none",
     borderRadius: "24px",
-    padding: "4px",
+    paddingLeft: "4px",
+    paddingRight: "4px",
     fontSize: "12px", // Match font size with BootstrapInput
     "&:hover": {
       border: "1px solid #eb6400", // Border color on hover

@@ -1,6 +1,6 @@
 import React from "react";
-import Event5 from "../../assets/img/events/event5.png";
-import Bank from "../../assets/img/icons/bank.png";
+import Event5 from "../../../assets/img/events/event5.png";
+// import Bank from "../../assets/img/icons/bank.png";
 
 function BankDetails() {
   return (

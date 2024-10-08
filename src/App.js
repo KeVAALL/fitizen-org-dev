@@ -17,7 +17,7 @@ import AllEvents from "./components/authenticated/AllEvents";
 import { EventLayout } from "./layout/eventLayout/eventLayout";
 import EventMain from "./components/authenticated/EventMain";
 import EventParticipants from "./components/authenticated/EventParticipants";
-import EventBilling from "./components/authenticated/EventBilling";
+import EventBilling from "./components/authenticated/Billings/EventBilling";
 import BIBExpo from "./components/authenticated/BIBExpo";
 import Discount from "./components/authenticated/Discount";
 import Polls from "./components/authenticated/Polls";
@@ -39,7 +39,11 @@ const theme = createTheme({
 const appLayout = createBrowserRouter([
   {
     path: `/`,
-    element: <AuthLayout />,
+    element: (
+      // <AuthGuard>
+      <AuthLayout />
+      // </AuthGuard>
+    ),
     children: [
       {
         path: "/",
