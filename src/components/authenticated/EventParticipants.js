@@ -75,6 +75,8 @@ function EventParticipants() {
   const [announceModal, setAnnounceModal] = useState(false);
   const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [downloadingMaster, setDownloadingMaster] = useState(false);
+  const [downloadingPersonal, setDownloadingPersonal] = useState(false);
   const categoryColor = ["#FBCDC3", "#C0462B", "#F3795E"];
   const cityColors = ["#FBCDC3", "#C0462B", "#F3795E", "#903420"];
   const [dynamicValidationSchema, setDynamicValidationSchema] = useState([]);
@@ -391,7 +393,7 @@ function EventParticipants() {
                   }}
                 ></i>
               )}
-              <i className="far fa-trash-alt action-button"></i>
+              {/* <i className="far fa-trash-alt action-button"></i> */}
               <WhiteTooltip
                 placement="left"
                 title={
@@ -1996,10 +1998,314 @@ function EventParticipants() {
                                 Send Announcement
                                 <i className="far fa-envelope text-14"></i>
                               </button>
-                              <button className="button rounded-24 py-4 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
-                                Download File
-                                <i className="fas fa-angle-down text-14"></i>
-                              </button>
+                              <WhiteTooltip
+                                // open={true}
+                                placement="bottom-start"
+                                title={
+                                  <Stack spacing={2}>
+                                    <Stack
+                                      className="text-14 cursor-pointer"
+                                      direction="row"
+                                      alignItems="center"
+                                      justifyContent="space-between"
+                                      spacing={2}
+                                      onClick={async () => {
+                                        console.log("click");
+                                        if (downloadingMaster) {
+                                          return;
+                                        }
+                                        toast.promise(
+                                          new Promise(
+                                            async (resolve, reject) => {
+                                              try {
+                                                setDownloadingMaster(true);
+
+                                                const result =
+                                                  await RestfulApiServiceDownload(
+                                                    `organizer/exportparticipantdata?Tran_Id=${decryptData(
+                                                      event_id
+                                                    )}&Typeexport=MasterFile`
+                                                  );
+
+                                                if (result) {
+                                                  const base64PDF = result.data; // assuming result.data contains the base64 string
+
+                                                  // Decode base64 string to binary string
+                                                  const binaryString =
+                                                    atob(base64PDF);
+
+                                                  // Convert binary string to Uint8Array
+                                                  const arrayBuffer =
+                                                    new Uint8Array(
+                                                      binaryString.length
+                                                    );
+                                                  for (
+                                                    let i = 0;
+                                                    i < binaryString.length;
+                                                    i++
+                                                  ) {
+                                                    arrayBuffer[i] =
+                                                      binaryString.charCodeAt(
+                                                        i
+                                                      );
+                                                  }
+
+                                                  // Create Blob from Uint8Array
+                                                  const blob = new Blob(
+                                                    [arrayBuffer],
+                                                    {
+                                                      type: "application/xlsx",
+                                                    }
+                                                  );
+
+                                                  // Create URL for the Blob
+                                                  const url =
+                                                    window.URL.createObjectURL(
+                                                      blob
+                                                    );
+
+                                                  // Create a link element, set the href and download attributes
+                                                  const link =
+                                                    document.createElement("a");
+                                                  link.href = url;
+                                                  link.setAttribute(
+                                                    "download",
+                                                    `Master.xlsx`
+                                                  );
+
+                                                  // Append the link to the DOM and trigger the download
+                                                  document.body.appendChild(
+                                                    link
+                                                  );
+                                                  link.click();
+
+                                                  // Clean up: remove the link from the DOM
+                                                  document.body.removeChild(
+                                                    link
+                                                  );
+
+                                                  // Resolve the promise to trigger the success toast
+                                                  resolve();
+                                                } else {
+                                                  // If the result is not valid, reject the promise to show the error toast
+                                                  reject(
+                                                    new Error(
+                                                      "Failed to download ticket"
+                                                    )
+                                                  );
+                                                }
+                                              } catch (err) {
+                                                // Reject the promise to trigger the error toast
+                                                reject(err);
+                                              } finally {
+                                                setDownloadingMaster(false);
+                                              }
+                                            }
+                                          ),
+                                          {
+                                            loading: "Downloading...",
+                                            success: "Downloaded successfully!",
+                                            error:
+                                              "Failed to download. Please try again later.",
+                                          }
+                                        );
+                                      }}
+                                    >
+                                      <div>Download Master File</div>
+                                      <i className="fas fa-download text-primary"></i>
+                                    </Stack>
+                                    <Stack
+                                      className="text-14 cursor-pointer"
+                                      direction="row"
+                                      alignItems="center"
+                                      justifyContent="space-between"
+                                      spacing={2}
+                                      onClick={async () => {
+                                        if (downloadingPersonal) {
+                                          return;
+                                        }
+                                        toast.promise(
+                                          new Promise(
+                                            async (resolve, reject) => {
+                                              try {
+                                                setDownloadingPersonal(true);
+
+                                                const result =
+                                                  await RestfulApiServiceDownload(
+                                                    `organizer/exportparticipantdata?Tran_Id=${decryptData(
+                                                      event_id
+                                                    )}&Typeexport=PersonalFile`
+                                                  );
+
+                                                if (result) {
+                                                  const base64PDF = result.data; // assuming result.data contains the base64 string
+
+                                                  // Decode base64 string to binary string
+                                                  const binaryString =
+                                                    atob(base64PDF);
+
+                                                  // Convert binary string to Uint8Array
+                                                  const arrayBuffer =
+                                                    new Uint8Array(
+                                                      binaryString.length
+                                                    );
+                                                  for (
+                                                    let i = 0;
+                                                    i < binaryString.length;
+                                                    i++
+                                                  ) {
+                                                    arrayBuffer[i] =
+                                                      binaryString.charCodeAt(
+                                                        i
+                                                      );
+                                                  }
+
+                                                  // Create Blob from Uint8Array
+                                                  const blob = new Blob(
+                                                    [arrayBuffer],
+                                                    {
+                                                      type: "application/xlsx",
+                                                    }
+                                                  );
+
+                                                  // Create URL for the Blob
+                                                  const url =
+                                                    window.URL.createObjectURL(
+                                                      blob
+                                                    );
+
+                                                  // Create a link element, set the href and download attributes
+                                                  const link =
+                                                    document.createElement("a");
+                                                  link.href = url;
+                                                  link.setAttribute(
+                                                    "download",
+                                                    `Personal.xlsx`
+                                                  );
+
+                                                  // Append the link to the DOM and trigger the download
+                                                  document.body.appendChild(
+                                                    link
+                                                  );
+                                                  link.click();
+
+                                                  // Clean up: remove the link from the DOM
+                                                  document.body.removeChild(
+                                                    link
+                                                  );
+
+                                                  // Resolve the promise to trigger the success toast
+                                                  resolve();
+                                                } else {
+                                                  // If the result is not valid, reject the promise to show the error toast
+                                                  reject(
+                                                    new Error(
+                                                      "Failed to download ticket"
+                                                    )
+                                                  );
+                                                }
+                                              } catch (err) {
+                                                // Reject the promise to trigger the error toast
+                                                reject(err);
+                                              } finally {
+                                                setDownloadingPersonal(false);
+                                              }
+                                            }
+                                          ),
+                                          {
+                                            loading: "Downloading...",
+                                            success: "Downloaded successfully!",
+                                            error:
+                                              "Failed to download. Please try again later.",
+                                          }
+                                        );
+                                      }}
+                                    >
+                                      <div>Download Personal Info</div>
+                                      <i className="fas fa-download text-primary"></i>
+                                    </Stack>
+                                    {/* <Stack
+                                      className="action-button"
+                                      direction="row"
+                                      alignItems="center"
+                                      spacing={2}
+                                      onClick={async () => {
+                                        // if (isDownloadingTicket) {
+                                        //   return;
+                                        // }
+                                        // toast.promise(
+                                        //   new Promise(async (resolve, reject) => {
+                                        //     try {
+                                        //       // setIsDownloadingTicket(true);
+                                        //       const result = await RestfulApiServiceDownload(
+                                        //         `organizer/downloadticket?Tran_Id=${row?.original?.Event_Booking_Participant_Id}`
+                                        //       );
+                                        //       if (result) {
+                                        //         const base64PDF = result.data; // assuming result.data contains the base64 string
+                                        //         // Decode base64 string to binary string
+                                        //         const binaryString = atob(base64PDF);
+                                        //         // Convert binary string to Uint8Array
+                                        //         const arrayBuffer = new Uint8Array(
+                                        //           binaryString.length
+                                        //         );
+                                        //         for (let i = 0; i < binaryString.length; i++) {
+                                        //           arrayBuffer[i] = binaryString.charCodeAt(i);
+                                        //         }
+                                        //         // Create Blob from Uint8Array
+                                        //         const blob = new Blob([arrayBuffer], {
+                                        //           type: "application/pdf",
+                                        //         });
+                                        //         // Create URL for the Blob
+                                        //         const url = window.URL.createObjectURL(blob);
+                                        //         // Create a link element, set the href and download attributes
+                                        //         const link = document.createElement("a");
+                                        //         link.href = url;
+                                        //         link.setAttribute(
+                                        //           "download",
+                                        //           `ticket${row?.original?.Event_Booking_Participant_Id}.pdf`
+                                        //         );
+                                        //         // Append the link to the DOM and trigger the download
+                                        //         document.body.appendChild(link);
+                                        //         link.click();
+                                        //         // Clean up: remove the link from the DOM
+                                        //         document.body.removeChild(link);
+                                        //         // Resolve the promise to trigger the success toast
+                                        //         resolve();
+                                        //       } else {
+                                        //         // If the result is not valid, reject the promise to show the error toast
+                                        //         reject(new Error("Failed to download ticket"));
+                                        //       }
+                                        //     } catch (err) {
+                                        //       // Reject the promise to trigger the error toast
+                                        //       reject(err);
+                                        //     } finally {
+                                        //       // setIsDownloadingTicket(false);
+                                        //     }
+                                        //   }),
+                                        //   {
+                                        //     loading: "Downloading ticket...",
+                                        //     success: "Ticket downloaded successfully!",
+                                        //     error:
+                                        //       "Failed to download ticket. Please try again later.",
+                                        //   }
+                                        // );
+                                      }}
+                                    >
+                                      <i
+                                        className="fas fa-download"
+                                        style={{ marginRight: "12px" }}
+                                      ></i>
+                                      Download Ticket
+                                    </Stack> */}
+                                  </Stack>
+                                }
+                                arrow
+                              >
+                                <button className="button rounded-24 py-4 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
+                                  Download File
+                                  <i className="fas fa-angle-down text-14"></i>
+                                </button>
+                              </WhiteTooltip>
                             </div>
                           </Stack>
 

@@ -14,6 +14,8 @@ import React, { useState } from "react";
 import EventTicket from "./EventTicket";
 import EventDetails from "./EventDetails";
 import EventDescription from "./EventDescription";
+import EventParticipant from "./EventParticipant";
+import EventBanner from "./EventBanner";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -82,6 +84,8 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
+                      fontSize: "16px",
+                      fontWeight: 600,
                     }}
                   />
                   <Tab
@@ -100,6 +104,7 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
+                      fontWeight: 600,
                     }}
                   />
                   <Tab
@@ -118,6 +123,7 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
+                      fontWeight: 600,
                     }}
                   />
                   <Tab
@@ -136,6 +142,7 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
+                      fontWeight: 600,
                     }}
                   />
                   <Tab
@@ -154,6 +161,7 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
+                      fontWeight: 600,
                     }}
                   />
                 </Tabs>
@@ -167,10 +175,10 @@ function Main() {
                   <EventTicket />
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index="four">
-                  Item Four
+                  <EventParticipant />
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index="five">
-                  Item Five
+                  <EventBanner />
                 </CustomTabPanel>
               </div>
             </div>

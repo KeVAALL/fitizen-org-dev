@@ -24,6 +24,7 @@ import Polls from "./components/authenticated/Polls";
 import Reviews from "./components/authenticated/Reviews";
 import Reports from "./components/authenticated/Reports";
 import Main from "./components/authenticated/EditEvent/Main";
+import Support from "./components/authenticated/Support";
 
 const theme = createTheme({
   breakpoints: {
@@ -33,6 +34,24 @@ const theme = createTheme({
       md: 960,
       lg: 1280,
       xl: 1920,
+    },
+  },
+  components: {
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          color: "#bdbdbd", // Black for unselected state
+          borderRadius: "4px",
+          "&.Mui-checked": {
+            color: "#f05736", // White for selected state
+          },
+          "&.Mui-disabled": {
+            cursor: "not-allowed !important", // Show not-allowed cursor when disabled
+            pointerEvents: "auto", // Allow pointer events to enable cursor change
+            opacity: 0.5, // Optional: Adjust opacity to indicate disabled state
+          },
+        },
+      },
     },
   },
   // You can add other theme customizations here
@@ -75,6 +94,10 @@ const appLayout = createBrowserRouter([
       {
         path: "reports",
         element: <Reports />,
+      },
+      {
+        path: "support",
+        element: <Support />,
       },
     ],
   },
