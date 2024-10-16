@@ -10,46 +10,58 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import Select from "react-select";
 import * as Yup from "yup";
 import { selectCustomStyle } from "../../utils/selectCustomStyle";
+import toast from "react-hot-toast";
 
 function Polls() {
   const { event_id } = useParams();
   const user = useSelector((state) => state.user.userProfile);
   const [fetchingPolls, setFetchingPolls] = useState(false);
+  const [allPolls, setAllPolls] = useState([]);
   const [addingPoll, setAddingPoll] = useState(false);
+  const [isEditingPoll, setIsEditingPoll] = useState(false);
   const [pollModal, setPollModal] = useState(false);
+  const [pollInitialValues, setPollInitialValues] = useState({
+    Poll_Name: "",
+    Question: "", // This will be controlled by ReactQuill
+    Poll_Type: null,
+    Mini_Rating: 0,
+    Max_Rating: 0,
+  });
   const pollType = [
-    { value: "Star Rating", label: "Star Rating" },
-    { value: "Slider Rating", label: "Slider Rating" },
+    { value: "Star", label: "Star Rating" },
+    { value: "Slider", label: "Slider Rating" },
   ];
-  useEffect(() => {
-    async function LoadParticipants() {
-      const reqdata = {
-        Method_Name: "Get",
-        Event_Id: decryptData(event_id),
-        Session_User_Id: user?.User_Id,
-        Session_User_Name: user?.User_Display_Name,
-        Session_Organzier_Id: user?.Organizer_Id,
-        Org_Id: "",
-        Poll_Name: "",
-        Poll_Id: "",
-      };
-      try {
-        setFetchingPolls(true);
-        const result = await RestfullApiService(reqdata, "organizer/pollget");
-        if (result) {
-          console.log(result?.data?.Result?.Table1);
-        }
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setFetchingPolls(false);
-      }
-    }
+  async function LoadPolls() {
+    const reqdata = {
+      Method_Name: "Get",
+      Event_Id: decryptData(event_id),
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      Poll_Name: "",
+      Poll_Id: "",
+    };
+    try {
+      setFetchingPolls(true);
+      const result = await RestfullApiService(reqdata, "organizer/pollget");
+      if (result) {
+        console.log(result?.data?.Result?.Table1);
 
+        setAllPolls(result?.data?.Result?.Table1);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setFetchingPolls(false);
+    }
+  }
+  useEffect(() => {
     if (event_id) {
-      LoadParticipants();
+      LoadPolls();
     }
   }, [event_id]);
+
   return (
     <div className="dashboard__main">
       <div className="dashboard__content pt-20">
@@ -108,19 +120,20 @@ function Polls() {
                           <i
                             onClick={() => {
                               setPollModal(false);
+                              setPollInitialValues({
+                                Poll_Name: "",
+                                Question: "", // This will be controlled by ReactQuill
+                                Poll_Type: null,
+                                Mini_Rating: 0,
+                                Max_Rating: 0,
+                              });
                             }}
                             class="fas fa-times text-16 text-primary cursor-pointer"
                           ></i>
                         </Stack>
 
                         <Formik
-                          initialValues={{
-                            Poll_Name: "",
-                            Question: "", // This will be controlled by ReactQuill
-                            Poll_Type: null,
-                            Mini_Rating: 0,
-                            Max_Rating: 0,
-                          }}
+                          initialValues={pollInitialValues}
                           validationSchema={Yup.object(
                             {
                               Poll_Name: Yup.string().required(
@@ -157,20 +170,108 @@ function Polls() {
                                 .min(
                                   Yup.ref("Mini_Rating"),
                                   "Maximum rating cannot be less than minimum rating"
-                                ),
-                              // .when("Mini_Rating", (Mini_Rating, schema) => {
-                              //   return schema.test({
-                              //     test: (Max_Rating) =>
-                              //       Max_Rating >= Mini_Rating,
-                              //     message:
-                              //       "Maximum Rating must be greater than Minimum Rating",
-                              //   });
-                              // }),
+                                )
+                                .test({
+                                  name: "max",
+                                  exclusive: false,
+                                  // message:
+                                  //   "Max Rating cannot exceed 5 for Star Rating", // Custom message
+                                  message:
+                                    "Max Rating cannot exceed the allowed maximum", // General error message
+                                  test: function (value) {
+                                    const { Poll_Type } = this.parent; // Access Poll_Type
+                                    // Check if Poll_Type is "Star Rating" and ensure Max_Rating is <= 5
+                                    // if (Poll_Type?.value === "Star") {
+                                    //   return value <= 5;
+                                    // }
+                                    if (Poll_Type?.value === "Star Rating") {
+                                      return (
+                                        value <= 5 ||
+                                        this.createError({
+                                          message: `Max Rating cannot exceed 5 for Star Rating`,
+                                        })
+                                      );
+                                    } else if (Poll_Type?.value === "Slider") {
+                                      return (
+                                        value <= 10 ||
+                                        this.createError({
+                                          message: `Max Rating cannot exceed 10 for Slider Rating`,
+                                        })
+                                      );
+                                    }
+                                    return true; // If Poll_Type is not "Star Rating", skip the condition
+                                  },
+                                }),
+
+                              // .test(
+                              //   "max-rating-limit", // Test name
+                              //   "For Star Rating, Max Rating cannot exceed 5", // Validation message
+                              //   function (value) {
+                              //     const { Poll_Type } = this.parent;
+                              //     if (
+                              //       Poll_Type?.value === "Star" &&
+                              //       value > 5
+                              //     ) {
+                              //       return false; // Fail the validation if max rating exceeds 5
+                              //     }
+                              //     return true; // Otherwise, pass the validation
+                              //   }
+                              // ),
                             },
                             [["Max_Rating", "Mini_Rating"]]
                           )}
                           onSubmit={async (values) => {
                             console.log(values);
+
+                            const reqdata = {
+                              ...values,
+                              Method_Name: isEditingPoll ? "Update" : "Create",
+                              Event_Id: decryptData(event_id),
+                              Session_User_Id: user?.User_Id,
+                              Session_User_Name: user?.User_Display_Name,
+                              Session_Organzier_Id: user?.Organizer_Id,
+                              Org_Id: user?.Org_Id,
+                              Poll_Id: isEditingPoll ? values?.Poll_Id : " ",
+                              Poll_Type: values?.Poll_Type?.value,
+                              Is_Active: 1,
+                            };
+                            try {
+                              setAddingPoll(true);
+
+                              const result = await RestfullApiService(
+                                reqdata,
+                                "organizer/pollset"
+                              );
+                              if (
+                                result?.data?.Result?.Table1[0]?.Result_Id ===
+                                -1
+                              ) {
+                                toast.error(
+                                  result?.data?.Result?.Table1[0]
+                                    ?.Result_Description
+                                );
+                                return;
+                              }
+                              if (result) {
+                                toast.success(
+                                  result?.data?.Result?.Table1[0]
+                                    ?.Result_Description
+                                );
+                                setPollModal(false);
+                                setPollInitialValues({
+                                  Poll_Name: "",
+                                  Question: "", // This will be controlled by ReactQuill
+                                  Poll_Type: null,
+                                  Mini_Rating: 0,
+                                  Max_Rating: 0,
+                                });
+                                LoadPolls();
+                              }
+                            } catch (err) {
+                              console.log(err);
+                            } finally {
+                              setAddingPoll(false);
+                            }
                           }}
                         >
                           {({ setFieldValue, values }) => (
@@ -229,7 +330,7 @@ function Polls() {
                                       e.preventDefault();
                                       const { value } = e.target;
 
-                                      const regex = /^[a-zA-Z][a-zA-Z\s]*$/;
+                                      const regex = /^[a-zA-Z][a-zA-Z\s?]*$/;
 
                                       if (
                                         !value ||
@@ -323,6 +424,7 @@ function Polls() {
                               >
                                 <div className="col-auto relative">
                                   <button
+                                    disabled={addingPoll}
                                     type="submit"
                                     className="button bg-primary w-200 h-50 rounded-24 py-15 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
                                   >
@@ -387,186 +489,56 @@ function Polls() {
                           <span className="text-16 mr-5">+</span> Create Polls
                         </button>
                       </div>
-                      <div className="col-xl-12 col-md-12">
-                        <div className="py-10 px-30 lg:px-10 rounded-16 bg-white shadow-4">
-                          <div className="row y-gap-20 justify-between items-center">
-                            <div className="col-lg-10 col-md-10">
-                              <div className="text-16 lh-16 fw-500">
-                                Lorem Ipsum is simply dummy text of the printing
-                                and typesetting industry.
-                              </div>
-                            </div>
-                            <div className="col-lg-2 col-md-2">
-                              <div className="d-flex gap-20 items-center">
-                                <div className="form-switch d-flex items-center">
-                                  <div className="switch">
-                                    <input type="checkbox" />
-                                    <span className="switch__slider"></span>
+
+                      {allPolls?.length > 0 &&
+                        allPolls?.map((poll) => {
+                          return (
+                            <div className="col-xl-12 col-md-12">
+                              <div className="py-10 px-30 lg:px-10 rounded-16 bg-white shadow-4">
+                                <div className="row y-gap-20 justify-between items-center">
+                                  <div className="col-lg-10 col-md-10">
+                                    <div className="text-16 lh-16 fw-500">
+                                      {poll?.Poll_Name}
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-2 col-md-2">
+                                    <div className="d-flex gap-20 items-center">
+                                      <div className="form-switch d-flex items-center">
+                                        <div className="switch">
+                                          <input type="checkbox" />
+                                          <span className="switch__slider"></span>
+                                        </div>
+                                      </div>
+                                      <a
+                                        href="#0"
+                                        className="text-20"
+                                        style={{ color: "#aeaeae" }}
+                                      >
+                                        <i className="fas fa-eye"></i>
+                                      </a>
+                                      <button
+                                        className="text-20"
+                                        style={{ color: "#aeaeae" }}
+                                        onClick={() => {
+                                          setIsEditingPoll(true);
+                                          setPollInitialValues({
+                                            ...poll,
+                                            Poll_Type: pollType?.filter(
+                                              (p) => p.value === poll.Poll_Type
+                                            )[0],
+                                          });
+                                          setPollModal(true);
+                                        }}
+                                      >
+                                        <i className="fas fa-pencil-alt"></i>
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-eye"></i>
-                                </a>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-pencil-alt"></i>
-                                </a>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-12 col-md-12">
-                        <div className="py-10 px-30 lg:px-10 rounded-16 bg-white shadow-4">
-                          <div className="row y-gap-20 justify-between items-center">
-                            <div className="col-lg-10 col-md-10">
-                              <div className="text-16 lh-16 fw-500">
-                                Lorem Ipsum is simply dummy text of the printing
-                                and typesetting.
-                              </div>
-                            </div>
-                            <div className="col-lg-2 col-md-2">
-                              <div className="d-flex gap-20 items-center">
-                                <div className="form-switch d-flex items-center">
-                                  <div className="switch">
-                                    <input type="checkbox" />
-                                    <span className="switch__slider"></span>
-                                  </div>
-                                </div>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-eye"></i>
-                                </a>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-pencil-alt"></i>
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-12 col-md-12">
-                        <div className="py-10 px-30 lg:px-10 rounded-16 bg-white shadow-4">
-                          <div className="row y-gap-20 justify-between items-center">
-                            <div className="col-lg-10 col-md-10">
-                              <div className="text-16 lh-16 fw-500">
-                                Lorem Ipsum is simply dummy text of the printing
-                                and typesetting industry.
-                              </div>
-                            </div>
-                            <div className="col-lg-2 col-md-2">
-                              <div className="d-flex gap-20 items-center">
-                                <div className="form-switch d-flex items-center">
-                                  <div className="switch">
-                                    <input type="checkbox" />
-                                    <span className="switch__slider"></span>
-                                  </div>
-                                </div>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-eye"></i>
-                                </a>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-pencil-alt"></i>
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-12 col-md-12">
-                        <div className="py-10 px-30 lg:px-10 rounded-16 bg-white shadow-4">
-                          <div className="row y-gap-20 justify-between items-center">
-                            <div className="col-lg-10 col-md-10">
-                              <div className="text-16 lh-16 fw-500">
-                                Lorem Ipsum is simply dummy text of the printing
-                                and typesetting.
-                              </div>
-                            </div>
-                            <div className="col-lg-2 col-md-2">
-                              <div className="d-flex gap-20 items-center">
-                                <div className="form-switch d-flex items-center">
-                                  <div className="switch">
-                                    <input type="checkbox" />
-                                    <span className="switch__slider"></span>
-                                  </div>
-                                </div>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-eye"></i>
-                                </a>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-pencil-alt"></i>
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-12 col-md-12">
-                        <div className="py-10 px-30 lg:px-10 rounded-16 bg-white shadow-4">
-                          <div className="row y-gap-20 justify-between items-center">
-                            <div className="col-lg-10 col-md-10">
-                              <div className="text-16 lh-16 fw-500">
-                                Lorem Ipsum is simply dummy text of the printing
-                                and typesetting industry.
-                              </div>
-                            </div>
-                            <div className="col-lg-2 col-md-2">
-                              <div className="d-flex gap-20 items-center">
-                                <div className="form-switch d-flex items-center">
-                                  <div className="switch">
-                                    <input type="checkbox" />
-                                    <span className="switch__slider"></span>
-                                  </div>
-                                </div>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-eye"></i>
-                                </a>
-                                <a
-                                  href="#0"
-                                  className="text-20"
-                                  style={{ color: "#aeaeae" }}
-                                >
-                                  <i className="fas fa-pencil-alt"></i>
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                          );
+                        })}
                     </div>
                   </div>
                 </>

@@ -23,6 +23,7 @@ import Discount from "./components/authenticated/Discount";
 import Polls from "./components/authenticated/Polls";
 import Reviews from "./components/authenticated/Reviews";
 import Reports from "./components/authenticated/Reports";
+import Main from "./components/authenticated/EditEvent/Main";
 
 const theme = createTheme({
   breakpoints: {
@@ -92,6 +93,10 @@ const appLayout = createBrowserRouter([
       {
         path: "participants/:event_id",
         element: <EventParticipants />,
+      },
+      {
+        path: "edit-event/:event_id",
+        element: <Main />,
       },
       {
         path: "billings/:event_id",

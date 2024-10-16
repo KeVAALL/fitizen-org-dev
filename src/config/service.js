@@ -4,7 +4,6 @@ import AxiosInstance from "../utils/axios";
 export async function RestfullApiService(data, endPoint) {
   try {
     const response = await AxiosInstance.post(`${endPoint}`, data);
-    console.log(response);
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {

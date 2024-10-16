@@ -9980,6 +9980,9 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
 .text-primary {
   color: var(--primary) !important;
 }
+.text-blue {
+  color: var(--color-blue-2) !important;
+}
 
 .text-green {
   color: #00ff47;
@@ -10414,6 +10417,9 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
 
 .border-primary {
   border: 1px solid var(--primary) !important;
+}
+.border-primary-bold {
+  border: 3px solid var(--primary) !important;
 }
 
 .size-3 {
@@ -13229,8 +13235,8 @@ input[type="range"]::-webkit-slider-thumb {
 .btn-spinner {
   width: 100%;
   display: block;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   position: absolute;
   top: 12px;
   left: calc(50% - 17px);

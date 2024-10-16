@@ -758,6 +758,30 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     borderBottom: "1px solid #BEBEBE",
   },
 }));
+export const StyledDotedTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#FFFBEE",
+    color: "#f05736",
+    fontSize: 14,
+    fontWeight: 500,
+    fontFamily: '"Inter", sans-serif',
+    borderTop: "none",
+    borderLeft: "none",
+    borderRight: "none",
+    borderBottom: "none",
+    borderRadius: "8px",
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 12,
+    fontWeight: 400,
+    fontFamily: '"Inter", sans-serif',
+    color: "#535B62",
+    borderLeft: "none",
+    borderRight: "none",
+    borderTop: "none",
+    borderBottom: "1px dashed #BEBEBE",
+  },
+}));
 
 // position: "absolute",
 // left: "-5px",

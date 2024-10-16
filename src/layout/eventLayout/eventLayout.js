@@ -284,7 +284,12 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
               {open ? (
                 <div className="sidebar__item">
                   <div className="sidebar__button">
-                    <a href="#" className="d-flex items-center text-14 lh-1">
+                    <a
+                      href={`/event/edit-event/${event_id}`}
+                      className={`d-flex items-center text-14 lh-1${
+                        isCurrentPage("/event/edit-event") ? " active-link" : ""
+                      }`}
+                    >
                       <i className="fas fa-edit mr-15"></i>
                       Edit Event
                     </a>
@@ -294,7 +299,14 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                 <HtmlLightTooltip arrow title="Edit Event" placement="right">
                   <div className="sidebar__item">
                     <div className="sidebar__button">
-                      <a href="#" className="d-flex items-center text-14 lh-1">
+                      <a
+                        href={`/event/edit-event/${event_id}`}
+                        className={`d-flex items-center text-14 lh-1${
+                          isCurrentPage("/event/edit-event")
+                            ? " active-link"
+                            : ""
+                        }`}
+                      >
                         <i className="fas fa-edit mr-15"></i>
                       </a>
                     </div>

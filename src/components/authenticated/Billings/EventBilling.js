@@ -139,19 +139,18 @@ function EventBilling() {
 
                   <div className="col-xl-3 col-md-6">
                     <div
+                      className="py-20 px-15 border-light rounded-16 bg-white cursor-pointer -hover-shadow"
                       onClick={() => {
                         setShowBankDetails(true);
                       }}
                     >
-                      <div className="py-20 px-15 border-light rounded-16 bg-white cursor-pointer -hover-shadow">
-                        <div className="row justify-between items-center">
-                          <div className="col-5">
-                            <img src={PY3} alt="icon" />
-                          </div>
-                          <div className="col-7 pl-0">
-                            <div className="fw-600 lh-14 text-13">
-                              Bank Details
-                            </div>
+                      <div className="row justify-between items-center">
+                        <div className="col-5">
+                          <img src={PY3} alt="icon" />
+                        </div>
+                        <div className="col-7 pl-0">
+                          <div className="fw-600 lh-14 text-13">
+                            Bank Details
                           </div>
                         </div>
                       </div>
