@@ -13,6 +13,7 @@ import { ErrorMessage, Field } from "formik";
 import React, { useState } from "react";
 import EventTicket from "./EventTicket";
 import EventDetails from "./EventDetails";
+import EventDescription from "./EventDescription";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -160,7 +161,7 @@ function Main() {
                   <EventDetails />
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index="two">
-                  Item Two
+                  <EventDescription />
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index="three">
                   <EventTicket />

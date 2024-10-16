@@ -26,11 +26,9 @@ import { Autocomplete, TextField, Checkbox, Chip } from "@mui/material";
 import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material";
 import NorthOutlinedIcon from "@mui/icons-material/NorthOutlined";
 import SouthOutlinedIcon from "@mui/icons-material/SouthOutlined";
-import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { BootstrapInput } from "../Input/textfield";
 import { matchSorter } from "match-sorter";
-import { customFilterStyles, CustomSelect } from "../Input/reactSelect";
 import Select, { components } from "react-select";
 
 // third-party
