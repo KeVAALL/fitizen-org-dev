@@ -13888,12 +13888,15 @@ input:-webkit-autofill::first-line {
 }
 .parent {
   width: 200px;
-  height: 60px;
-  padding: 16px;
+  height: 43px;
+  padding: 8px 16px;
+  cursor: pointer;
   /* padding: 2rem; */
   background: #ffffff;
   border-radius: 8px;
-  box-shadow: 7px 20px 20px rgb(210, 227, 244);
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  /* border: 1px solid #949494; */
+  /* box-shadow: 7px 20px 20px rgb(210, 227, 244); */
 }
 .file-upload-ticket {
   text-align: center;
@@ -13952,4 +13955,11 @@ input:-webkit-autofill::first-line {
   right: 0;
   opacity: 0;
   cursor: pointer;
+}
+.event-category-accordion .MuiAccordionSummary-expandIconWrapper {
+  transform: none !important;
+}
+.event-category-accordion .MuiAccordionSummary-root {
+  min-height: 48px !important;
+  height: 48px !important;
 }
