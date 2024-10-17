@@ -1,5 +1,5 @@
 // React imports
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -23,11 +23,13 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   TextField,
 } from "@mui/material";
+import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
+import { IconButton } from "@mui/material";
+
 import Select from "react-select";
 import { PieChart } from "@mui/x-charts";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -73,6 +75,9 @@ function EventParticipants() {
   const [stateData, setStateData] = useState([]);
   const [openDate, setDateOpen] = useState(false);
   const [announceModal, setAnnounceModal] = useState(false);
+  const [transferTicketModal, setTransferTicketModal] = useState(false);
+  const [transferTicketData, setTransferTicketData] = useState(null);
+
   const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
   const categoryColor = ["#FBCDC3", "#C0462B", "#F3795E"];
@@ -80,7 +85,6 @@ function EventParticipants() {
   const [dynamicValidationSchema, setDynamicValidationSchema] = useState([]);
   const [dynamicFormValues, setDynamicFormValues] = useState([]);
   const [otherFormation, setOtherFormation] = useState({});
-  const [value, setValue] = useState("");
   const [initialValues, setInitialValues] = useState({
     Participant_Name: "",
     Participant_Email: "",
@@ -413,6 +417,13 @@ function EventParticipants() {
                       direction="row"
                       alignItems="center"
                       spacing={2}
+                      onClick={() => {
+                        debugger;
+                        setTransferTicketData(row?.original ?? {});
+                        setTransferTicketModal((prevState) => {
+                          return !prevState;
+                        });
+                      }}
                     >
                       <i
                         className="fas fa-random"
@@ -592,37 +603,37 @@ function EventParticipants() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [showForm]);
-  useEffect(() => {
-    async function LoadParticipants() {
-      const reqdata = {
-        Method_Name: "Get",
-        Event_Id: decryptData(event_id),
-        Session_User_Id: user?.User_Id,
-        Session_User_Name: user?.User_Display_Name,
-        Session_Organzier_Id: user?.Organizer_Id,
-      };
-      try {
-        setFetchingDetails(true);
-        const result = await RestfullApiService(
-          reqdata,
-          "organizer/geteventparticipant"
-        );
-        if (result) {
-          console.log(result?.data?.Result?.Table1);
-          setParticipants(result?.data?.Result?.Table1);
-          setAgeCategory(result?.data?.Result?.Table6);
-          setGenderData(result?.data?.Result?.Table2);
-          setCategoryData(result?.data?.Result?.Table3);
-          setCityData(result?.data?.Result?.Table4);
-          setStateData(result?.data?.Result?.Table5);
-        }
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setFetchingDetails(false);
+  async function LoadParticipants() {
+    const reqdata = {
+      Method_Name: "Get",
+      Event_Id: decryptData(event_id),
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+    };
+    try {
+      setFetchingDetails(true);
+      const result = await RestfullApiService(
+        reqdata,
+        "organizer/geteventparticipant"
+      );
+      if (result) {
+        console.log(result?.data?.Result?.Table1);
+        setParticipants(result?.data?.Result?.Table1);
+        setAgeCategory(result?.data?.Result?.Table6);
+        setGenderData(result?.data?.Result?.Table2);
+        setCategoryData(result?.data?.Result?.Table3);
+        setCityData(result?.data?.Result?.Table4);
+        setStateData(result?.data?.Result?.Table5);
       }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setFetchingDetails(false);
     }
+  }
 
+  useEffect(() => {
     if (event_id) {
       LoadParticipants();
     }
@@ -1950,6 +1961,317 @@ function EventParticipants() {
                           </Stack>
                         </Box>
                       </Modal>
+                      {/* ===========transferTicketModal=======  */}
+                      <Modal open={transferTicketModal}>
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 600,
+                            bgcolor: "background.paper",
+                            border: "none",
+                            borderRadius: 2,
+                            boxShadow: 24,
+                            p: 3,
+                          }}
+                        >
+                          <Stack
+                            direction="column"
+                            alignItems="center"
+                            spacing={1}
+                          >
+                            <Stack
+                              style={{ width: "100%" }}
+                              direction="row"
+                              justifyContent="space-between"
+                              alignItems="center"
+                            >
+                              <div className="text-16 lh-16 fw-600 text-primary">
+                                Transfer Ticket
+                              </div>
+                              <i
+                                onClick={() =>
+                                  setTransferTicketModal(
+                                    (prevState) => !prevState
+                                  )
+                                }
+                                class="fas fa-times text-16 text-primary cursor-pointer"
+                              ></i>
+                            </Stack>
+                            {console.log({ transferTicketData })}
+                            <Formik
+                              initialValues={{
+                                TransfereeName:
+                                  transferTicketData?.Participant_Name,
+                                TransfereeMobileNumber:
+                                  transferTicketData?.Phone_Number,
+                                TransfereeEmail:
+                                  transferTicketData?.Participant_Email,
+                                TransferToName: "",
+                                TransferToEmail: "",
+                                Event_Booking_Participant_Id:
+                                  transferTicketData?.Event_Booking_Participant_Id,
+                              }}
+                              validateOnBlur={false}
+                              // validationSchema={Yup.object({
+                              //   TransfereeName: Yup.string().required(
+                              //     "Transferee Name is required"
+                              //   ),
+                              //   TransfereeEmail: Yup.string()
+                              //     .email("Invalid email format")
+                              //     .required("Transferee Email is required"),
+                              //   TransferToName: Yup.string().required(
+                              //     "Transfer To Name is required"
+                              //   ),
+                              //   TransferToEmail: Yup.string()
+                              //     .email("Invalid email format")
+                              //     .required("Transfer To Email is required"),
+                              // })}
+                              validationSchema={Yup.object({
+                                TransfereeName: Yup.string().required(
+                                  "Transferee Name is required"
+                                ),
+                                TransfereeEmail: Yup.string()
+                                  .email("Invalid email format")
+                                  .required("Transferee Email is required"),
+                                TransferToName: Yup.string().required(
+                                  "Transfer To Name is required"
+                                ),
+                                TransferToEmail: Yup.string()
+                                  .email("Invalid email format")
+                                  .required("Transfer To Email is required")
+                                  .test(
+                                    "emails-not-same",
+                                    "Already Transferred",
+                                    function (value) {
+                                      const { TransfereeEmail } = this.parent;
+                                      return value !== TransfereeEmail; // Ensure they are not the same
+                                    }
+                                  ),
+                              })}
+                              onSubmit={async (values) => {
+                                console.log(values);
+                                // Your submit logic here
+
+                                const reqdata = {
+                                  Method_Name: "toufiqTransferTicket",
+                                  Session_User_Id: user?.User_Id,
+                                  Session_User_Name: user?.User_Display_Name,
+                                  Session_Organzier_Id: user?.Organizer_Id,
+                                  Event_Id: decryptData(event_id),
+                                  Participant_Id:
+                                    values?.Event_Booking_Participant_Id,
+                                  Participant_Email_Id: values?.TransfereeEmail,
+                                  Participant_Mobile_Number:
+                                    values?.TransfereeMobileNumber,
+                                  Participant_Name: values?.TransfereeEmail,
+                                  Transfer_Name: values?.TransferToName,
+                                  Transfer_Email_Id: values?.TransferToEmail,
+                                };
+                                debugger;
+                                try {
+                                  const result = await RestfullApiService(
+                                    reqdata,
+                                    "organizer/transferticket"
+                                  );
+
+                                  console.log(
+                                    result?.data?.Statusasfdasdfs !== 200
+                                  );
+                                  debugger;
+                                  if (result?.data?.Status !== 200) {
+                                    toast.error(
+                                      result?.data?.Description ||
+                                        "Something went wrong"
+                                    );
+                                    return;
+                                  }
+                                  toast.success(
+                                    "Ticket has been transferred successfully"
+                                  );
+                                  setTransferTicketModal(false);
+                                  LoadParticipants();
+                                } catch (err) {
+                                  console.log(err);
+                                }
+                              }}
+                            >
+                              {({ setFieldValue }) => (
+                                <Form style={{ width: "100%" }}>
+                                  <div>
+                                    <div
+                                      id="_main_parent"
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: "16px",
+                                      }}
+                                    >
+                                      <div
+                                        id="_first-row"
+                                        style={{
+                                          display: "grid",
+                                          gridTemplateColumns: "1fr 1fr",
+                                          gap: "16px",
+                                        }}
+                                      >
+                                        <div id="_first_child">
+                                          <div className="single-field w-full md:w-1/2 pr-2">
+                                            <label className="text-13 text-reading fw-500">
+                                              Transferee Name
+                                            </label>
+                                            <div className="form-control">
+                                              <Field
+                                                disabled
+                                                name="TransfereeName"
+                                                className="form-control"
+                                                placeholder="Transferee Name"
+                                                onChange={(e) =>
+                                                  setFieldValue(
+                                                    "TransfereeName",
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                            </div>
+                                            <ErrorMessage
+                                              name="TransfereeName"
+                                              component="div"
+                                              className="text-error-2 text-13 mt-5"
+                                            />
+                                          </div>
+                                        </div>
+                                        <div id="_second_child">
+                                          <div className="single-field w-full md:w-1/2 pr-2">
+                                            <label className="text-13 text-reading fw-500">
+                                              Transferee Email
+                                            </label>
+                                            <div className="form-control">
+                                              <Field
+                                                disabled
+                                                name="TransfereeEmail"
+                                                className="form-control"
+                                                placeholder="Transferee Email"
+                                                onChange={(e) =>
+                                                  setFieldValue(
+                                                    "TransfereeEmail",
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                            </div>
+                                            <ErrorMessage
+                                              name="TransfereeEmail"
+                                              component="div"
+                                              className="text-error-2 text-13 mt-5"
+                                            />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div
+                                        id="_middle_row"
+                                        style={{ textAlign: "center" }}
+                                      >
+                                        <IconButton id="_middle_child">
+                                          <MoveToInboxIcon
+                                            id="_middle_child_btn"
+                                            size="large"
+                                            color="orange"
+                                          />
+                                        </IconButton>
+                                      </div>
+
+                                      <div
+                                        id="_second-row"
+                                        style={{
+                                          display: "grid",
+                                          gridTemplateColumns: "1fr 1fr",
+                                          gap: "16px",
+                                        }}
+                                      >
+                                        <div id="_first_child">
+                                          <div className="single-field w-full md:w-1/2 pr-2">
+                                            <label className="text-13 text-reading fw-500">
+                                              Transfer To Name
+                                            </label>
+                                            <div className="form-control">
+                                              <Field
+                                                name="TransferToName"
+                                                className="form-control"
+                                                placeholder="Transfer To Name"
+                                                onChange={(e) =>
+                                                  setFieldValue(
+                                                    "TransferToName",
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                            </div>
+                                            <ErrorMessage
+                                              name="TransferToName"
+                                              component="div"
+                                              className="text-error-2 text-13 mt-5"
+                                            />
+                                          </div>
+                                        </div>
+                                        <div id="_second_child">
+                                          <div className="single-field w-full md:w-1/2 pr-2">
+                                            <label className="text-13 text-reading fw-500">
+                                              Transfer To Email
+                                            </label>
+                                            <div className="form-control">
+                                              <Field
+                                                name="TransferToEmail"
+                                                className="form-control"
+                                                placeholder="Transfer To Email"
+                                                onChange={(e) =>
+                                                  setFieldValue(
+                                                    "TransferToEmail",
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                            </div>
+                                            <ErrorMessage
+                                              name="TransferToEmail"
+                                              component="div"
+                                              className="text-error-2 text-13 mt-5"
+                                            />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Submit Button */}
+                                  <Stack
+                                    style={{ width: "100%" }}
+                                    direction="row"
+                                    justifyContent="flex-start"
+                                    alignItems="center"
+                                    className="mt-20"
+                                  >
+                                    <div
+                                      className="col-auto relative"
+                                      style={{ margin: "auto" }}
+                                    >
+                                      <button
+                                        type="submit"
+                                        className="button bg-primary w-350 h-50 rounded-24 py-15 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                                      >
+                                        Transfer Ticket
+                                      </button>
+                                    </div>
+                                  </Stack>
+                                </Form>
+                              )}
+                            </Formik>
+                          </Stack>
+                        </Box>
+                      </Modal>
                       <div className="col-xl-12 col-md-12">
                         <Stack
                           direction="column"
@@ -2704,7 +3026,7 @@ export default EventParticipants;
                                           })}
                                       </Stack>
 
-                                     Remaining cities placed in a vertical stack 
+                                     Remaining cities placed in a vertical stack
                                       {categoryData
                                         .slice(2)
                                         .map((category, index) => {

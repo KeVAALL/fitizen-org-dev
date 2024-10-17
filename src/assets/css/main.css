@@ -13792,7 +13792,7 @@ input:-webkit-autofill::first-line {
   margin-top: 16px !important;
 }
 .pie-chart-report {
-  height: 207px !important;
+  height: 150px !important;
 }
 .pie-chart-report svg {
   width: initial !important;
@@ -13806,8 +13806,8 @@ input:-webkit-autofill::first-line {
   color: black;
 }
 /* .box {
-  width: 100px; 
-  padding: 10px; 
+  width: 100px;
+  padding: 10px;
   text-align: center;
   color: #fff;
 } */
