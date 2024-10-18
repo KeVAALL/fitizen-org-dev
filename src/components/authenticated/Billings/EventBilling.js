@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import Event5 from "../../../assets/img/events/event5.png";
 import PY1 from "../../../assets/img/icons/py1.png";
@@ -9,17 +9,74 @@ import BankDetails from "./BankDetails";
 import Payout from "./Payout";
 import PaymentHistory from "./PaymentHistory";
 import Transactions from "./Transactions";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { decryptData } from "../../../utils/storage";
+import { RestfullApiService } from "../../../config/service";
+import toast from "react-hot-toast";
 
 function EventBilling() {
+  const { event_id } = useParams();
+  const user = useSelector((state) => state.user.userProfile);
+
   const [showBankDetails, setShowBankDetails] = useState(false);
+  const [getData , setGetData] = useState([]);
   const [showPaymentHistory, setShowPaymentHistory] = useState(false);
   const [showTransactions, setShowTransactions] = useState(false);
   const [showPayout, setShowPayout] = useState(false);
 
+
+const handleGetData = useCallback(async () => {
+  const bankDetails = {
+    Method_Name: "GetPayout",
+    Session_User_Id: user?.User_Id,
+    Session_User_Name: user?.User_Display_Name,
+    Session_Organzier_Id: user?.Organizer_Id,
+    Org_Id: user?.Org_Id,
+    Event_Id: decryptData(event_id),
+    Bank_Id: "", // this will empty for the get as well
+  };
+
+  try {
+    const { data } = await RestfullApiService(
+      bankDetails,
+      "organizer/GetBank"
+    );
+
+    if (data?.Result?.Table1?.length === 0 || data?.Status !== 200) {
+      toast.error(
+        data?.Result?.Table1?.[0]?.Result_Description ||
+          "Something went wrong"
+      );
+      return;
+    }
+    setGetData(data?.Result?.Table1 ?? []);
+    console.log(data?.Result?.Table1);
+  } catch (err) {
+    toast.error("Something went wrong");
+    console.log(err);
+  } finally {
+  }
+}, [
+  event_id,
+  user?.Org_Id,
+  user?.Organizer_Id,
+  user?.User_Display_Name,
+  user?.User_Id,
+]);
+
+useEffect(()=>{
+  handleGetData()
+},[handleGetData, showPayout])
+
+useEffect(()=>{
+  handleGetData()
+},[handleGetData])
+
   return showBankDetails && !showPayout ? (
-    <BankDetails />
+      <BankDetails />
   ) : showPayout && !showBankDetails ? (
-    <Payout setShowPayout={setShowPayout} />
+    <Payout setShowPayout={setShowPayout} getData={getData?.[0]}/>
   ) : (
     <div className="dashboard__main">
       <div className="dashboard__content pt-20">
@@ -64,33 +121,35 @@ function EventBilling() {
               ) : (
                 <>
                   <div className="col-xl-12 col-md-12 mb-30">
-                    <div
+                   {
+                    getData?.length>0 ? getData.map((curData)=>{
+                      return  <div
                       className="py-30 px-30 border-light rounded-8 bg-skin"
                       style={{ boxShadow: "2px 2px 7.5px 0px #0000000D" }}
                     >
                       <div className="row y-gap-20 justify-between items-center">
                         <div className="col-lg-5">
                           <div className="fw-500 lh-14 text-11 text-light-1">
-                            Next Payout On (Only for transactions till 3
-                            September)
+                            Next Payout On (Only for transactions till {curData?.transactiontill ?? ""})
                           </div>
                           <div className="text-15 text-primary lh-16 fw-600 mt-5">
-                            Thu, 05 September 2024
-                          </div>
+{curData?.next_cycledate ?? ""}                          </div>
                         </div>
                         <div className="col-lg-5">
                           <div className="fw-500 lh-14 text-11 text-light-1">
                             Payout Cycle
                           </div>
                           <div className="text-15 text-primary lh-16 fw-600 mt-5">
-                            Weekly to AXIS BANK••••4752
+                            {curData?.Payment_Feq ?? ""} to {curData?.Bank_Name ?? ""}{curData?.Account_Number
+  ? `••••${curData.Account_Number.slice(-4)}`
+  : ""}
+
                           </div>
                         </div>
                         <div className="col-lg-2">
                           <button
                             onClick={(e) => {
                               e.preventDefault();
-
                               setShowPayout(true);
                             }}
                             className="button -primary-1 rounded-22 px-20 py-10 text-primary border-primary bg-white text-12 mx-auto"
@@ -100,6 +159,8 @@ function EventBilling() {
                         </div>
                       </div>
                     </div>
+                    }):"No data found"
+                   }
                   </div>
 
                   <div className="col-xl-3 col-md-6">

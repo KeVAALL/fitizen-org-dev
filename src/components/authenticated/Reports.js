@@ -9,6 +9,8 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import * as XLSX from "xlsx";
+
 import React, { useCallback, useEffect, useState } from "react";
 import Select from "react-select";
 import { customRoundedStyles } from "../../utils/selectCustomStyle";
@@ -112,7 +114,76 @@ function Reports() {
   useEffect(() => {
     handleGetData();
   }, [handleGetData]);
-  console.log({ getData });
+
+  // const handleDownload = () => {
+  //   debugger
+  //   if (getData?.Table4?.length > 0) {
+  //     // Create a new workbook and worksheet
+  //     const wb = XLSX.utils.book_new();
+
+  //     // Define the header and map the table data
+  //     const tableData = getData.Table4.map((item) => ({
+  //       'Ticket Name': item.Event_Name ?? '',
+  //       'Page Views': item.Number_count ?? 0,
+  //     }));
+
+  //     // Create a worksheet from the data
+  //     const ws = XLSX.utils.json_to_sheet(tableData);
+
+  //     // Add the worksheet to the workbook
+  //     XLSX.utils.book_append_sheet(wb, ws, 'Page Views Data');
+
+  //     // Create the Excel file and download it
+  //     XLSX.writeFile(wb, 'Page_Views_Data.xlsx');
+  //   }
+  // };
+
+  const downloadExcel = (data, sheetName, fileName) => {
+    if (data?.length > 0) {
+      // Create a new workbook and worksheet
+      const wb = XLSX.utils.book_new();
+
+      // Create a worksheet from the data
+      const ws = XLSX.utils.json_to_sheet(data);
+
+      // Add the worksheet to the workbook
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+      // Create the Excel file and trigger the download
+      XLSX.writeFile(wb, `${fileName}.xlsx`);
+    } else {
+      console.warn("No data available for download.");
+    }
+  };
+
+  const handleDownloadSummary = () => {
+    const tableData = getData?.Table2?.map((item) => ({
+      Item: item?.Item ?? "",
+      Quantity: item.Quantity ?? 0,
+      "Amount (INR)": item.Amount ?? 0,
+    }));
+
+    // Call the utility function to download the Excel file
+    downloadExcel(tableData, "Page Summary Data", "Page_Summary_Data");
+  };
+  const handleDownload = () => {
+    const tableData = getData?.Table4?.map((item) => ({
+      "Ticket Name": item.Event_Name ?? "",
+      "Page Views": item.Number_count ?? 0,
+    }));
+    // Call the utility function to download the Excel file
+    downloadExcel(tableData, "Page Views Data", "Page_Views_Data");
+  };
+
+  const handleNumberOfTicketSold = () => {
+    const tableData = getData?.Table4?.map((item) => ({
+      Item: item?.Ticket_Name ?? "",
+      Quantity: item.Quantity ?? 0,
+      "Amount (INR)": item.Sales ?? 0,
+    }));
+    // Call the utility function to download the Excel file
+    downloadExcel(tableData, "Page Views Data", "Page_Views_Data");
+  };
   return (
     <div className="dashboard__main">
       <div className="dashboard__content pt-20">
@@ -276,7 +347,10 @@ function Reports() {
                         justifyContent="space-between"
                       >
                         <div className="text-16 lh-16 fw-600 mt-5">Summary</div>
-                        <button className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25">
+                        <button
+                          className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25"
+                          onClick={handleDownloadSummary}
+                        >
                           Download
                         </button>
                       </Stack>
@@ -336,7 +410,10 @@ function Reports() {
                           <div className="text-16 lh-16 fw-600 mt-5">
                             Page Views
                           </div>
-                          <button className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25">
+                          <button
+                            className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25"
+                            onClick={handleDownload}
+                          >
                             Download
                           </button>
                         </Stack>
@@ -391,7 +468,10 @@ function Reports() {
                           <div className="text-16 lh-16 fw-600 mt-5">
                             Number of Tickets Sold
                           </div>
-                          <button className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25">
+                          <button
+                            className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25"
+                            onClick={handleNumberOfTicketSold}
+                          >
                             Download
                           </button>
                         </Stack>
