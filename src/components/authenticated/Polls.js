@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Event5 from "../../assets/img/events/event5.png";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 import { useParams } from "react-router-dom";
 import { decryptData } from "../../utils/storage";
 import { useSelector } from "react-redux";
@@ -44,7 +44,7 @@ function Polls() {
     };
     try {
       setFetchingPolls(true);
-      const result = await RestfullApiService(reqdata, "organizer/pollget");
+      const result = await RestfulApiService(reqdata, "organizer/pollget");
       if (result) {
         console.log(result?.data?.Result?.Table1);
 
@@ -238,7 +238,7 @@ function Polls() {
                             try {
                               setAddingPoll(true);
 
-                              const result = await RestfullApiService(
+                              const result = await RestfulApiService(
                                 reqdata,
                                 "organizer/pollset"
                               );

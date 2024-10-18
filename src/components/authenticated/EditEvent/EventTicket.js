@@ -24,17 +24,19 @@ import { selectCustomStyle } from "../../../utils/selectCustomStyle";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { decryptData } from "../../../utils/storage";
-import { RestfullApiService } from "../../../config/service";
+import { RestfulApiService } from "../../../config/service";
 import Loader from "../../../utils/Loader";
 import CustomAccordion from "./CustomAccordion";
 
 function EventTicket() {
   const { event_id } = useParams();
   const user = useSelector((state) => state.user.userProfile);
-  const [initialValues, setInitialValues] = useState({});
+  const selectedCategory = useSelector(
+    (state) => state.category.categorySelected
+  );
   const [fetchingCategory, setFetchingCategory] = useState(false);
   const [allCategory, setAllCategory] = useState([]);
-  const [submitForm, setSubmitForm] = useState(false);
+  const [raceDistanceCategory, setRaceDistanceCategory] = useState([]);
 
   async function LoadCategory() {
     const reqdata = {
@@ -48,7 +50,7 @@ function EventTicket() {
     };
     try {
       setFetchingCategory(true);
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "organizer/geteventcategory"
       );
@@ -72,11 +74,31 @@ function EventTicket() {
       setFetchingCategory(false);
     }
   }
+  const FetchCategoryOptions = async () => {
+    try {
+      const reqdata = {
+        Method_Name: "GetEventCategory",
+        Session_User_Id: user?.User_Id,
+        Org_Id: user?.Org_Id,
+        ParentField_Id: selectedCategory?.value,
+        SearchText: "",
+      };
+      const response = await RestfulApiService(reqdata, "master/Getdropdown");
+
+      console.log(response.data.Result.Table1);
+
+      setRaceDistanceCategory(response.data.Result.Table1);
+    } catch (error) {
+      return [];
+    }
+  };
   useEffect(() => {
     if (event_id) {
       LoadCategory();
+      FetchCategoryOptions();
     }
   }, [event_id]);
+
   return (
     <div
       className="py-30 px-30 border-light rounded-8"
@@ -87,7 +109,12 @@ function EventTicket() {
       ) : (
         <Stack spacing={4}>
           {allCategory?.map((category) => {
-            return <CustomAccordion category={category} />;
+            return (
+              <CustomAccordion
+                category={category}
+                raceDistanceCategory={raceDistanceCategory}
+              />
+            );
           })}
         </Stack>
       )}

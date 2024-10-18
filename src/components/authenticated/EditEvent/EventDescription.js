@@ -8,7 +8,7 @@ import * as Yup from "yup";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { decryptData } from "../../../utils/storage";
-import { RestfullApiService } from "../../../config/service";
+import { RestfulApiService } from "../../../config/service";
 import { Backdrop, CircularProgress } from "@mui/material";
 import AsyncSelect from "react-select/async";
 import CreatableSelect from "react-select/creatable";
@@ -60,7 +60,7 @@ function EventDescription() {
     try {
       setSubmitForm(true);
 
-      const result = await RestfullApiService(reqdata, "organizer/SaveEvent");
+      const result = await RestfulApiService(reqdata, "organizer/SaveEvent");
       if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
         toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
         return;
@@ -88,7 +88,7 @@ function EventDescription() {
     };
     try {
       setFetchingDescription(true);
-      const result = await RestfullApiService(reqdata, "organizer/GetEvent");
+      const result = await RestfulApiService(reqdata, "organizer/GetEvent");
       if (result) {
         const result1 = result?.data?.Result?.Table1[0];
 

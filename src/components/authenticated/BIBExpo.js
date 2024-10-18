@@ -12,7 +12,7 @@ import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 import { decryptData } from "../../utils/storage";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc"; // Import UTC plugin for working with UTC
@@ -96,7 +96,7 @@ function BIBExpo() {
     };
     try {
       setFetchingBib(true);
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "organizer/getbibexpodetails"
       );
@@ -253,7 +253,7 @@ function BIBExpo() {
                         try {
                           setAddingBib(true);
 
-                          const result = await RestfullApiService(
+                          const result = await RestfulApiService(
                             reqdata,
                             "organizer/addbibexpodetails"
                           );

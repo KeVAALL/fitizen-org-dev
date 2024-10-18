@@ -7,6 +7,7 @@ export const selectCustomStyle = {
   control: (provided, state) => ({
     ...provided,
     padding: "3.6px",
+    backgroundColor: state.isDisabled ? "#3353d10d" : provided.backgroundColor,
     // border: state.isFocused ? "1px solid #AFBACA" : provided.border,
     border: state.isFocused ? "1px solid #EE5636" : "1px solid #dfe3e7",
     // boxShadow: state.isFocused ? "0 0 0 1px #21B546" : provided.boxShadow,
@@ -30,9 +31,9 @@ export const selectCustomStyle = {
       color: state.isSelected && "#fff",
     },
   }),
-  placeholder: (provided) => ({
+  placeholder: (provided, state) => ({
     ...provided,
-    color: "#111111",
+    color: "#bcbbbb",
     fontSize: "13px",
     fontWeight: 500,
     letterSpacing: "0.02em",

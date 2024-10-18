@@ -44,7 +44,7 @@ import {
 import { decryptData } from "../../utils/storage";
 import Event5 from "../../assets/img/events/event5.png";
 import { WhiteSingleTooltip } from "../../utils/Tooltip";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 import { customRoundedStyles } from "../../utils/selectCustomStyle";
 
 function Reviews() {
@@ -98,7 +98,7 @@ function Reviews() {
 
         try {
           // Make the API call
-          const result = await RestfullApiService(reqdata, "organizer/reviews");
+          const result = await RestfulApiService(reqdata, "organizer/reviews");
 
           if (result) {
             return true;
@@ -149,7 +149,7 @@ function Reviews() {
 
         try {
           // Make the API call
-          const result = await RestfullApiService(reqdata, "organizer/reviews");
+          const result = await RestfulApiService(reqdata, "organizer/reviews");
 
           if (result) {
             // Assuming the API response includes a 'success' field
@@ -205,7 +205,7 @@ function Reviews() {
     };
     try {
       setFetchingReview(true);
-      const result = await RestfullApiService(reqdata, "organizer/reviews");
+      const result = await RestfulApiService(reqdata, "organizer/reviews");
       if (result) {
         setTableData(result?.data?.Result?.Table1);
         setEventRating(result?.data?.Result?.Table2[0]);
@@ -550,7 +550,7 @@ function Reviews() {
                         };
                         try {
                           setFetchingReviewCat(true);
-                          const result = await RestfullApiService(
+                          const result = await RestfulApiService(
                             reqdata,
                             "organizer/reviews"
                           );

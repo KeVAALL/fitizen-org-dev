@@ -4,9 +4,10 @@ import { selectCustomStyle } from "../../../utils/selectCustomStyle";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedCategory } from "../../../redux/slices/categorySlice";
 import { decryptData } from "../../../utils/storage";
-import { RestfullApiService } from "../../../config/service";
+import { RestfulApiService } from "../../../config/service";
 import { Backdrop, CircularProgress } from "@mui/material";
 import AsyncSelect from "react-select/async";
 import CreatableSelect from "react-select/creatable";
@@ -30,6 +31,7 @@ const initialFormValues = {
 
 function EventDetails() {
   const { event_id } = useParams();
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userProfile);
   const [fetchingDetails, setFetchingDetails] = useState(false);
   const [eventTypeDropdown, setEventTypeDropdown] = useState([]);
@@ -83,7 +85,7 @@ function EventDetails() {
         ParentField_Id: inputValue,
         SearchText: "",
       };
-      const response = await RestfullApiService(reqdata, "master/Getdropdown");
+      const response = await RestfulApiService(reqdata, "master/Getdropdown");
 
       return response.data.Result.Table1.map((option) => ({
         label: option.label,
@@ -102,7 +104,7 @@ function EventDetails() {
         ParentField_Id: String(inputValue),
         SearchText: "",
       };
-      const response = await RestfullApiService(reqdata, "master/Getdropdown");
+      const response = await RestfulApiService(reqdata, "master/Getdropdown");
 
       const data = response?.data?.Result?.Table1[0];
 
@@ -212,13 +214,17 @@ function EventDetails() {
     try {
       setSubmitForm(true);
 
-      const result = await RestfullApiService(reqdata, "organizer/SaveEvent");
+      const result = await RestfulApiService(reqdata, "organizer/SaveEvent");
       if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
         toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
         return;
       }
       if (result) {
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+        const apiResponse = {
+          categorySelected: values?.EventType_Id,
+        };
+        dispatch(setSelectedCategory(apiResponse));
       }
     } catch (err) {
       toast.error(err?.Result?.Table1[0]?.Result_Description);
@@ -240,10 +246,15 @@ function EventDetails() {
     };
     try {
       setFetchingDetails(true);
-      const result = await RestfullApiService(reqdata, "organizer/GetEvent");
+      const result = await RestfulApiService(reqdata, "organizer/GetEvent");
       if (result) {
         const result1 = result?.data?.Result?.Table1[0];
-
+        const apiResponse = {
+          categorySelected: result?.data?.Result?.Table3?.filter(
+            (type) => type.value === result1?.EventType_Id
+          )[0],
+        };
+        dispatch(setSelectedCategory(apiResponse));
         setTimezoneDropdown(result?.data?.Result?.Table2);
         setEventTypeDropdown(result?.data?.Result?.Table3);
         setTakeawayDropdown(result?.data?.Result?.Table6);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 import { MEDIA_URL } from "../../config/url";
 import { Backdrop, Box, CircularProgress, Modal, Stack } from "@mui/material";
 import toast from "react-hot-toast";
@@ -56,7 +56,7 @@ function AllEvents() {
     };
     try {
       setSubmitModalForm(true);
-      const result = await RestfullApiService(reqdata, "organizer/cloneevent");
+      const result = await RestfulApiService(reqdata, "organizer/cloneevent");
       if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
         toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
         return;
@@ -84,7 +84,7 @@ function AllEvents() {
     };
     try {
       setFetchingDashboard(true);
-      const result = await RestfullApiService(reqdata, "organizer/dashboard");
+      const result = await RestfulApiService(reqdata, "organizer/dashboard");
       if (result) {
         console.log(result?.data?.Result?.Table1);
         setEvents(result?.data?.Result?.Table1);
@@ -108,7 +108,7 @@ function AllEvents() {
     try {
       // Remove Toast
       await toast.promise(
-        RestfullApiService(reqdata, "organizer/dashboard"),
+        RestfulApiService(reqdata, "organizer/dashboard"),
         {
           loading: isActive ? "Deactivating event..." : "Activating event...",
           success: (result) => {

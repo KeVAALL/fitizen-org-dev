@@ -53,7 +53,7 @@ import {
 import { WhiteSingleTooltip, WhiteTooltip } from "../../utils/Tooltip";
 import {
   RestfulApiServiceDownload,
-  RestfullApiService,
+  RestfulApiService,
 } from "../../config/service";
 import { decryptData } from "../../utils/storage";
 import { MEDIA_URL } from "../../config/url";
@@ -291,7 +291,7 @@ function EventParticipants() {
                       try {
                         setIsResending(true);
 
-                        const result = await RestfullApiService(
+                        const result = await RestfulApiService(
                           reqdata,
                           "organizer/resendticket"
                         );
@@ -341,7 +341,7 @@ function EventParticipants() {
                     try {
                       setIsEditing(true);
 
-                      const result = await RestfullApiService(
+                      const result = await RestfulApiService(
                         reqdata,
                         "organizer/geteventparticipant"
                       );
@@ -605,7 +605,7 @@ function EventParticipants() {
       };
       try {
         setFetchingDetails(true);
-        const result = await RestfullApiService(
+        const result = await RestfulApiService(
           reqdata,
           "organizer/geteventparticipant"
         );
@@ -721,7 +721,7 @@ function EventParticipants() {
                         try {
                           setSubmitForm(true);
 
-                          const result = await RestfullApiService(
+                          const result = await RestfulApiService(
                             reqdata,
                             "organizer/updateeventparticipant"
                           );
@@ -749,7 +749,7 @@ function EventParticipants() {
                             };
                             try {
                               setFetchingDetails(true);
-                              const result = await RestfullApiService(
+                              const result = await RestfulApiService(
                                 reqdata,
                                 "organizer/geteventparticipant"
                               );
@@ -1734,7 +1734,7 @@ function EventParticipants() {
                                 try {
                                   setSendingAnnouncement(true);
 
-                                  const result = await RestfullApiService(
+                                  const result = await RestfulApiService(
                                     reqdata,
                                     "organizer/announcement"
                                   );
@@ -1866,7 +1866,7 @@ function EventParticipants() {
 
                                             try {
                                               await toast.promise(
-                                                RestfullApiService(
+                                                RestfulApiService(
                                                   reqdata,
                                                   "master/uploadfile"
                                                 ),

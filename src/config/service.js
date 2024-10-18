@@ -1,7 +1,7 @@
 import AxiosInstance from "../utils/axios";
 
 //API call
-export async function RestfullApiService(data, endPoint) {
+export async function RestfulApiService(data, endPoint) {
   try {
     const response = await AxiosInstance.post(`${endPoint}`, data);
     return response;
@@ -19,7 +19,7 @@ export async function RestfullApiService(data, endPoint) {
   }
 }
 
-export async function RestfullApiServiceGet(data, endPoint) {
+export async function RestfulApiServiceGet(data, endPoint) {
   try {
     const response = await AxiosInstance.get(`${endPoint}`, data);
     return response;
