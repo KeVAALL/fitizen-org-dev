@@ -10668,7 +10668,6 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
   width: 170px;
 }
 
-
 .w-220 {
   width: 220px;
 }
@@ -13438,6 +13437,9 @@ input[type='tel']:disabled,
 textarea:disabled {
   background: #3353d10d;
 }
+input[type="checkbox"]:disabled:hover {
+  cursor: not-allowed !important;
+}
 button:disabled {
   background: #3353d10d;
   border-color: #3353d10d;
@@ -13883,4 +13885,81 @@ input:-webkit-autofill::first-line {
 }
 .int-checkbox .MuiSvgIcon-root {
   font-size: 1.2rem !important;
+}
+.parent {
+  width: 200px;
+  height: 43px;
+  padding: 8px 16px;
+  cursor: pointer;
+  /* padding: 2rem; */
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  /* border: 1px solid #949494; */
+  /* box-shadow: 7px 20px 20px rgb(210, 227, 244); */
+}
+.file-upload-ticket {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  /* border: 3px dashed rgb(210, 227, 244); */
+  /* padding: 1.5rem; */
+  position: relative;
+  cursor: pointer;
+}
+.file-upload-ticket p {
+  font-size: 0.87rem;
+  margin-top: 10px;
+  color: #bbcada;
+}
+.file-upload-ticket input {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.banner-parent {
+  width: 450px;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 25px;
+  border: 1px solid #949494;
+  /* box-shadow: 7px 20px 20px rgb(210, 227, 244); */
+}
+.file-upload-banner {
+  text-align: center;
+  /* border: 3px dashed rgb(210, 227, 244); */
+  position: relative;
+  cursor: pointer;
+}
+/* .file-upload-banner p {
+  font-size: 0.87rem;
+  margin-top: 10px;
+  color: #bbcada;
+} */
+.file-upload-banner input {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.event-category-accordion .MuiAccordionSummary-expandIconWrapper {
+  transform: none !important;
+}
+.event-category-accordion .MuiAccordionSummary-root {
+  min-height: 48px !important;
+  height: 48px !important;
 }

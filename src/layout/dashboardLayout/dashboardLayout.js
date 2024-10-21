@@ -260,7 +260,14 @@ const ReactSidebar = ({ open, menu, navigate }) => {
               {open ? (
                 <div className="sidebar__item">
                   <div className="sidebar__button ">
-                    <a href="#" className="d-flex items-center text-14 lh-1">
+                    <a
+                      href="/dashboard/support"
+                      className={`d-flex items-center text-14 lh-1${
+                        isCurrentPage("/dashboard/support")
+                          ? " active-link"
+                          : ""
+                      }`}
+                    >
                       <i className="fas fa-phone-alt mr-15"></i>
                       Support
                     </a>
@@ -270,7 +277,14 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 <HtmlLightTooltip arrow title="Support" placement="right">
                   <div className="sidebar__item">
                     <div className="sidebar__button ">
-                      <a href="#" className="d-flex items-center text-14 lh-1">
+                      <a
+                        href="/dashboard/support"
+                        className={`d-flex items-center text-14 lh-1${
+                          isCurrentPage("/dashboard/support")
+                            ? " active-link"
+                            : ""
+                        }`}
+                      >
                         <i className="fas fa-phone-alt mr-15"></i>
                       </a>
                     </div>

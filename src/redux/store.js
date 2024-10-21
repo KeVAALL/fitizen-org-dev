@@ -12,10 +12,12 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import userReducer from "./slices/userSlice";
+import categoryReducer from "./slices/categorySlice";
 import { encryptTransform } from "redux-persist-transform-encrypt";
 
 const rootReducer = combineReducers({
   user: userReducer,
+  category: categoryReducer,
 });
 
 const encryptor = encryptTransform({

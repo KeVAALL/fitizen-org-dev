@@ -4,7 +4,7 @@ import OtpInput from "../../utils/OtpInput";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { PhoneInput } from "react-international-phone";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { setProfile } from "../../redux/slices/userSlice";
@@ -43,7 +43,7 @@ function OtpCustomModal({
     try {
       setVerifyingMobile(true);
 
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "participant/validateemailmobile"
       );
@@ -97,7 +97,7 @@ function OtpCustomModal({
     try {
       setVerifyingMobileOtp(true);
 
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "participant/validateemailmobileotp"
       );
@@ -150,7 +150,7 @@ function OtpCustomModal({
     try {
       setVerifyingMobile(true);
 
-      const result = await RestfullApiService(reqdata, "master/Send_Otp");
+      const result = await RestfulApiService(reqdata, "master/Send_Otp");
 
       if (result) {
         const otp = result?.data?.Result?.Table1[0]?.Result_Extra_Key;

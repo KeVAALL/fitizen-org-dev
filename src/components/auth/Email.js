@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 import toast from "react-hot-toast";
 import OtpInput from "../../utils/OtpInput";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,7 +40,7 @@ function Email({ setShowEmailForm, setShowLoginForm }) {
     try {
       setVerifyingEmail(true);
 
-      const result = await RestfullApiService(reqdata, "master/Send_Otp");
+      const result = await RestfulApiService(reqdata, "master/Send_Otp");
 
       if (result) {
         const otp = result?.data?.Result?.Table1[0]?.Result_Extra_Key;
@@ -76,7 +76,7 @@ function Email({ setShowEmailForm, setShowLoginForm }) {
     try {
       setVerifyingEmail(true);
 
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "organizer/validateemailmobile"
       );
@@ -126,7 +126,7 @@ function Email({ setShowEmailForm, setShowLoginForm }) {
     try {
       setVerifyingEmailOtp(true);
 
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "organizer/validateemailmobileotp"
       );

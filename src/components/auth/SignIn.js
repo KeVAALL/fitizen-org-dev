@@ -12,7 +12,7 @@ import * as Yup from "yup";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import toast from "react-hot-toast";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 
 import "./auth.css";
 import OtpInput from "../../utils/OtpInput";
@@ -51,7 +51,7 @@ function SignIn() {
     try {
       setVerifyingMobile(true);
 
-      const result = await RestfullApiService(reqdata, "master/Send_Otp");
+      const result = await RestfulApiService(reqdata, "master/Send_Otp");
       if (result) {
         console.log(result?.data?.Result);
 
@@ -80,7 +80,7 @@ function SignIn() {
     try {
       setVerifyingMobile(true);
 
-      const result = await RestfullApiService(reqdata, "master/Send_Otp");
+      const result = await RestfulApiService(reqdata, "master/Send_Otp");
 
       if (result) {
         const otp = result?.data?.Result?.Table1[0]?.Result_Extra_Key;
@@ -112,7 +112,7 @@ function SignIn() {
     try {
       setVerifyingOtp(true);
 
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "organizer/signinwithmobileotp"
       );

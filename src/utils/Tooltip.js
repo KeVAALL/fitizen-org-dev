@@ -61,7 +61,7 @@ export const WhiteTooltip = styled(({ className, ...props }) => (
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: "#fff",
     color: "#000",
-    maxWidth: 220,
+    maxWidth: 250,
     // height: 30,
     fontSize: theme.typography.pxToRem(12),
     fontFamily: '"Inter", sans-serif',

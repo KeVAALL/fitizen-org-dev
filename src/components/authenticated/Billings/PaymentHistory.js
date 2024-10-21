@@ -44,7 +44,7 @@ import {
 import { WhiteSingleTooltip, WhiteTooltip } from "../../../utils/Tooltip";
 import {
   RestfulApiServiceDownload,
-  RestfullApiService,
+  RestfulApiService,
 } from "../../../config/service";
 import { decryptData } from "../../../utils/storage";
 import {

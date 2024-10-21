@@ -7,7 +7,7 @@ import DIcon3 from "../../assets/img/icons/dicon3.png";
 import DIcon4 from "../../assets/img/icons/dicon4.png";
 import DIcon5 from "../../assets/img/icons/dicon5.png";
 import { useParams } from "react-router-dom";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 import { useSelector } from "react-redux";
 import { decryptData } from "../../utils/storage";
 import { Backdrop, CircularProgress } from "@mui/material";
@@ -31,7 +31,7 @@ function EventMain() {
       };
       try {
         setFetchingDetails(true);
-        const result = await RestfullApiService(reqdata, "organizer/dashboard");
+        const result = await RestfulApiService(reqdata, "organizer/dashboard");
         if (result) {
           console.log(result?.data?.Result?.Table1);
           setEvent(result?.data?.Result?.Table1[0]);
