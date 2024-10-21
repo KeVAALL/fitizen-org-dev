@@ -6,98 +6,110 @@ import { toUpper } from "lodash";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { decryptData } from "../../../utils/storage";
-import { RestfullApiService } from "../../../config/service";
+import { RestfulApiService } from "../../../config/service";
 import toast from "react-hot-toast";
 const options = [
   { label: "Every Week", value: "W" },
-  { label: "Every Month", value: "M" }
+  { label: "Every Month", value: "M" },
 ];
 
 const weekDays = [
   { label: "Monday", value: "1" },
-  { label: "Tuesday", value: "2"},
+  { label: "Tuesday", value: "2" },
   { label: "Wednesday", value: "3" },
   { label: "Thursday", value: "4" },
-  { label: "Friday", value:"5" },
+  { label: "Friday", value: "5" },
 ];
 
-
-
-const initialData={
+const initialData = {
   Payment_Time: "",
   Selected_Bank: "",
   Payment_Days: "",
-}
-function Payout({ setShowPayout ,getData}) {
+};
+function Payout({ setShowPayout, getData }) {
   const { event_id } = useParams();
   const user = useSelector((state) => state.user.userProfile);
 
+  const [selectedData, setSelectedData] = useState(initialData);
+  const [bankList, setBankList] = useState([]);
 
-  const [selectedData , setSelectedData] = useState(initialData)
-  const [bankList , setBankList]=useState([])
+  console.log("bankList", bankList);
+  const handleGetBank = useCallback(async () => {
+    const reqdata = {
+      Method_Name: "GetBank",
+      Org_Id: user?.Org_Id,
+      ParentField_Id: decryptData(event_id),
+      SearchText: "",
+      Session_User_Id: user?.User_Id,
+    };
 
-console.log("bankList",bankList)
-const handleGetBank = useCallback(async () => {
-  const reqdata = {
-    Method_Name: "GetBank",
-    Org_Id: user?.Org_Id,
-    ParentField_Id: decryptData(event_id),
-    SearchText: "",
-    Session_User_Id: user?.User_Id,
-
-  };
-
-  try {
-    const result = await RestfullApiService(reqdata, "master/Getdropdown");
-    if (result) {
-      setBankList(result?.data?.Result?.Table1?.map((curBank)=>({
-        label:curBank?.Item_Name,
-        value:curBank?.Item_Id
-      })) ?? [])
+    try {
+      const result = await RestfulApiService(reqdata, "master/Getdropdown");
+      if (result) {
+        setBankList(
+          result?.data?.Result?.Table1?.map((curBank) => ({
+            label: curBank?.Item_Name,
+            value: curBank?.Item_Id,
+          })) ?? []
+        );
+      }
+    } catch (err) {
+      console.log(err);
     }
-  } catch (err) {
-    console.log(err);
-  }
-}, [user, event_id]);
+  }, [user, event_id]);
 
-useEffect(()=>{
-  handleGetBank()
-},[handleGetBank])
+  useEffect(() => {
+    handleGetBank();
+  }, [handleGetBank]);
 
-useEffect(()=>{
-  setSelectedData({...selectedData,Payment_Time: getData?.Payment_Frequency, Selected_Bank: getData?.Bank_Id, Payment_Days: getData?.Payment_Day})
-// eslint-disable-next-line react-hooks/exhaustive-deps
-},[getData])
+  useEffect(() => {
+    setSelectedData({
+      ...selectedData,
+      Payment_Time: getData?.Payment_Frequency,
+      Selected_Bank: getData?.Bank_Id,
+      Payment_Days: getData?.Payment_Day,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getData]);
 
-
-
-const handleSubmit = useCallback(async () => {
-
-  const requestData = {
-    Method_Name: "Create",
-    Session_User_Id: user?.User_Id,
-    Session_User_Name: user?.User_Display_Name,
-    Session_Organzier_Id: user?.Organizer_Id,
-    Org_Id: user?.Org_Id,
-    Event_Id: decryptData(event_id),
-    Payment_Frequency: selectedData?.Payment_Time,
-    Payment_Day: selectedData?.Payment_Days,
-    Bank_Id: selectedData?.Selected_Bank
-  };
-  try {
-    const {data} = await RestfullApiService(requestData, "organizer/payoutreq");
-    if(data?.Result?.Table1?.[0]?.Result_Id!==1){
-      toast.error(data?.Result?.Table1?.[0]?.Result_Description|| "Something Went wrong")
-      return
+  const handleSubmit = useCallback(async () => {
+    const requestData = {
+      Method_Name: "Create",
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      Event_Id: decryptData(event_id),
+      Payment_Frequency: selectedData?.Payment_Time,
+      Payment_Day: selectedData?.Payment_Days,
+      Bank_Id: selectedData?.Selected_Bank,
+    };
+    try {
+      const { data } = await RestfulApiService(
+        requestData,
+        "organizer/payoutreq"
+      );
+      if (data?.Result?.Table1?.[0]?.Result_Id !== 1) {
+        toast.error(
+          data?.Result?.Table1?.[0]?.Result_Description ||
+            "Something Went wrong"
+        );
+        return;
+      }
+      toast.success(data?.Result?.Table1?.[0]?.Result_Description);
+      setShowPayout(false);
+    } catch (err) {
+      toast.error("Something Went wrong");
+      console.log(err);
     }
-    toast.success(data?.Result?.Table1?.[0]?.Result_Description)
-    setShowPayout(false)
-
-  } catch (err) {
-    toast.error( "Something Went wrong")
-    console.log(err);
-  }
-}, [selectedData, user?.User_Id, user?.User_Display_Name, user?.Organizer_Id, user?.Org_Id, event_id]);
+  }, [
+    selectedData,
+    user?.User_Id,
+    user?.User_Display_Name,
+    user?.Organizer_Id,
+    user?.Org_Id,
+    event_id,
+  ]);
 
   return (
     <div class="dashboard__main">
@@ -144,22 +156,19 @@ const handleSubmit = useCallback(async () => {
                           <sup class="asc">*</sup>
                         </label>
                         <Select
-                            isSearchable={false}
-                            styles={selectCustomStyle}
-                            options={options}
-                            value={
-                              options.find((option) => {
-                                return option.value === selectedData?.Payment_Time;
-                              })
-                            }
-                            onChange={(event) => {
-                              setSelectedData({
-                                ...selectedData,
-                                Payment_Time: event.value,
-                              });
-                            }}
-
-                          />
+                          isSearchable={false}
+                          styles={selectCustomStyle}
+                          options={options}
+                          value={options.find((option) => {
+                            return option.value === selectedData?.Payment_Time;
+                          })}
+                          onChange={(event) => {
+                            setSelectedData({
+                              ...selectedData,
+                              Payment_Time: event.value,
+                            });
+                          }}
+                        />
                       </div>
                     </div>
 
@@ -167,26 +176,22 @@ const handleSubmit = useCallback(async () => {
                     <div class="col-6">
                       <div class="single-field">
                         <label class="text-13 fw-500">
-                        Select Day{" "}
-                          <sup class="asc">*</sup>
+                          Select Day <sup class="asc">*</sup>
                         </label>
                         <Select
-                            isSearchable={false}
-                            styles={selectCustomStyle}
-                            options={weekDays}
-                            value={
-                              weekDays.find((option) => {
-                                return option.value === selectedData?.Payment_Days;
-                              })
-                            }
-                            onChange={(event) => {
-                              setSelectedData({
-                                ...selectedData,
-                                Payment_Days: event.value,
-                              });
-                            }}
-
-                          />
+                          isSearchable={false}
+                          styles={selectCustomStyle}
+                          options={weekDays}
+                          value={weekDays.find((option) => {
+                            return option.value === selectedData?.Payment_Days;
+                          })}
+                          onChange={(event) => {
+                            setSelectedData({
+                              ...selectedData,
+                              Payment_Days: event.value,
+                            });
+                          }}
+                        />
                       </div>
                     </div>
                     <div class="col-12">
@@ -199,19 +204,17 @@ const handleSubmit = useCallback(async () => {
                             isSearchable={false}
                             styles={selectCustomStyle}
                             options={bankList}
-                            value={
-                              bankList.find((option) => {
-                                return option.value === selectedData?.Selected_Bank;
-                              })
-                            }
-
+                            value={bankList.find((option) => {
+                              return (
+                                option.value === selectedData?.Selected_Bank
+                              );
+                            })}
                             onChange={(event) => {
                               setSelectedData({
                                 ...selectedData,
                                 Selected_Bank: event.value,
                               });
                             }}
-
                           />
                         </div>
                       </div>

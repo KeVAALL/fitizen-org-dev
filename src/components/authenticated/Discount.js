@@ -19,7 +19,7 @@ import {
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { decryptData } from "../../utils/storage";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 import { Category } from "@mui/icons-material";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
@@ -81,7 +81,7 @@ function Discount() {
     };
 
     try {
-      const result = await RestfullApiService(reqdata, "master/Getdropdown");
+      const result = await RestfulApiService(reqdata, "master/Getdropdown");
       if (result) {
         console.log(result?.data?.Result?.Table1);
         setEventCategories(result?.data?.Result?.Table1);
@@ -109,7 +109,7 @@ function Discount() {
     };
 
     try {
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "organizer/EventDiscount"
       );
@@ -144,7 +144,7 @@ function Discount() {
         Event_Id: decryptData(event_id),
       };
       try {
-        const result = await RestfullApiService(
+        const result = await RestfulApiService(
           reqdata,
           "organizer/EventDiscount"
         );
@@ -173,7 +173,7 @@ function Discount() {
           setShowDiscountForm(true);
         }
       } catch (err) {
-        debugger
+        debugger;
         toast.error(err.message || "Something went wrong");
         console.log(err);
       } finally {
@@ -189,100 +189,107 @@ function Discount() {
     ]
   );
 
-//   const handleDelete=useCallback(async(EventDiscount_Id)=>{
-//     setShowLoader(true);
-//     const reqdata = {
-//       Method_Name: "Delete",
-//       Session_User_Id: user?.User_Id,
-//       Session_User_Name: user?.User_Display_Name,
-//       Session_Organzier_Id: user?.Organizer_Id,
-//       Org_Id: user?.Org_Id,
-//       EventDiscount_Id, //
-//       Event_Id: decryptData(event_id),
-//     };
-//     try {
-//       const result = await RestfullApiService(
-//         reqdata,
-//         "organizer/SaveEventDiscount"
-//       );
-// debugger
-//       if ( result?.data?.Status) {
-//         toast.success("Deleted Successfully");
-//         hanldeGetList();
-//       }
-//     } catch (err) {
-//       debugger
-//       toast.error(err.message || "Something went wrong");
-//       console.log(err);
-//     } finally {
-//       setShowLoader(false);
-//     }
-//   },[event_id, hanldeGetList, user?.Org_Id, user?.Organizer_Id, user?.User_Display_Name, user?.User_Id])
+  //   const handleDelete=useCallback(async(EventDiscount_Id)=>{
+  //     setShowLoader(true);
+  //     const reqdata = {
+  //       Method_Name: "Delete",
+  //       Session_User_Id: user?.User_Id,
+  //       Session_User_Name: user?.User_Display_Name,
+  //       Session_Organzier_Id: user?.Organizer_Id,
+  //       Org_Id: user?.Org_Id,
+  //       EventDiscount_Id, //
+  //       Event_Id: decryptData(event_id),
+  //     };
+  //     try {
+  //       const result = await RestfulApiService(
+  //         reqdata,
+  //         "organizer/SaveEventDiscount"
+  //       );
+  // debugger
+  //       if ( result?.data?.Status) {
+  //         toast.success("Deleted Successfully");
+  //         hanldeGetList();
+  //       }
+  //     } catch (err) {
+  //       debugger
+  //       toast.error(err.message || "Something went wrong");
+  //       console.log(err);
+  //     } finally {
+  //       setShowLoader(false);
+  //     }
+  //   },[event_id, hanldeGetList, user?.Org_Id, user?.Organizer_Id, user?.User_Display_Name, user?.User_Id])
 
+  const handleDelete = useCallback(
+    async (EventDiscount_Id) => {
+      // Trigger the SweetAlert confirmation
+      Swal.fire({
+        title: "Are you sure?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+        preConfirm: async () => {
+          // Show loading spinner on the confirm button
+          Swal.showLoading();
 
-const handleDelete = useCallback(
-  async (EventDiscount_Id) => {
-    // Trigger the SweetAlert confirmation
-    Swal.fire({
-      title: "Are you sure?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-      preConfirm: async () => {
-        // Show loading spinner on the confirm button
-        Swal.showLoading();
+          const reqdata = {
+            Method_Name: "Delete",
+            Session_User_Id: user?.User_Id,
+            Session_User_Name: user?.User_Display_Name,
+            Session_Organzier_Id: user?.Organizer_Id,
+            Org_Id: user?.Org_Id,
+            EventDiscount_Id, // passing EventDiscount_Id directly
+            Event_Id: decryptData(event_id),
+          };
 
-        const reqdata = {
-          Method_Name: "Delete",
-          Session_User_Id: user?.User_Id,
-          Session_User_Name: user?.User_Display_Name,
-          Session_Organzier_Id: user?.Organizer_Id,
-          Org_Id: user?.Org_Id,
-          EventDiscount_Id, // passing EventDiscount_Id directly
-          Event_Id: decryptData(event_id),
-        };
+          try {
+            const result = await RestfulApiService(
+              reqdata,
+              "organizer/SaveEventDiscount"
+            );
 
-        try {
-          const result = await RestfullApiService(
-            reqdata,
-            "organizer/SaveEventDiscount"
-          );
-
-          // Check if the deletion is successful
-          if (result?.data?.Status) {
-            return true; // Return true to proceed with the success alert
-          } else {
-            // Show validation message if the delete operation fails
-            Swal.showValidationMessage("Failed to delete the discount.");
+            // Check if the deletion is successful
+            if (result?.data?.Status) {
+              return true; // Return true to proceed with the success alert
+            } else {
+              // Show validation message if the delete operation fails
+              Swal.showValidationMessage("Failed to delete the discount.");
+              return false;
+            }
+          } catch (error) {
+            // Handle the error by showing a validation message
+            Swal.showValidationMessage("Request failed: " + error.message);
             return false;
           }
-        } catch (error) {
-          // Handle the error by showing a validation message
-          Swal.showValidationMessage("Request failed: " + error.message);
-          return false;
-        }
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // If deletion is confirmed and successful, show the success message
-        Swal.fire({
-          title: "Deleted!",
-          text: "Event discount has been deleted.",
-          icon: "success",
+        },
+      })
+        .then((result) => {
+          if (result.isConfirmed) {
+            // If deletion is confirmed and successful, show the success message
+            Swal.fire({
+              title: "Deleted!",
+              text: "Event discount has been deleted.",
+              icon: "success",
+            });
+
+            // Reload the list after successful deletion
+            hanldeGetList();
+          }
+        })
+        .finally(() => {
+          setShowLoader(false); // Ensure loader is hidden after the process
         });
-
-        // Reload the list after successful deletion
-        hanldeGetList();
-      }
-    }).finally(() => {
-      setShowLoader(false); // Ensure loader is hidden after the process
-    });
-  },
-  [event_id, hanldeGetList, user?.Org_Id, user?.Organizer_Id, user?.User_Display_Name, user?.User_Id]
-);
-
+    },
+    [
+      event_id,
+      hanldeGetList,
+      user?.Org_Id,
+      user?.Organizer_Id,
+      user?.User_Display_Name,
+      user?.User_Id,
+    ]
+  );
 
   const handleSubmit = useCallback(async () => {
     const formatDate = (date) => dayjs(date).format("DD MMM YYYY");
@@ -355,24 +362,23 @@ const handleDelete = useCallback(
     console.log({ reqdata });
 
     try {
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "organizer/SaveEventDiscount"
       );
       if (result) {
         console.log(result?.data?.Result?.Table1);
-        const {Result_Id}=result?.data?.Result?.Table1?.[0]
-         debugger
-        if(Result_Id===1){
+        const { Result_Id } = result?.data?.Result?.Table1?.[0];
+        debugger;
+        if (Result_Id === 1) {
           hanldeGetList();
           setGetOneData(initialValues);
-        }else{
+        } else {
           toast.error(result?.data?.Result?.Table1?.[0]?.Result_Description);
         }
-
       }
     } catch (err) {
-      debugger
+      debugger;
       toast.error(err.message || "Something went wrong");
       console.log(err);
     }
@@ -474,7 +480,6 @@ const handleDelete = useCallback(
                                 Discount_Type: event.value, // Ensure that you set the correct value from the selected option
                               });
                             }}
-
                           />
                         </div>
                       </div>
@@ -997,10 +1002,13 @@ const handleDelete = useCallback(
                                       hanldeEdit(cur?.EventDiscount_Id);
                                     }}
                                   ></i>
-                                  <i className="far fa-trash-alt action-button"  onClick={() => {
+                                  <i
+                                    className="far fa-trash-alt action-button"
+                                    onClick={() => {
                                       //
                                       handleDelete(cur?.EventDiscount_Id);
-                                    }}></i>{" "}
+                                    }}
+                                  ></i>{" "}
                                 </div>
                               </div>
                             </Fragment>

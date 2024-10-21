@@ -3,7 +3,7 @@ import Event5 from "../../../assets/img/events/event5.png";
 import { Box, Modal, Stack } from "@mui/material";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import { RestfullApiService } from "../../../config/service";
+import { RestfulApiService } from "../../../config/service";
 import { useSelector } from "react-redux";
 import { decryptData } from "../../../utils/storage";
 import { useParams } from "react-router-dom";
@@ -60,7 +60,7 @@ function BankDetails() {
     };
 
     try {
-      const { data } = await RestfullApiService(
+      const { data } = await RestfulApiService(
         bankDetails,
         "organizer/GetBank"
       );
@@ -86,7 +86,6 @@ function BankDetails() {
     user?.User_Id,
   ]);
 
-
   const handleDelete = useCallback(
     async (Bank_Id) => {
       // Create the request data first
@@ -109,12 +108,14 @@ function BankDetails() {
 
       try {
         // Check if the bank can be deleted before showing the confirmation
-        const { data } = await RestfullApiService(reqdata, "organizer/SaveBank");
+        const { data } = await RestfulApiService(reqdata, "organizer/SaveBank");
         // If the bank cannot be deleted, show a message and exit
         if (data?.Result?.Table1?.[0]?.Result_Id !== 1) {
           Swal.fire({
             title: "Error",
-            text: data?.Result?.Table1?.[0]?.Result_Description || "Cannot delete this bank; it is set in payout.",
+            text:
+              data?.Result?.Table1?.[0]?.Result_Description ||
+              "Cannot delete this bank; it is set in payout.",
             icon: "error",
           });
           return; // Exit the function to prevent further execution
@@ -133,7 +134,10 @@ function BankDetails() {
 
             // Perform the actual deletion
             try {
-              const deleteResponse = await RestfullApiService(reqdata, "organizer/SaveBank");
+              const deleteResponse = await RestfulApiService(
+                reqdata,
+                "organizer/SaveBank"
+              );
 
               // Check the result of the deletion
               if (deleteResponse?.data?.Result?.Table1?.[0]?.Result_Id === 1) {
@@ -141,7 +145,9 @@ function BankDetails() {
               } else {
                 // Show validation message if deletion fails
                 Swal.showValidationMessage(
-                  deleteResponse?.data?.Result?.Table1?.[0]?.Result_Description || "Cannot delete this bank; it is set in payout."
+                  deleteResponse?.data?.Result?.Table1?.[0]
+                    ?.Result_Description ||
+                    "Cannot delete this bank; it is set in payout."
                 );
                 return false; // Indicate that the deletion was not successful
               }
@@ -173,10 +179,15 @@ function BankDetails() {
         });
       }
     },
-    [event_id, handleGetBankDetails, user?.Org_Id, user?.Organizer_Id, user?.User_Display_Name, user?.User_Id]
+    [
+      event_id,
+      handleGetBankDetails,
+      user?.Org_Id,
+      user?.Organizer_Id,
+      user?.User_Display_Name,
+      user?.User_Id,
+    ]
   );
-
-
 
   useEffect(() => {
     handleGetBankDetails();
@@ -216,7 +227,7 @@ function BankDetails() {
             </Stack>
             <Formik
               initialValues={{
-                Bank_Id:editData?.Bank_Id ?? "",
+                Bank_Id: editData?.Bank_Id ?? "",
                 Bank_Name: editData?.Bank_Name ?? "",
                 Account_Holder_Name: editData?.Account_Holder_Name ?? "",
                 Account_Number: editData?.Account_Number ?? "",
@@ -231,7 +242,8 @@ function BankDetails() {
                 console.log(values);
                 // Your submit logic here
                 const bankDetails = {
-                  Method_Name:Object?.keys(editData).length > 0?"Update": "Create",
+                  Method_Name:
+                    Object?.keys(editData).length > 0 ? "Update" : "Create",
                   Session_User_Id: user?.User_Id,
                   Session_User_Name: user?.User_Display_Name,
                   Session_Organzier_Id: user?.Organizer_Id,
@@ -247,7 +259,7 @@ function BankDetails() {
                   Is_Active: 1,
                 };
                 try {
-                  const { data } = await RestfullApiService(
+                  const { data } = await RestfulApiService(
                     bankDetails,
                     "organizer/SaveBank"
                   );
@@ -543,11 +555,10 @@ function BankDetails() {
                 </div>
                 <div className="col-lg-12 text-right pb-5">
                   <button
-                   onClick={() => {
-                    setEditData({});
-                    setShowBankModal((previous) => !previous);
-                  }}
-
+                    onClick={() => {
+                      setEditData({});
+                      setShowBankModal((previous) => !previous);
+                    }}
                     className="w-150 button -primary-1 rounded-22 px-20 py-10 text-primary border-primary bg-white text-12 d-inline-block"
                   >
                     <span className="text-[16px] mr-[5px]">+</span> Add Bank
@@ -604,7 +615,13 @@ function BankDetails() {
                                   </td>
 
                                   <td className="" style={{ color: "#aeaeae" }}>
-                                    <a href="#" className="px-10" onClick={()=>handleDelete(curBank?.Bank_Id )}>
+                                    <a
+                                      href="#"
+                                      className="px-10"
+                                      onClick={() =>
+                                        handleDelete(curBank?.Bank_Id)
+                                      }
+                                    >
                                       <i className="far fa-trash-alt text-18"></i>
                                     </a>
                                     <a

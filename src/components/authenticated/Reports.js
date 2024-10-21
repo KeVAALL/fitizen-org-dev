@@ -21,16 +21,14 @@ import {
   markElementClasses,
   PieChart,
 } from "@mui/x-charts";
-import { RestfullApiService } from "../../config/service";
+import { RestfulApiService } from "../../config/service";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const initialValues = {
   Select_Event: null,
 };
 function Reports() {
-  const { event_id } = useParams();
   const user = useSelector((state) => state.user.userProfile);
 
   const [loading, setLoading] = useState(false);
@@ -56,7 +54,7 @@ function Reports() {
           Result: { Table1 },
           Description,
         },
-      } = await RestfullApiService(reqdata, "master/Getdropdown");
+      } = await RestfulApiService(reqdata, "master/Getdropdown");
       if (Status !== 200) {
         toast.error(Description || "Something went wrong");
         return;
@@ -95,7 +93,7 @@ function Reports() {
     try {
       setLoading(true);
 
-      const { data } = await RestfullApiService(reqdata, "organizer/reports");
+      const { data } = await RestfulApiService(reqdata, "organizer/reports");
       console.log(data?.Result);
       setGetData(data?.Result ?? {});
     } catch (err) {

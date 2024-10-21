@@ -616,7 +616,7 @@ function EventParticipants() {
     };
     try {
       setFetchingDetails(true);
-      const result = await RestfullApiService(
+      const result = await RestfulApiService(
         reqdata,
         "organizer/geteventparticipant"
       );
@@ -2075,7 +2075,7 @@ function EventParticipants() {
                                 };
                                 debugger;
                                 try {
-                                  const result = await RestfullApiService(
+                                  const result = await RestfulApiService(
                                     reqdata,
                                     "organizer/transferticket"
                                   );
