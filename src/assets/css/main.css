@@ -1711,6 +1711,11 @@ h6 {
   .custom-modal-content {
     width: 100% !important;
   }
+  .fixed-card{
+    position: relative !important;
+    top: 0 !important;
+    width: 100% !important;
+  }
 }
 
 @media (max-width: 575px) {
@@ -13962,4 +13967,10 @@ input:-webkit-autofill::first-line {
 .event-category-accordion .MuiAccordionSummary-root {
   min-height: 48px !important;
   height: 48px !important;
+}
+.fixed-card{
+  position: fixed;
+  top: 120px;
+  width: 480px;
+  height: calc(100% -20%);
 }

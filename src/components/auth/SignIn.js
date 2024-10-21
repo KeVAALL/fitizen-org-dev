@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SignInBanner from "../../assets/img/masthead/h-banner.png";
 import DarkLogo from "../../assets/img/general/logo-dark.png";
 import Org1 from "../../assets/img/masthead/org-1.gif";
@@ -24,6 +24,7 @@ function SignIn() {
   const [otpOwner, setOTPOwner] = useState();
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [verifyingMobile, setVerifyingMobile] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
@@ -150,9 +151,26 @@ function SignIn() {
       setVerifyingOtp(false);
     }
   };
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      setScrolled(true);
+    } else {
+      setScrolled(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <div>
-      <section className="masthead -type-1 z-5">
+      <section className="masthead -type-1 z-5 lg:pb-50 lg:pt-100">
         <div className="masthead__bg">
           <img src={SignInBanner} alt="image-mast" className="js-lazy" />
         </div>
@@ -173,7 +191,7 @@ function SignIn() {
                   setShowLoginForm={setShowLoginForm}
                 />
               ) : (
-                <div className="px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16 relative">
+                <div className={`px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16${scrolled ? " fixed-card": ""}`}>
                   {showOtpInput && (
                     <div
                       className="fas fa-arrow-left border-primary text-12 text-primary fw-600 rounded-full px-10 py-10 text-center cursor-pointer h-30 w-30 button otp-back-btn"
