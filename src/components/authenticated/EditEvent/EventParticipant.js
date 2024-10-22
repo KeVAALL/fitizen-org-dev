@@ -3,13 +3,336 @@ import {
   AccordionDetails,
   AccordionSummary,
   Checkbox,
+  CircularProgress,
   IconButton,
   Stack,
 } from "@mui/material";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import React from "react";
+import React, { useState } from "react";
+import { RestfulApiService } from "../../../config/service";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { decryptData } from "../../../utils/storage";
+// import { useDrag, useDrop } from "react-dnd";
+// import update from "immutability-helper"; // To handle immutability when updating state
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import toast from "react-hot-toast";
+
+const ItemType = "QUESTION"; // Define a type for the draggable item
+
+// Draggable Question Component
+// const DraggableQuestion = ({ question, index, moveQuestion }) => {
+//   const ref = useRef(null);
+
+//   const [, drop] = useDrop({
+//     accept: ItemType,
+//     hover: (draggedItem) => {
+//       if (draggedItem.index !== index) {
+//         moveQuestion(draggedItem.index, index); // Swap the questions
+//         draggedItem.index = index; // Update the dragged item index
+//       }
+//     },
+//   });
+
+//   const [{ isDragging }, drag] = useDrag({
+//     type: ItemType,
+//     item: { index },
+//     collect: (monitor) => ({
+//       isDragging: monitor.isDragging(),
+//     }),
+//   });
+
+//   drag(drop(ref)); // Make the component draggable and droppable
+
+//   return (
+//     <div
+//       ref={ref}
+//       className="col-lg-12 col-md-12"
+//       style={{
+//         opacity: isDragging ? 0.5 : 1,
+//         cursor: "move",
+//       }}
+//     >
+//       <div
+//         className="py-15 px-15 border-light rounded-8"
+//         style={{
+//           boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+//         }}
+//       >
+//         <div className="row">
+//           <div className="col-1 d-flex">
+//             <Checkbox
+//               checked={question.checked}
+//               onChange={(e) => {
+//                 console.log(e.target.checked);
+//               }}
+//             />
+//           </div>
+//           <div className="col-3">
+//             <div className="y-gap-5">
+//               <label className="text-13 fw-500">
+//                 {question?.Question}
+//                 <sup className="asc">*</sup>
+//               </label>
+//               <div className="d-flex gap-20">
+//                 <label className="text-error-2 text-13">Mandatory Field</label>
+//                 <div className="form-switch d-flex">
+//                   <div className="switch">
+//                     <input
+//                       type="checkbox"
+//                       onChange={(e) => {
+//                         console.log(e);
+//                       }}
+//                     />
+//                     <span className="switch__slider"></span>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//           <div className="col-4 d-flex items-center">
+//             <div className="single-field w-full">
+//               <div className="form-control">
+//                 <input
+//                   disabled
+//                   type="text"
+//                   className="form-control"
+//                   placeholder={question?.Question}
+//                   name="name"
+//                 />
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+const DraggableQuestion = ({ qkey, question, index, toggleChecked }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: question.Question_Id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    marginBottom: "8px",
+    borderRadius: "8px",
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes}>
+      <div
+        className="py-15 px-15 border-light rounded-8 row"
+        style={{
+          boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+          // cursor: "move",
+          cursor: "grab",
+        }}
+      >
+        <div className="col-1 d-flex">
+          <Checkbox
+            checked={question.checked}
+            onChange={(e) => {
+              e.stopPropagation();
+              console.log(question.Question_Id);
+              toggleChecked(question.Question_Id);
+            }}
+          />
+        </div>
+        <div className="col-3 drag-handle" {...listeners}>
+          <div class="y-gap-5">
+            <label class="text-13 fw-500">
+              {question?.Question} <sup className="asc">*</sup>
+            </label>
+            <div class="d-flex gap-20">
+              <label class="text-error-2 text-13">Mandatory Field</label>
+              <div className="form-switch d-flex">
+                <div className="switch">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => {
+                      console.log(e);
+                    }}
+                  />
+                  <span className="switch__slider"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="col-4 d-flex items-center drag-handle" {...listeners}>
+          <div class="single-field w-full">
+            <div class="form-control">
+              <input
+                disabled
+                type="text"
+                class="form-control"
+                placeholder={question?.Question}
+                name="name"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function EventParticipant() {
+  const { event_id } = useParams();
+  const user = useSelector((state) => state.user.userProfile);
+  const [isOtherInfoAccordion, setOtherInfoAccordion] = useState(false);
+  const [loadingQuestionForm, setLoadingQuestionForm] = useState(false);
+  const [infoQuestions, setInfoQuestions] = useState([]);
+  const [submitQuestionForm, setSubmitQuestionForm] = useState(false);
+
+  const handleCancelClick = (event) => {
+    event.stopPropagation(); // Prevent accordion from toggling
+    setOtherInfoAccordion(false); // Close the accordion
+  };
+  const handleEditClick = async (event, eventCategoryId) => {
+    event.stopPropagation(); // Prevent accordion from toggling
+
+    const reqdata = {
+      Method_Name: "Question",
+      Event_Id: decryptData(event_id),
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      EventCategoryEntry_Id: eventCategoryId,
+    };
+    try {
+      setLoadingQuestionForm(true);
+      const result = await RestfulApiService(reqdata, "organizer/GetEvent");
+      if (result) {
+        const result1 = JSON.parse(
+          result?.data?.Result?.Table1[0]?.Question
+        )?.map((res) => {
+          return { ...res, checked: res?.Event_Question_Id ? true : false };
+        });
+        setInfoQuestions(result1);
+
+        setOtherInfoAccordion(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoadingQuestionForm(false);
+    }
+  };
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      const oldIndex = infoQuestions.findIndex(
+        (item) => item.Question_Id === active.id
+      );
+      const newIndex = infoQuestions.findIndex(
+        (item) => item.Question_Id === over.id
+      );
+
+      const updatedQuestions = arrayMove(infoQuestions, oldIndex, newIndex);
+
+      // Update Display_Order_No based on new order
+      updatedQuestions.forEach((question, index) => {
+        question.Display_Order_No = index + 1;
+      });
+
+      setInfoQuestions(updatedQuestions); // Pass the updated order back to the parent component
+    }
+  };
+  const toggleChecked = (id) => {
+    const updatedQuestions = infoQuestions.map((q) =>
+      q.Question_Id === id ? { ...q, checked: !q.checked } : q
+    );
+    setInfoQuestions(updatedQuestions);
+  };
+  const generateQuestionXMLData = (infoQuestions) => {
+    let QuestionXMLData = "";
+
+    infoQuestions.forEach((question) => {
+      if (question.checked) {
+        QuestionXMLData += "<R>";
+        QuestionXMLData += `<QID>${question.Question_Id}</QID>`;
+        QuestionXMLData += `<EQID></EQID>`; // Assuming you want to keep this empty
+        QuestionXMLData += `<ON>${question.Display_Order_No}</ON>`;
+        QuestionXMLData += `<DOC>${question.Doc_Path}</DOC>`; // Update as needed
+        QuestionXMLData += "</R>";
+      }
+    });
+
+    QuestionXMLData = `<D>${QuestionXMLData}</D>`;
+    return QuestionXMLData; // You can return or log this
+  };
+  const handleSaveClick = async (e) => {
+    e.preventDefault();
+
+    const isAnyChecked = infoQuestions.some((question) => question.checked);
+
+    if (!isAnyChecked) {
+      // Display error toast if no checkbox is checked
+      toast.error("Please select at least one field");
+      return;
+    }
+
+    const reqdata = {
+      Method_Name: "Question",
+      Event_Id: decryptData(event_id),
+      Event_Name: "",
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      XMLData: "",
+      TakeAwayXMLData: "",
+      FacilityXMLData: "",
+      QuestionXMLData: generateQuestionXMLData(infoQuestions),
+      Event_Description: "",
+      Rules_Regulations: "",
+      Refund_Cancellation: "",
+    };
+
+    try {
+      setSubmitQuestionForm(true);
+
+      const result = await RestfulApiService(reqdata, "organizer/SaveEvent");
+
+      if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+        toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
+        return;
+      }
+
+      if (result) {
+        // toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+        toast.success("Saved");
+      }
+    } catch (err) {
+      toast.error(err?.Result?.Table1[0]?.Result_Description);
+    } finally {
+      setSubmitQuestionForm(false);
+    }
+  };
+
   return (
     <div
       className="py-30 px-30 border-light rounded-8"
@@ -30,6 +353,7 @@ function EventParticipant() {
         <div className="col-12">
           <Stack spacing={3}>
             <Accordion
+              className="event-category-accordion"
               sx={{
                 borderRadius: 0, // Remove border radius
                 "&:before": {
@@ -133,6 +457,7 @@ function EventParticipant() {
             </Accordion>
 
             <Accordion
+              className="event-category-accordion"
               sx={{
                 borderRadius: 0, // Remove border radius
                 "&:before": {
@@ -236,6 +561,7 @@ function EventParticipant() {
             </Accordion>
 
             <Accordion
+              className="event-category-accordion"
               sx={{
                 borderRadius: 0, // Remove border radius
                 "&:before": {
@@ -243,6 +569,8 @@ function EventParticipant() {
                 },
                 boxShadow: "none", // Remove default box shadow
               }}
+              expanded={isOtherInfoAccordion}
+              onChange={() => setOtherInfoAccordion(!isOtherInfoAccordion)}
             >
               <AccordionSummary
                 style={{
@@ -252,25 +580,57 @@ function EventParticipant() {
                   pointerEvents: "none",
                 }}
                 expandIcon={
-                  <IconButton
-                    size="small"
-                    sx={{
-                      backgroundColor: "#949494",
-                      padding: "4px",
-                      borderRadius: 0,
-                      pointerEvents: "auto",
-                      "&:hover": {
-                        backgroundColor: "#f05736",
-                      },
-                    }}
-                  >
-                    <AddOutlinedIcon
-                      fontSize="inherit"
+                  isOtherInfoAccordion ? (
+                    <IconButton
+                      size="small"
                       style={{
-                        color: "#fff",
+                        backgroundColor: "#949494",
+                        padding: "4px",
+                        borderRadius: 0,
+                        pointerEvents: "auto",
+                        "&:hover": {
+                          backgroundColor: "#f05736",
+                        },
                       }}
-                    />
-                  </IconButton>
+                      onClick={handleCancelClick}
+                    >
+                      <ClearOutlinedIcon
+                        fontSize="inherit"
+                        style={{
+                          color: "#fff",
+                        }}
+                      />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      size="small"
+                      sx={{
+                        backgroundColor: "#949494",
+                        padding: "4px",
+                        borderRadius: 0,
+                        pointerEvents: "auto",
+                        "&:hover": {
+                          backgroundColor: "#f05736",
+                        },
+                      }}
+                      onClick={(e) => {
+                        handleEditClick(e);
+                      }}
+                    >
+                      {loadingQuestionForm ? (
+                        <CircularProgress
+                          style={{ color: "#fff", height: "1em", width: "1em" }}
+                        />
+                      ) : (
+                        <AddOutlinedIcon
+                          fontSize="inherit"
+                          style={{
+                            color: "#fff",
+                          }}
+                        />
+                      )}
+                    </IconButton>
+                  )
                 }
                 aria-controls="panel1-content"
                 id="panel1-header"
@@ -284,56 +644,42 @@ function EventParticipant() {
                   boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
                 }}
               >
-                <div className="row y-gap-30 py-20">
-                  <div class="col-lg-12 col-md-12">
-                    <div
-                      className="py-15 px-15 border-light rounded-8"
-                      style={{
-                        boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
-                      }}
-                    >
-                      <div className="row">
-                        <div className="col-1 d-flex">
-                          <Checkbox />
-                        </div>
-                        <div className="col-3">
-                          <div class="y-gap-5">
-                            <label class="text-13 fw-500">
-                              Pincode <sup className="asc">*</sup>
-                            </label>
-                            <div class="d-flex gap-20">
-                              <label class="text-error-2 text-13">
-                                Mandatory Field
-                              </label>
-                              <div className="form-switch d-flex ">
-                                <div className="switch">
-                                  <input
-                                    type="checkbox"
-                                    onChange={(e) => {
-                                      console.log(e);
-                                    }}
-                                  />
-                                  <span className="switch__slider"></span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-4 d-flex items-center">
-                          <div class="single-field w-full">
-                            <div class="form-control">
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder="Add Name"
-                                name="name"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={infoQuestions.map((q) => q.Question_Id)}
+                  >
+                    <div className="row y-gap-15 px-20 py-20">
+                      {infoQuestions?.map((question, index) => {
+                        return (
+                          <DraggableQuestion
+                            qkey={question.Question_Id}
+                            question={question}
+                            index={index}
+                            toggleChecked={toggleChecked}
+                          />
+                        );
+                      })}
                     </div>
-                  </div>
+                  </SortableContext>
+                </DndContext>
+
+                <div className="col-auto relative">
+                  <button
+                    disabled={submitQuestionForm}
+                    // type="submit"
+                    onClick={handleSaveClick}
+                    className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                  >
+                    {!submitQuestionForm ? (
+                      `Save`
+                    ) : (
+                      <span className="btn-spinner"></span>
+                    )}
+                  </button>
                 </div>
               </AccordionDetails>
             </Accordion>

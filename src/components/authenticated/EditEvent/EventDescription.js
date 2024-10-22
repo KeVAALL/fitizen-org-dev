@@ -61,10 +61,12 @@ function EventDescription() {
       setSubmitForm(true);
 
       const result = await RestfulApiService(reqdata, "organizer/SaveEvent");
+
       if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
         toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
         return;
       }
+
       if (result) {
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
       }

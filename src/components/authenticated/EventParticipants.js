@@ -2698,9 +2698,9 @@ function EventParticipants() {
                                       <TableRow
                                         key={row.id}
                                         {...row.getRowProps()}
-                                        onClick={() => {
-                                          row.toggleRowSelected();
-                                        }}
+                                        // onClick={() => {
+                                        //   row.toggleRowSelected();
+                                        // }}
                                         sx={{
                                           cursor: "pointer",
                                           bgcolor: row.isSelected

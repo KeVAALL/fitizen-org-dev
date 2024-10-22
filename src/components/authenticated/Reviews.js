@@ -30,7 +30,6 @@ import {
   TextField,
 } from "@mui/material";
 import Select from "react-select";
-import * as Yup from "yup";
 import Swal from "sweetalert2";
 
 // Project imports

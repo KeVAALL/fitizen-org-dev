@@ -7,6 +7,8 @@ import {
 import AuthGuard from "./utils/route-guard/AuthGuard";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
 
 import { ToasterProvider } from "./context/ToasterContext";
 import SignIn from "./components/auth/SignIn";
@@ -154,7 +156,9 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <ToasterProvider>
-          <RouterProvider router={appLayout} />
+          <DndProvider backend={HTML5Backend}>
+            <RouterProvider router={appLayout} />
+          </DndProvider>
         </ToasterProvider>
       </ThemeProvider>
     </>

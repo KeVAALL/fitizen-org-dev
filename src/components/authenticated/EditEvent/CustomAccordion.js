@@ -29,6 +29,7 @@ import { RestfulApiService } from "../../../config/service";
 import * as Yup from "yup";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 
@@ -458,7 +459,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
       if (result) {
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
         // setEventCategoryName(
-        //   `${values.Race_Distance} ${
+        //   `${values.EventCategory_Id.value === "C007003" ? values.Race_Distance : values.EventCategory_Id.label} ${
         //     values.Race_Distance_Unit?.value || values.Race_Distance_Unit
         //   } ${values.Timed_Event?.value} ${values.EventCategory_Name}`
         // );
@@ -469,6 +470,69 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
     } finally {
       setSubmitForm(false);
     }
+  };
+  const handleDelete = (prize, index, remove) => {
+    Swal.fire({
+      title: "Are you sure?",
+      // text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      preConfirm: async () => {
+        // Show loading on the "Yes, delete it!" button
+        Swal.showLoading();
+
+        const reqdata = {
+          Method_Name: "PrizeDelete",
+          Session_User_Id: user?.User_Id,
+          Session_User_Name: user?.User_Display_Name,
+          Session_Organzier_Id: user?.Organizer_Id,
+          Org_Id: user?.Org_Id,
+          Event_Id: decryptData(event_id),
+          EventCategoryEntry_Id: prize.EventPrizeEntry_Id,
+          EventCategory_Id: "",
+          EventCategory_Name: "",
+          ImagePath: "",
+          ImageName: "",
+          XMLData: "",
+          PrizeXMLData: "",
+        };
+
+        try {
+          // Make the API call
+          const result = await RestfulApiService(
+            reqdata,
+            "organizer/addupdatecategory"
+          );
+
+          if (result) {
+            // Assuming the API response includes a 'success' field
+            // Return true if the API call is successful
+            remove(index);
+            return true;
+          } else {
+            // If the API response indicates failure, show a validation message
+            Swal.showValidationMessage("Failed to delete the prize.");
+            return false;
+          }
+        } catch (error) {
+          // If an error occurs, show an error message
+          Swal.showValidationMessage("Request failed: " + error);
+          return false;
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show the success message after the deletion is confirmed
+        Swal.fire({
+          title: "Deleted!",
+          text: "Prize has been deleted.",
+          icon: "success",
+        });
+      }
+    });
   };
   const combineDateAndTime = (dateString, timeString) => {
     if (!dateString || !timeString) return null; // Return null if either value is missing
@@ -1077,7 +1141,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                           First_Prize: "",
                                           Second_Prize: "",
                                           Third_Prize: "",
-                                          EventPrizeEntry_Id: "",
+                                          EventPrizeEntry_Id: "New",
                                         });
                                       }
                                     }}
@@ -1124,7 +1188,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                           <>
                             <div className="col-md-12">
                               <div className="row y-gap-20">
-                                {values.Event_Prize.length > 0 &&
+                                {values.Event_Prize.length > 0 ? (
                                   values.Event_Prize.map((prize, index) => (
                                     <div className="row" key={index}>
                                       <div className="col-md-11">
@@ -1260,21 +1324,43 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                         </div>
                                       </div>
 
-                                      {index !== 0 && (
-                                        <div className="col-1 relative">
-                                          <label className="text-13 text-white fw-500">
-                                            __
-                                          </label>
-                                          <button
-                                            onClick={() => remove(index)}
-                                            className="button w-45 h-45 border-primary-bold text-20 fw-600 rounded-full"
-                                          >
-                                            -
-                                          </button>
-                                        </div>
-                                      )}
+                                      {/* {index !== 0 && ( */}
+                                      <div className="col-1 relative">
+                                        <label className="text-13 text-white fw-500">
+                                          __
+                                        </label>
+                                        <button
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            if (
+                                              prize.EventPrizeEntry_Id === "New"
+                                            ) {
+                                              remove(index);
+                                            } else {
+                                              handleDelete(
+                                                prize,
+                                                index,
+                                                remove
+                                              );
+                                            }
+                                          }}
+                                          className="button w-45 h-45 border-primary-bold text-20 fw-600 rounded-full"
+                                        >
+                                          -
+                                        </button>
+                                      </div>
+                                      {/* )} */}
                                     </div>
-                                  ))}
+                                  ))
+                                ) : (
+                                  <>
+                                    <ErrorMessage
+                                      name="Event_Prize"
+                                      component="div"
+                                      className="text-error-2 text-13"
+                                    />
+                                  </>
+                                )}
                               </div>
                             </div>
                             <div className="col-md-2">
@@ -1289,7 +1375,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                       First_Prize: "",
                                       Second_Prize: "",
                                       Third_Prize: "",
-                                      EventPrizeEntry_Id: "",
+                                      EventPrizeEntry_Id: "New",
                                     });
                                   }}
                                   className="button w-full rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
@@ -1729,18 +1815,20 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                   </div>
                 </div>
 
-                <div className="col-12 relative">
-                  <button
-                    disabled={submitForm}
-                    type="submit"
-                    className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                  >
-                    {!submitForm ? (
-                      `Save`
-                    ) : (
-                      <span className="btn-spinner"></span>
-                    )}
-                  </button>
+                <div className="col-12">
+                  <div className="col-auto relative">
+                    <button
+                      disabled={submitForm}
+                      type="submit"
+                      className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                    >
+                      {!submitForm ? (
+                        `Save`
+                      ) : (
+                        <span className="btn-spinner"></span>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </Form>
