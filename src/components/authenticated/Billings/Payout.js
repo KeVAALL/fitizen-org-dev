@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
 import toast from "react-hot-toast";
+import EventTitle from "../EventTitle";
 const options = [
   { label: "Every Week", value: "W" },
   { label: "Every Month", value: "M" },
@@ -117,40 +118,12 @@ function Payout({ setShowPayout, getData }) {
         <section class="layout-pb-md">
           <div class="container">
             <div class="row y-gap-30">
-              <div class="col-xl-12 col-md-12">
-                <div class="py-10 px-15 rounded-8 bg-white border-light">
-                  <div class="row y-gap-20 justify-between items-center">
-                    <div class="col-1">
-                      <div class="w-50 h-50 rounded-full overflow-hidden">
-                        <img
-                          src={Event5}
-                          class="w-full h-full object-cover"
-                          alt="icon"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-10">
-                      <div class="text-16 lh-16 fw-500">
-                        Golden Triangle Challenge: Run through India's Rich
-                        Heritage
-                      </div>
-                    </div>
-                    <div class="col-1">
-                      <div class="form-switch d-flex items-center">
-                        <div class="switch">
-                          <input type="checkbox" />
-                          <span class="switch__slider"></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <EventTitle />
               <div class="col-xl-9 col-md-9">
                 <div class="py-20 px-20 border-light rounded-8">
                   <div class="row y-gap-20 justify-between items-center">
                     <div class="col-6">
-                      <div class="single-field">
+                      <div class="y-gap-10">
                         <label class="text-13 fw-500">
                           I would like to receive payment{" "}
                           <sup class="asc">*</sup>
@@ -174,7 +147,7 @@ function Payout({ setShowPayout, getData }) {
 
                     {/* ====== for days ========= */}
                     <div class="col-6">
-                      <div class="single-field">
+                      <div class="y-gap-10">
                         <label class="text-13 fw-500">
                           Select Day <sup class="asc">*</sup>
                         </label>
@@ -195,7 +168,7 @@ function Payout({ setShowPayout, getData }) {
                       </div>
                     </div>
                     <div class="col-12">
-                      <div class="single-field">
+                      <div class="y-gap-10">
                         <label class="text-13 fw-500">
                           Select Default Bank <sup class="asc">*</sup>
                         </label>

@@ -41,11 +41,12 @@ import {
 } from "../../utils/ReactTable";
 
 import { decryptData } from "../../utils/DataEncryption";
-import Event5 from "../../assets/img/events/event5.png";
 import { WhiteSingleTooltip } from "../../utils/Tooltip";
 import { RestfulApiService } from "../../config/service";
 import { customRoundedStyles } from "../../utils/ReactSelectStyles";
 import EventTitle from "./EventTitle";
+import Loader from "../../utils/BackdropLoader";
+import TableLoader from "./TableLoader";
 
 function Reviews() {
   const { event_id } = useParams();
@@ -352,27 +353,7 @@ function Reviews() {
           <div className="container">
             <div className="row y-gap-30">
               {fetchingReview ? (
-                <div
-                  className="col-xl-12"
-                  style={{ position: "relative", height: "300px" }}
-                >
-                  <Backdrop
-                    sx={{
-                      color: "#f05736",
-                      backgroundColor: "#fff",
-                      position: "absolute", // Make Backdrop absolute to the row div
-                      top: "50%", // Set the top position to 50%
-                      left: "50%", // Set the left position to 50%
-                      transform: "translate(-50%, -50%)", // Translate to center
-                      width: "100%",
-                      height: "100%",
-                      zIndex: 1, // Ensure it's above the content inside the row div
-                    }}
-                    open={fetchingReview}
-                  >
-                    <CircularProgress color="inherit" />
-                  </Backdrop>
-                </div>
+                <Loader fetching={fetchingReview} />
               ) : (
                 <>
                   <EventTitle />
@@ -575,52 +556,7 @@ function Reviews() {
                         </TableHead>
 
                         {fetchingReviewCat ? (
-                          // <div
-                          //   className="col-xl-12"
-                          //   style={{ position: "relative", height: "300px" }}
-                          // >
-                          //   <Box
-                          //     sx={{
-                          //       color: "#f05736",
-                          //       backgroundColor: "#fff",
-                          //       position: "absolute", // Make Backdrop absolute to the row div
-                          //       top: "50%", // Set the top position to 50%
-                          //       left: "50%", // Set the left position to 50%
-                          //       transform: "translate(-50%, -50%)", // Translate to center
-                          //       width: "100%",
-                          //       height: "100%",
-                          //       zIndex: 1, // Ensure it's above the content inside the row div
-                          //     }}
-                          //     open={fetchingReview}
-                          //   >
-                          //     <CircularProgress color="inherit" />
-                          //   </Box>
-                          // </div>
-                          <TableBody className="table_body_main">
-                            <TableRow>
-                              <TableCell
-                                colSpan={columns.length + 1}
-                                align="center"
-                              >
-                                <div
-                                  className="col-xl-12"
-                                  style={{
-                                    position: "relative",
-                                    height: "150px",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <CircularProgress
-                                    style={{
-                                      color: "#f05736",
-                                    }}
-                                  />
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
+                          <TableLoader columns={columns} />
                         ) : (
                           <TableBody
                             className="table_body_main"

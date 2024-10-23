@@ -13,6 +13,7 @@ import { decryptData } from "../../utils/DataEncryption";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { setCurrentEvent } from "../../redux/slices/eventSlice";
 import EventTitle from "./EventTitle";
+import Loader from "../../utils/BackdropLoader";
 
 function EventMain() {
   const { event_id } = useParams();
@@ -65,27 +66,7 @@ function EventMain() {
           <div className="container">
             <div className="row y-gap-30">
               {fetchingDetails ? (
-                <div
-                  className="col-xl-12"
-                  style={{ position: "relative", height: "300px" }}
-                >
-                  <Backdrop
-                    sx={{
-                      color: "#f05736",
-                      backgroundColor: "#fff",
-                      position: "absolute", // Make Backdrop absolute to the row div
-                      top: "50%", // Set the top position to 50%
-                      left: "50%", // Set the left position to 50%
-                      transform: "translate(-50%, -50%)", // Translate to center
-                      width: "100%",
-                      height: "100%",
-                      zIndex: 1, // Ensure it's above the content inside the row div
-                    }}
-                    open={fetchingDetails}
-                  >
-                    <CircularProgress color="inherit" />
-                  </Backdrop>
-                </div>
+                <Loader fetching={fetchingDetails} />
               ) : (
                 <>
                   {/* <div className="col-xl-12 col-md-12">

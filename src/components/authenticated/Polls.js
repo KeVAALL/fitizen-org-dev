@@ -12,6 +12,7 @@ import * as Yup from "yup";
 import { selectCustomStyle } from "../../utils/ReactSelectStyles";
 import toast from "react-hot-toast";
 import EventTitle from "./EventTitle";
+import Loader from "../../utils/BackdropLoader";
 
 function Polls() {
   const { event_id } = useParams();
@@ -70,27 +71,7 @@ function Polls() {
           <div className="container">
             <div className="row y-gap-30">
               {fetchingPolls ? (
-                <div
-                  className="col-xl-12"
-                  style={{ position: "relative", height: "300px" }}
-                >
-                  <Backdrop
-                    sx={{
-                      color: "#f05736",
-                      backgroundColor: "#fff",
-                      position: "absolute", // Make Backdrop absolute to the row div
-                      top: "50%", // Set the top position to 50%
-                      left: "50%", // Set the left position to 50%
-                      transform: "translate(-50%, -50%)", // Translate to center
-                      width: "100%",
-                      height: "100%",
-                      zIndex: 1, // Ensure it's above the content inside the row div
-                    }}
-                    open={fetchingPolls}
-                  >
-                    <CircularProgress color="inherit" />
-                  </Backdrop>
-                </div>
+                <Loader fetching={fetchingPolls} />
               ) : (
                 <>
                   <Modal open={pollModal}>
@@ -476,20 +457,20 @@ function Polls() {
                                     </div>
                                   </div>
                                   <div className="col-lg-2 col-md-2">
-                                    <div className="d-flex gap-20 items-center">
+                                    <div className="d-flex gap-20 items-center justify-end">
                                       <div className="form-switch d-flex items-center">
                                         <div className="switch">
                                           <input type="checkbox" />
                                           <span className="switch__slider"></span>
                                         </div>
                                       </div>
-                                      <a
+                                      {/* <a
                                         href="#0"
                                         className="text-20"
                                         style={{ color: "#aeaeae" }}
                                       >
                                         <i className="fas fa-eye"></i>
-                                      </a>
+                                      </a> */}
                                       <button
                                         className="text-20"
                                         style={{ color: "#aeaeae" }}

@@ -548,6 +548,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
   const handleCancelClick = (event) => {
     event.stopPropagation(); // Prevent accordion from toggling
     setAccordionOpen(false); // Close the accordion
+    setFormValues(initialValues);
   };
   const handleDeleteClick = (event) => {
     event.stopPropagation(); // Prevent accordion from toggling

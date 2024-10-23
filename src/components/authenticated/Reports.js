@@ -9,7 +9,6 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import * as XLSX from "xlsx";
 
 import React, { useCallback, useEffect, useState } from "react";
 import Select from "react-select";
@@ -24,6 +23,8 @@ import {
 import { RestfulApiService } from "../../config/service";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import Loader from "../../utils/BackdropLoader";
+import { downloadExcel, inrCurrency } from "../../utils/UtilityFunctions";
 
 const initialValues = {
   Select_Event: null,
@@ -113,47 +114,6 @@ function Reports() {
     handleGetData();
   }, [handleGetData]);
 
-  // const handleDownload = () => {
-  //   debugger
-  //   if (getData?.Table4?.length > 0) {
-  //     // Create a new workbook and worksheet
-  //     const wb = XLSX.utils.book_new();
-
-  //     // Define the header and map the table data
-  //     const tableData = getData.Table4.map((item) => ({
-  //       'Ticket Name': item.Event_Name ?? '',
-  //       'Page Views': item.Number_count ?? 0,
-  //     }));
-
-  //     // Create a worksheet from the data
-  //     const ws = XLSX.utils.json_to_sheet(tableData);
-
-  //     // Add the worksheet to the workbook
-  //     XLSX.utils.book_append_sheet(wb, ws, 'Page Views Data');
-
-  //     // Create the Excel file and download it
-  //     XLSX.writeFile(wb, 'Page_Views_Data.xlsx');
-  //   }
-  // };
-
-  const downloadExcel = (data, sheetName, fileName) => {
-    if (data?.length > 0) {
-      // Create a new workbook and worksheet
-      const wb = XLSX.utils.book_new();
-
-      // Create a worksheet from the data
-      const ws = XLSX.utils.json_to_sheet(data);
-
-      // Add the worksheet to the workbook
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
-
-      // Create the Excel file and trigger the download
-      XLSX.writeFile(wb, `${fileName}.xlsx`);
-    } else {
-      console.warn("No data available for download.");
-    }
-  };
-
   const handleDownloadSummary = () => {
     const tableData = getData?.Table2?.map((item) => ({
       Item: item?.Item ?? "",
@@ -189,27 +149,7 @@ function Reports() {
           <div className="container">
             <div className="row y-gap-30">
               {false ? (
-                <div
-                  className="col-xl-12"
-                  style={{ position: "relative", height: "300px" }}
-                >
-                  <Backdrop
-                    sx={{
-                      color: "#f05736",
-                      backgroundColor: "#fff",
-                      position: "absolute", // Make Backdrop absolute to the row div
-                      top: "50%", // Set the top position to 50%
-                      left: "50%", // Set the left position to 50%
-                      transform: "translate(-50%, -50%)", // Translate to center
-                      width: "100%",
-                      height: "100%",
-                      zIndex: 1, // Ensure it's above the content inside the row div
-                    }}
-                    open={false}
-                  >
-                    <CircularProgress color="inherit" />
-                  </Backdrop>
-                </div>
+                <Loader fetching={false} />
               ) : (
                 <>
                   <div className="col-xl-12 col-md-12">
@@ -255,7 +195,9 @@ function Reports() {
                                   Net Sales
                                 </div>
                                 <div className="text-26 lh-16 fw-700 mt-5 text-primary">
-                                  ₹{curData?.NetSales ? curData?.NetSales : 0}
+                                  {curData?.NetSales
+                                    ? inrCurrency(curData?.NetSales)
+                                    : `₹ 0`}
                                 </div>
                               </div>
                             </div>
@@ -276,10 +218,9 @@ function Reports() {
                                   Net Earnings
                                 </div>
                                 <div className="text-26 lh-16 fw-700 mt-5 text-primary">
-                                  ₹
                                   {curData?.NetEarning
-                                    ? curData?.NetEarning
-                                    : 0}
+                                    ? inrCurrency(curData?.NetEarning)
+                                    : `₹ 0`}
                                 </div>
                               </div>
                             </div>
@@ -300,7 +241,9 @@ function Reports() {
                                   Refunds
                                 </div>
                                 <div className="text-26 lh-16 fw-700 mt-5 text-primary">
-                                  ₹{curData?.Refunds ? curData?.Refunds : 0}
+                                  {curData?.Refunds
+                                    ? inrCurrency(curData?.Refunds)
+                                    : `₹ 0`}
                                 </div>
                               </div>
                             </div>
@@ -381,7 +324,9 @@ function Reports() {
                                         {curData?.Quantity ?? 0}
                                       </StyledTableCell>
                                       <StyledTableCell>
-                                        {curData?.Amount ? curData?.Amount : 0}
+                                        {curData?.Amount
+                                          ? inrCurrency(curData?.Amount)
+                                          : 0}
                                       </StyledTableCell>
                                     </TableRow>
                                   );
@@ -503,7 +448,9 @@ function Reports() {
                                           : 0}
                                       </StyledTableCell>
                                       <StyledTableCell>
-                                        {curData?.Sales ? curData?.Sales : 0}
+                                        {curData?.Sales
+                                          ? inrCurrency(curData?.Sales)
+                                          : 0}
                                       </StyledTableCell>
                                     </TableRow>
                                   );

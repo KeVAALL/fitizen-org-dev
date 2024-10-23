@@ -963,7 +963,7 @@ function Discount() {
                                   className="text-14 text-reading lh-16 fw-500"
                                   style={{
                                     display: "flex",
-                                    gap: "8px",
+                                    gap: "12px",
                                     justifyContent: "center",
                                     cursor: "pointer",
                                   }}

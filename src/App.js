@@ -12,8 +12,8 @@ import { DndProvider } from "react-dnd";
 
 import { ToasterProvider } from "./context/ToasterContext";
 import SignIn from "./components/auth/SignIn";
-import AuthLayout from "./layout/authHeader/authLayout";
-import { DashboardLayout } from "./layout/dashboardLayout/dashboardLayout";
+import AuthLayout from "./layout/AuthHeader/AuthLayout";
+import DashboardLayout from "./layout/DashboardLayout/DashLayout";
 import Profile from "./components/authenticated/Profile";
 import AllEvents from "./components/authenticated/AllEvents";
 import { EventLayout } from "./layout/eventLayout/eventLayout";
@@ -61,11 +61,7 @@ const theme = createTheme({
 const appLayout = createBrowserRouter([
   {
     path: `/`,
-    element: (
-      // <AuthGuard>
-      <AuthLayout />
-      // </AuthGuard>
-    ),
+    element: <AuthLayout />,
     children: [
       {
         path: "/",

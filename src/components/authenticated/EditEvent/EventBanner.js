@@ -10,6 +10,7 @@ import { Modal } from "@mui/material";
 import * as Yup from "yup";
 import { ErrorMessage, Form, Formik } from "formik";
 import Loader from "../../../utils/BackdropLoader";
+import { MEDIA_URL } from "../../../config/url";
 
 function EventBanner() {
   const { event_id } = useParams();
@@ -316,24 +317,37 @@ function EventBanner() {
                   </Modal>
 
                   <div className="col-12">
-                    <div className="banner-parent w-full">
-                      <div className="file-upload-banner">
-                        <p className="text-14 text-reading fw-600">
-                          Desktop Cover Image : (Size 1920X1080)
-                        </p>
-                        <i className="fas fa-upload text-80 text-primary mt-30"></i>
-                        <p className="text-16 text-reading fw-600 mt-20">
-                          Click box to upload
-                        </p>
-                        <p className="text-14 text-reading fw-500">
-                          JPEG or PNGS smaller than 10mb
-                        </p>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileChange}
+                    <div
+                      className={`banner-parent w-full${
+                        values.Image_Name ? " p-0" : ""
+                      }`}
+                    >
+                      {values.Image_Name ? (
+                        <img
+                          className="w-full"
+                          style={{ borderRadius: "25px", height: "450px" }}
+                          src={`${MEDIA_URL}/${values.Image_Path}`}
+                          alt="banner"
                         />
-                      </div>
+                      ) : (
+                        <div className="file-upload-banner">
+                          <p className="text-14 text-reading fw-600">
+                            Desktop Cover Image : (Size 1920X1080)
+                          </p>
+                          <i className="fas fa-upload text-80 text-primary mt-30"></i>
+                          <p className="text-16 text-reading fw-600 mt-20">
+                            Click box to upload
+                          </p>
+                          <p className="text-14 text-reading fw-500">
+                            JPEG or PNGS smaller than 10mb
+                          </p>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 

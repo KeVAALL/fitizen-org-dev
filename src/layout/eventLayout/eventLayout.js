@@ -1,15 +1,13 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   BrowserRouter as Router,
-  Routes,
-  Route,
   useLocation,
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { AppBar, Toolbar, Box } from "@mui/material";
-import { styled, useTheme } from "@mui/material/styles";
+import { AppBar, Toolbar, Box, Avatar } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Menu, Sidebar } from "react-pro-sidebar";
 import { Outlet } from "react-router-dom";
@@ -18,11 +16,13 @@ import DarkLogo from "../../assets/img/general/logo-dark.png";
 import FavLogo from "../../assets/img/general/favicon.png";
 import Avatar3 from "../../assets/img/avatars/3.png";
 
-import "../dashboardLayout/layout.css";
+import "../DashboardLayout/DashboardLayout.css";
 import { HtmlLightTooltip } from "../../utils/Tooltip";
-import { decryptData } from "../../utils/DataEncryption";
+import { useSelector } from "react-redux";
 
 const Header = ({ open, handleDrawerToggle }) => {
+  const user = useSelector((state) => state.user.userProfile);
+
   return (
     <AppBar
       position="static"
@@ -77,14 +77,24 @@ const Header = ({ open, handleDrawerToggle }) => {
                 </div>
               </div>
 
-              <div className="pl-15">
-                <a href="#">
-                  <img
-                    src={Avatar3}
-                    alt="image-avatar"
-                    className="size-50 rounded-22 object-cover"
-                  />
-                </a>
+              <div className="d-flex items-center gap-10">
+                <div className="pl-15">
+                  <Avatar
+                    sx={{
+                      bgcolor: "#fff3c7",
+                      color: "#f05736",
+                      border: "1px solid #f05736",
+                      cursor: "pointer",
+                      fontSize: 18,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {user?.User_Name?.slice(0, 1)}
+                  </Avatar>
+                </div>
+                <div className="text-15 text-black fw-500">
+                  Hi, {user?.User_Name?.split(" ")[0]}
+                </div>
               </div>
 
               <div

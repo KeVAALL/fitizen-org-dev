@@ -7,7 +7,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { AppBar, Toolbar, Box, Avatar, Drawer } from "@mui/material";
+import { AppBar, Toolbar, Box, Avatar } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Menu, Sidebar } from "react-pro-sidebar";
@@ -17,10 +17,16 @@ import DarkLogo from "../../assets/img/general/logo-dark.png";
 import FavLogo from "../../assets/img/general/favicon.png";
 import Avatar3 from "../../assets/img/avatars/3.png";
 
-import "./layout.css";
+import "./DashboardLayout.css";
 import { HtmlLightTooltip } from "../../utils/Tooltip";
+import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
+import { clearProfile } from "../../redux/slices/userSlice";
+import toast from "react-hot-toast";
 
 const Header = ({ open, handleDrawerToggle }) => {
+  const user = useSelector((state) => state.user.userProfile);
+
   return (
     <AppBar
       position="static"
@@ -75,14 +81,24 @@ const Header = ({ open, handleDrawerToggle }) => {
                 </div>
               </div>
 
-              <div className="pl-15">
-                <a href="#">
-                  <img
-                    src={Avatar3}
-                    alt="image-avatar"
-                    className="size-50 rounded-22 object-cover"
-                  />
-                </a>
+              <div className="d-flex items-center gap-10">
+                <div className="pl-15">
+                  <Avatar
+                    sx={{
+                      bgcolor: "#fff3c7",
+                      color: "#f05736",
+                      border: "1px solid #f05736",
+                      cursor: "pointer",
+                      fontSize: 18,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {user?.User_Name?.slice(0, 1)}
+                  </Avatar>
+                </div>
+                <div className="text-15 text-black fw-500">
+                  Hi, {user?.User_Name?.split(" ")[0]}
+                </div>
               </div>
 
               <div
@@ -106,11 +122,31 @@ const Header = ({ open, handleDrawerToggle }) => {
 };
 
 const ReactSidebar = ({ open, menu, navigate }) => {
-  console.log(menu);
-
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const isCurrentPage = (url) => location.pathname.includes(url);
+
+  async function Logout() {
+    const shouldDelete = await Swal.fire({
+      title: "Are you sure you want to logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, Logout!",
+    });
+
+    if (shouldDelete.isConfirmed) {
+      try {
+        dispatch(clearProfile());
+        navigate("/");
+      } catch (err) {
+        console.error("API Error:", err);
+        toast.error("Failed to Logout!");
+      }
+    }
+  }
 
   return (
     <>
@@ -328,19 +364,25 @@ const ReactSidebar = ({ open, menu, navigate }) => {
               {open ? (
                 <div className="sidebar__item">
                   <div className="sidebar__button">
-                    <a href="#" className="d-flex items-center text-14 lh-1">
+                    <button
+                      onClick={Logout}
+                      className="d-flex items-center text-14 lh-1"
+                    >
                       <i className="fas fa-sign-out-alt mr-15"></i>
                       Sign Out
-                    </a>
+                    </button>
                   </div>
                 </div>
               ) : (
                 <HtmlLightTooltip arrow title="Sign Out" placement="right">
                   <div className="sidebar__item">
                     <div className="sidebar__button">
-                      <a href="#" className="d-flex items-center text-14 lh-1">
+                      <button
+                        onClick={Logout}
+                        className="d-flex items-center text-14 lh-1"
+                      >
                         <i className="fas fa-sign-out-alt mr-15"></i>
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </HtmlLightTooltip>
@@ -390,7 +432,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
   );
 };
 
-export const DashboardLayout = () => {
+const DashboardLayout = () => {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const theme = useTheme();
@@ -481,3 +523,5 @@ export const DashboardLayout = () => {
     </Box>
   );
 };
+
+export default DashboardLayout;

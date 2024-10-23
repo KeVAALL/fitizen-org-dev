@@ -1,4 +1,5 @@
 import { jwtDecode } from "jwt-decode";
+import * as XLSX from "xlsx";
 
 export const dateFormat = (dateStr) => {
   // Original date string
@@ -74,4 +75,22 @@ export const verifyToken = (authToken) => {
    * Property 'exp' does not exist on type '<T = unknown>(token: string, options?: JwtDecodeOptions | undefined) => T'.
    */
   return decoded.exp > Date.now() / 1000;
+};
+
+export const downloadExcel = (data, sheetName, fileName) => {
+  if (data?.length > 0) {
+    // Create a new workbook and worksheet
+    const wb = XLSX.utils.book_new();
+
+    // Create a worksheet from the data
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+    // Create the Excel file and trigger the download
+    XLSX.writeFile(wb, `${fileName}.xlsx`);
+  } else {
+    console.warn("No data available for download.");
+  }
 };

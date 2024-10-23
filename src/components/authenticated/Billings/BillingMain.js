@@ -74,7 +74,7 @@ function EventBilling() {
   }, [handleGetData]);
 
   return showBankDetails && !showPayout ? (
-    <BankDetails />
+    <BankDetails handleShowBankDetails={setShowBankDetails} />
   ) : showPayout && !showBankDetails ? (
     <Payout setShowPayout={setShowPayout} getData={getData?.[0]} />
   ) : (

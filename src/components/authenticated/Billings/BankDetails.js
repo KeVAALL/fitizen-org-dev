@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import Select from "react-select";
 import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import Swal from "sweetalert2";
+import EventTitle from "../EventTitle";
 
 // import Bank from "../../assets/img/icons/bank.png";
 const dropDwonAccountType = [
@@ -24,7 +25,7 @@ const dropDwonAccountType = [
   },
 ];
 
-function BankDetails() {
+function BankDetails({ handleShowBankDetails }) {
   const { event_id } = useParams();
   const user = useSelector((state) => state.user.userProfile);
 
@@ -85,7 +86,6 @@ function BankDetails() {
     user?.User_Display_Name,
     user?.User_Id,
   ]);
-
   const handleDelete = useCallback(
     async (Bank_Id) => {
       // Create the request data first
@@ -524,36 +524,18 @@ function BankDetails() {
           <section className="layout-pb-md">
             <div className="container">
               <div className="row y-gap-30">
-                <div className="col-xl-12 col-md-12">
-                  <div className="py-10 px-15 rounded-8 border-light bg-white">
-                    <div className="row y-gap-20 justify-between items-center">
-                      <div className="col-1">
-                        <div className="w-50 h-50 rounded-full overflow-hidden">
-                          <img
-                            src={Event5}
-                            className="w-full h-full object-cover"
-                            alt="icon"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-10">
-                        <div className="text-16 lh-16 fw-500">
-                          Golden Triangle Challenge: Run through India's Rich
-                          Heritage
-                        </div>
-                      </div>
-                      <div className="col-1">
-                        <div className="form-switch d-flex items-center">
-                          <div className="switch">
-                            <input type="checkbox" />
-                            <span className="switch__slider"></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <EventTitle />
+                <div className="col-lg-6 pb-5">
+                  <button
+                    onClick={(e) => {
+                      handleShowBankDetails(false);
+                    }}
+                    className="button rounded-full py-12 px-15 w-40 h-40 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25"
+                  >
+                    <i className="fas fa-chevron-left text-14"></i>
+                  </button>
                 </div>
-                <div className="col-lg-12 text-right pb-5">
+                <div className="col-lg-6 text-right pb-5">
                   <button
                     onClick={() => {
                       setEditData({});

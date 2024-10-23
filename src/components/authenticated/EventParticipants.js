@@ -61,6 +61,7 @@ import { decryptData } from "../../utils/DataEncryption";
 import { MEDIA_URL } from "../../config/url";
 import { selectCustomStyle } from "../../utils/ReactSelectStyles";
 import EventTitle from "./EventTitle";
+import Loader from "../../utils/BackdropLoader";
 
 function EventParticipants() {
   const { event_id } = useParams();
@@ -603,10 +604,6 @@ function EventParticipants() {
   );
   const colors = ["pink", "orange", "brown"]; // Array of color className
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [showForm]);
-
   async function LoadParticipants() {
     const reqdata = {
       Method_Name: "Get",
@@ -636,12 +633,77 @@ function EventParticipants() {
       setFetchingDetails(false);
     }
   }
+  async function EditParticipant(values) {
+    console.log("Form Data", values);
 
+    const reqdata = {
+      Method_Name: "Update",
+      Event_Id: decryptData(event_id),
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Participant_Id: values?.Transaction_Number,
+      Booking_Id: values?.Booking_Number,
+      xmlData: generatePersonalXML(values),
+      QuestionXMLData: generateQuestionXml(values),
+    };
+    try {
+      setSubmitForm(true);
+
+      const result = await RestfulApiService(
+        reqdata,
+        "organizer/updateeventparticipant"
+      );
+      if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+        toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
+        return;
+      }
+      if (result) {
+        toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+        setShowForm(false);
+        const reqdata = {
+          Method_Name: "Get",
+          Event_Id: decryptData(event_id),
+          Session_User_Id: user?.User_Id,
+          Session_User_Name: user?.User_Display_Name,
+          Session_Organzier_Id: user?.Organizer_Id,
+        };
+        try {
+          setFetchingDetails(true);
+          const result = await RestfulApiService(
+            reqdata,
+            "organizer/geteventparticipant"
+          );
+          if (result) {
+            console.log(result?.data?.Result?.Table1);
+            setParticipants(result?.data?.Result?.Table1);
+            setAgeCategory(result?.data?.Result?.Table6);
+            setGenderData(result?.data?.Result?.Table2);
+            setCategoryData(result?.data?.Result?.Table3);
+            setCityData(result?.data?.Result?.Table4);
+            setStateData(result?.data?.Result?.Table5);
+          }
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setFetchingDetails(false);
+        }
+        // window.location.reload();
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setSubmitForm(false);
+    }
+  }
   useEffect(() => {
     if (event_id) {
       LoadParticipants();
     }
   }, [event_id]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [showForm]);
   // useEffect(() => {
   //   console.log(
   //     "Filtered Data: ",
@@ -659,27 +721,7 @@ function EventParticipants() {
           <div className="container">
             <div className="row y-gap-30">
               {fetchingDetails ? (
-                <div
-                  className="col-xl-12"
-                  style={{ position: "relative", height: "300px" }}
-                >
-                  <Backdrop
-                    sx={{
-                      color: "#f05736",
-                      backgroundColor: "#fff",
-                      position: "absolute", // Make Backdrop absolute to the row div
-                      top: "50%", // Set the top position to 50%
-                      left: "50%", // Set the left position to 50%
-                      transform: "translate(-50%, -50%)", // Translate to center
-                      width: "100%",
-                      height: "100%",
-                      zIndex: 1, // Ensure it's above the content inside the row div
-                    }}
-                    open={fetchingDetails}
-                  >
-                    <CircularProgress color="inherit" />
-                  </Backdrop>
-                </div>
+                <Loader fetching={fetchingDetails} />
               ) : (
                 <>
                   <EventTitle />
@@ -689,77 +731,7 @@ function EventParticipants() {
                       enableReinitialize
                       initialValues={initialValues}
                       validationSchema={validationSchema}
-                      onSubmit={async (values) => {
-                        console.log("Form Data", values);
-
-                        const reqdata = {
-                          Method_Name: "Update",
-                          Event_Id: decryptData(event_id),
-                          Session_User_Id: user?.User_Id,
-                          Session_User_Name: user?.User_Display_Name,
-                          Session_Organzier_Id: user?.Organizer_Id,
-                          Participant_Id: values?.Transaction_Number,
-                          Booking_Id: values?.Booking_Number,
-                          xmlData: generatePersonalXML(values),
-                          QuestionXMLData: generateQuestionXml(values),
-                        };
-                        try {
-                          setSubmitForm(true);
-
-                          const result = await RestfulApiService(
-                            reqdata,
-                            "organizer/updateeventparticipant"
-                          );
-                          if (
-                            result?.data?.Result?.Table1[0]?.Result_Id === -1
-                          ) {
-                            toast.error(
-                              result?.data?.Result?.Table1[0]
-                                ?.Result_Description
-                            );
-                            return;
-                          }
-                          if (result) {
-                            toast.success(
-                              result?.data?.Result?.Table1[0]
-                                ?.Result_Description
-                            );
-                            setShowForm(false);
-                            const reqdata = {
-                              Method_Name: "Get",
-                              Event_Id: decryptData(event_id),
-                              Session_User_Id: user?.User_Id,
-                              Session_User_Name: user?.User_Display_Name,
-                              Session_Organzier_Id: user?.Organizer_Id,
-                            };
-                            try {
-                              setFetchingDetails(true);
-                              const result = await RestfulApiService(
-                                reqdata,
-                                "organizer/geteventparticipant"
-                              );
-                              if (result) {
-                                console.log(result?.data?.Result?.Table1);
-                                setParticipants(result?.data?.Result?.Table1);
-                                setAgeCategory(result?.data?.Result?.Table6);
-                                setGenderData(result?.data?.Result?.Table2);
-                                setCategoryData(result?.data?.Result?.Table3);
-                                setCityData(result?.data?.Result?.Table4);
-                                setStateData(result?.data?.Result?.Table5);
-                              }
-                            } catch (err) {
-                              console.log(err);
-                            } finally {
-                              setFetchingDetails(false);
-                            }
-                            // window.location.reload();
-                          }
-                        } catch (err) {
-                          console.log(err);
-                        } finally {
-                          setSubmitForm(false);
-                        }
-                      }}
+                      onSubmit={EditParticipant}
                     >
                       {({
                         handleChange,
@@ -789,17 +761,6 @@ function EventParticipants() {
                                     <div className="row mt-16">
                                       <div className="col-xl-3 pl-0">
                                         <div className="single-field">
-                                          {/* <label className="text-13 text-reading fw-500">
-                                            Participant Name
-                                          </label>
-                                          <div className="form-control">
-                                            <input
-                                              type="text"
-                                              className="form-control"
-                                              placeholder="Participant Name"
-                                              name="pname"
-                                            />
-                                          </div> */}
                                           <label className="text-13 text-reading fw-500">
                                             Participant Name
                                           </label>
@@ -956,26 +917,6 @@ function EventParticipants() {
                                               )}
                                             </Field>
                                           </div>
-                                          {/* <div className="form-control">
-                                            <Field
-                                              as="select"
-                                              name="Blood_Group"
-                                              className="form-control text-primary"
-                                            >
-                                              <option
-                                                value=""
-                                                label="Select Blood Group"
-                                              />
-                                              <option value="A+" label="A+" />
-                                              <option value="A-" label="A-" />
-                                              <option value="B+" label="B+" />
-                                              <option value="B-" label="B-" />
-                                              <option value="AB+" label="AB+" />
-                                              <option value="AB-" label="AB-" />
-                                              <option value="O+" label="O+" />
-                                              <option value="O-" label="O-" />
-                                            </Field>
-                                          </div> */}
                                           <ErrorMessage
                                             name="Blood_Group"
                                             component="div"

@@ -8,6 +8,7 @@ import { encryptData } from "../../utils/DataEncryption";
 import * as Yup from "yup";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { set } from "lodash";
+import Loader from "../../utils/BackdropLoader";
 
 function AllEvents() {
   const user = useSelector((state) => state.user.userProfile);
@@ -423,27 +424,7 @@ function AllEvents() {
             </Modal>
             <div className="row y-gap-40" style={{ position: "relative" }}>
               {fetchingDashboard ? (
-                <div
-                  className="col-xl-12"
-                  style={{ position: "relative", height: "300px" }}
-                >
-                  <Backdrop
-                    sx={{
-                      color: "#f05736",
-                      backgroundColor: "#fff",
-                      position: "absolute", // Make Backdrop absolute to the row div
-                      top: "50%", // Set the top position to 50%
-                      left: "50%", // Set the left position to 50%
-                      transform: "translate(-50%, -50%)", // Translate to center
-                      width: "100%",
-                      height: "100%",
-                      zIndex: 1, // Ensure it's above the content inside the row div
-                    }}
-                    open={fetchingDashboard}
-                  >
-                    <CircularProgress color="inherit" />
-                  </Backdrop>
-                </div>
+                <Loader fetching={fetchingDashboard} />
               ) : (
                 events?.map((ev, index) => {
                   const encryptedParam = encryptData(ev?.Event_Id);

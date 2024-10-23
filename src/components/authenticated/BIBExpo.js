@@ -19,6 +19,7 @@ import utc from "dayjs/plugin/utc"; // Import UTC plugin for working with UTC
 import timezone from "dayjs/plugin/timezone";
 import toast from "react-hot-toast";
 import EventTitle from "./EventTitle";
+import Loader from "../../utils/BackdropLoader";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -153,27 +154,7 @@ function BIBExpo() {
           <div className="container">
             <div className="row y-gap-30">
               {fetchingBib ? (
-                <div
-                  className="col-xl-12"
-                  style={{ position: "relative", height: "300px" }}
-                >
-                  <Backdrop
-                    sx={{
-                      color: "#f05736",
-                      backgroundColor: "#fff",
-                      position: "absolute", // Make Backdrop absolute to the row div
-                      top: "50%", // Set the top position to 50%
-                      left: "50%", // Set the left position to 50%
-                      transform: "translate(-50%, -50%)", // Translate to center
-                      width: "100%",
-                      height: "100%",
-                      zIndex: 1, // Ensure it's above the content inside the row div
-                    }}
-                    open={fetchingBib}
-                  >
-                    <CircularProgress color="inherit" />
-                  </Backdrop>
-                </div>
+                <Loader fetching={fetchingBib} />
               ) : (
                 <>
                   <EventTitle />

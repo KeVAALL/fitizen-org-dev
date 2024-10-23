@@ -1,3 +1,4 @@
+import { Avatar } from "@mui/material";
 import React from "react";
 import { useSelector } from "react-redux";
 
@@ -43,14 +44,28 @@ function Navbar() {
                 </div>
               </div>
               {isLoggedIn && isVerified ? (
-                <div className="d-flex items-center ml-20 is-menu-opened-hide lg:d-none">
-                  <a
-                    href="/dashboard/profile"
-                    className="button h-40 px-10 rounded-100 border-primary text-15 text-primary -primary-1"
-                  >
-                    <i className="far fa-user text-20"></i>
-                  </a>
-                </div>
+                <a
+                  className="d-flex items-center gap-10"
+                  href="/dashboard/profile"
+                >
+                  <div className="ml-15">
+                    <Avatar
+                      sx={{
+                        bgcolor: "#fff3c7",
+                        color: "#f05736",
+                        border: "1px solid #f05736",
+                        cursor: "pointer",
+                        fontSize: 18,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {user?.User_Name?.slice(0, 1)}
+                    </Avatar>
+                  </div>
+                  <div className="text-15 text-black fw-500">
+                    Hi, {user?.User_Name?.split(" ")[0]}
+                  </div>
+                </a>
               ) : (
                 <></>
               )}

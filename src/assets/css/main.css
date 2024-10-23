@@ -1711,7 +1711,7 @@ h6 {
   .custom-modal-content {
     width: 100% !important;
   }
-  .fixed-card{
+  .fixed-card {
     position: relative !important;
     top: 0 !important;
     width: 100% !important;
@@ -13812,12 +13812,6 @@ input:-webkit-autofill::first-line {
 .boxes p:nth-child(2) {
   color: black;
 }
-/* .box {
-  width: 100px;
-  padding: 10px;
-  text-align: center;
-  color: #fff;
-} */
 .color-box {
   width: 25px;
   /* width: 12%; */
@@ -13830,7 +13824,6 @@ input:-webkit-autofill::first-line {
   text-align: center;
   background-color: #fbcdc3;
 }
-
 .orange {
   width: 25px; /* Adjust width as needed */
   height: 50px; /* Adjust width as needed */
@@ -13838,7 +13831,6 @@ input:-webkit-autofill::first-line {
   text-align: center;
   background-color: #c0462b;
 }
-
 .brown {
   width: 25px; /* Adjust width as needed */
   height: 50px; /* Adjust width as needed */
@@ -13846,9 +13838,22 @@ input:-webkit-autofill::first-line {
   text-align: center;
   background-color: #f3795e;
 }
+
 .MuiPaginationItem-root {
   margin: 0 !important;
   border-radius: 0 !important;
+  border: 1px solid #c4c4c4 !important;
+}
+.MuiPaginationItem-ellipsis {
+  color: grey !important;
+  font-weight: 600 !important;
+  border: none !important;
+}
+.MuiPaginationItem-root.MuiPaginationItem-ellipsis {
+  border: none !important; /* Extra specificity for ellipsis */
+}
+.MuiPagination-root {
+  border: none !important;
 }
 /* .MuiPaginationItem-firstLast:first-child {
   border-top-left-radius: 8px !important;
@@ -13968,7 +13973,7 @@ input:-webkit-autofill::first-line {
   min-height: 48px !important;
   height: 48px !important;
 }
-.fixed-card{
+.fixed-card {
   position: fixed;
   top: 120px;
   width: 480px;

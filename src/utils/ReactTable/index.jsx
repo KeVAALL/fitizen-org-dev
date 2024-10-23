@@ -430,7 +430,7 @@ export const TablePagination = ({
             "& .MuiPaginationItem-root": {
               fontSize: "14px",
               color: "#CECECE",
-              border: "1px solid #EAEAEA !important",
+              // border: "1px solid #EAEAEA !important",
             },
             "& .MuiPaginationItem-root.Mui-selected": {
               backgroundColor: "#f05736",
@@ -440,15 +440,6 @@ export const TablePagination = ({
             "& .MuiPaginationItem-root svg": {
               color: "#f05736",
             },
-            // // Handle border-radius for first and last items
-            // "& .MuiPaginationItem-firstLast:first-of-type": {
-            //   borderTopLeftRadius: "8px !important",
-            //   borderBottomLeftRadius: "8px !important",
-            // },
-            // "& .MuiPaginationItem-firstLast:last-of-type": {
-            //   borderTopRightRadius: "8px !important",
-            //   borderBottomRightRadius: "8px !important",
-            // },
             "& .MuiPaginationItem-root:hover svg": {
               color: "#d0452d", // Darker on hover
             },
