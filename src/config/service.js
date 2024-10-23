@@ -1,4 +1,4 @@
-import AxiosInstance from "../utils/axios";
+import AxiosInstance from "../utils/AxiosBaseUrl";
 
 //API call
 export async function RestfulApiService(data, endPoint) {

@@ -16,11 +16,17 @@ import { RestfulApiService } from "../../config/service";
 
 import "./auth.css";
 import OtpInput from "../../utils/OtpInput";
-import { useDispatch } from "react-redux";
-import { setLoginAttempt, setProfile } from "../../redux/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  clearProfile,
+  setLoginAttempt,
+  setProfile,
+} from "../../redux/slices/userSlice";
 import Email from "./Email";
+import { verifyToken } from "../../utils/UtilityFunctions";
 
 function SignIn() {
+  const token = useSelector((state) => state.user.token);
   const [otpOwner, setOTPOwner] = useState();
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [verifyingMobile, setVerifyingMobile] = useState(false);
@@ -160,11 +166,22 @@ function SignIn() {
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    
+    const verifyAndRedirect = () => {
+      if (!verifyToken(token)) {
+        dispatch(clearProfile());
+        navigate("/sign-in", { replace: true });
+        // window.location.reload();
+      }
+    };
+
+    verifyAndRedirect();
+  }, []);
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
     // Clean up the event listener on component unmount
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -191,7 +208,11 @@ function SignIn() {
                   setShowLoginForm={setShowLoginForm}
                 />
               ) : (
-                <div className={`px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16${scrolled ? " fixed-card": ""}`}>
+                <div
+                  className={`px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16${
+                    scrolled ? " fixed-card" : ""
+                  }`}
+                >
                   {showOtpInput && (
                     <div
                       className="fas fa-arrow-left border-primary text-12 text-primary fw-600 rounded-full px-10 py-10 text-center cursor-pointer h-30 w-30 button otp-back-btn"

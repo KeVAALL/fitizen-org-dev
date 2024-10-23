@@ -13,11 +13,13 @@ import {
 import storage from "redux-persist/lib/storage";
 import userReducer from "./slices/userSlice";
 import categoryReducer from "./slices/categorySlice";
+import eventReducer from "./slices/eventSlice";
 import { encryptTransform } from "redux-persist-transform-encrypt";
 
 const rootReducer = combineReducers({
   user: userReducer,
   category: categoryReducer,
+  selectedEvent: eventReducer,
 });
 
 const encryptor = encryptTransform({

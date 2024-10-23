@@ -46,11 +46,11 @@ import {
   RestfulApiServiceDownload,
   RestfulApiService,
 } from "../../../config/service";
-import { decryptData } from "../../../utils/storage";
+import { decryptData } from "../../../utils/DataEncryption";
 import {
   customRoundedStyles,
   selectCustomStyle,
-} from "../../../utils/selectCustomStyle";
+} from "../../../utils/ReactSelectStyles";
 import PaymentHistoryInvoice from "./PaymentHistoryInvoice";
 
 function PaymentHistory({ setShowPaymentHistory }) {

@@ -3,14 +3,15 @@ import React, { useEffect, useState } from "react";
 import Event5 from "../../assets/img/events/event5.png";
 import { RestfulApiService } from "../../config/service";
 import { useParams } from "react-router-dom";
-import { decryptData } from "../../utils/storage";
+import { decryptData } from "../../utils/DataEncryption";
 import { useSelector } from "react-redux";
 import { Backdrop, Box, CircularProgress, Modal, Stack } from "@mui/material";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Select from "react-select";
 import * as Yup from "yup";
-import { selectCustomStyle } from "../../utils/selectCustomStyle";
+import { selectCustomStyle } from "../../utils/ReactSelectStyles";
 import toast from "react-hot-toast";
+import EventTitle from "./EventTitle";
 
 function Polls() {
   const { event_id } = useParams();
@@ -442,35 +443,8 @@ function Polls() {
                       </Stack>
                     </Box>
                   </Modal>
-                  <div className="col-xl-12 col-md-12">
-                    <div className="py-10 px-15 rounded-8 bg-white border-light">
-                      <div className="row y-gap-20 justify-between items-center">
-                        <div className="col-1">
-                          <div className="w-50 h-50 rounded-full overflow-hidden">
-                            <img
-                              src={Event5}
-                              className="w-full h-full object-cover"
-                              alt="icon"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-10">
-                          <div className="text-16 lh-16 fw-500">
-                            Golden Triangle Challenge: Run through India's Rich
-                            Heritage
-                          </div>
-                        </div>
-                        <div className="col-1">
-                          <div className="form-switch d-flex items-center">
-                            <div className="switch">
-                              <input type="checkbox" />
-                              <span className="switch__slider"></span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+
+                  <EventTitle />
 
                   <div className="py-20 px-20">
                     <div className="row y-gap-20 justify-between items-center">

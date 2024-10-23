@@ -13,7 +13,7 @@ import * as XLSX from "xlsx";
 
 import React, { useCallback, useEffect, useState } from "react";
 import Select from "react-select";
-import { customRoundedStyles } from "../../utils/selectCustomStyle";
+import { customRoundedStyles } from "../../utils/ReactSelectStyles";
 import { StyledTableCell } from "../../utils/ReactTable";
 import {
   LineChart,

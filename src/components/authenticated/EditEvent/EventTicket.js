@@ -20,12 +20,12 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Select from "react-select";
-import { selectCustomStyle } from "../../../utils/selectCustomStyle";
+import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { decryptData } from "../../../utils/storage";
+import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
-import Loader from "../../../utils/Loader";
+import Loader from "../../../utils/BackdropLoader";
 import CustomAccordion from "./CustomAccordion";
 
 function EventTicket() {

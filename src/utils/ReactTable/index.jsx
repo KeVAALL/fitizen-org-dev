@@ -27,14 +27,9 @@ import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material";
 import NorthOutlinedIcon from "@mui/icons-material/NorthOutlined";
 import SouthOutlinedIcon from "@mui/icons-material/SouthOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { BootstrapInput } from "../Input/textfield";
+import { BootstrapInput } from "../Input/Textfield";
 import { matchSorter } from "match-sorter";
 import Select, { components } from "react-select";
-
-// third-party
-// import { CSVLink } from "react-csv";
-// import { BootstrapInput } from "../Input/textfield";
-// import { matchSorter } from "match-sorter";
 
 // assets
 export function GlobalFilter({ globalFilter, setGlobalFilter, ...props }) {

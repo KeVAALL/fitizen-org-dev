@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+
 export const dateFormat = (dateStr) => {
   // Original date string
 
@@ -60,4 +62,16 @@ export const inrCurrency = (currencyValue) => {
 
 export const removeSpace = (string) => {
   return string?.split(" ").join("-");
+};
+
+export const verifyToken = (authToken) => {
+  if (!authToken) {
+    return false;
+  }
+  const decoded = jwtDecode(authToken);
+
+  /**
+   * Property 'exp' does not exist on type '<T = unknown>(token: string, options?: JwtDecodeOptions | undefined) => T'.
+   */
+  return decoded.exp > Date.now() / 1000;
 };

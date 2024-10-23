@@ -2,14 +2,14 @@ import React, { createRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RestfulApiService } from "../../../config/service";
-import { decryptData } from "../../../utils/storage";
+import { decryptData } from "../../../utils/DataEncryption";
 import toast from "react-hot-toast";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { Modal } from "@mui/material";
 import * as Yup from "yup";
 import { ErrorMessage, Form, Formik } from "formik";
-import Loader from "../../../utils/Loader";
+import Loader from "../../../utils/BackdropLoader";
 
 function EventBanner() {
   const { event_id } = useParams();

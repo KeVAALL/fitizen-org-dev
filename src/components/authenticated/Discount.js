@@ -8,7 +8,7 @@ import React, {
 
 import Event5 from "../../assets/img/events/event5.png";
 import Select from "react-select";
-import { selectCustomStyle } from "../../utils/selectCustomStyle";
+import { selectCustomStyle } from "../../utils/ReactSelectStyles";
 import { TextField } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
@@ -18,12 +18,13 @@ import {
 } from "@mui/x-date-pickers";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { decryptData } from "../../utils/storage";
+import { decryptData } from "../../utils/DataEncryption";
 import { RestfulApiService } from "../../config/service";
 import { Category } from "@mui/icons-material";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import EventTitle from "./EventTitle";
 
 function Discount() {
   const initialValues = useMemo(
@@ -403,35 +404,7 @@ function Discount() {
         <section class="layout-pb-md">
           <div class="container">
             <div class="row y-gap-30">
-              <div class="col-xl-12 col-md-12">
-                <div class="py-10 px-15 rounded-8 bg-white border-light">
-                  <div class="row y-gap-20 justify-between items-center">
-                    <div class="col-1">
-                      <div class="w-50 h-50 rounded-full overflow-hidden">
-                        <img
-                          src={Event5}
-                          class="w-full h-full object-cover"
-                          alt="icon"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-10">
-                      <div class="text-16 lh-16 fw-500">
-                        Golden Triangle Challenge: Run through India's Rich
-                        Heritage
-                      </div>
-                    </div>
-                    <div class="col-1">
-                      <div class="form-switch d-flex items-center">
-                        <div class="switch">
-                          <input type="checkbox" />
-                          <span class="switch__slider"></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <EventTitle />
 
               {showDiscountForm ? (
                 <div class="col-xl-12 col-md-12">

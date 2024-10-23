@@ -13,7 +13,7 @@ import React, { useState } from "react";
 import { RestfulApiService } from "../../../config/service";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { decryptData } from "../../../utils/storage";
+import { decryptData } from "../../../utils/DataEncryption";
 // import { useDrag, useDrop } from "react-dnd";
 // import update from "immutability-helper"; // To handle immutability when updating state
 import { DndContext, closestCenter } from "@dnd-kit/core";

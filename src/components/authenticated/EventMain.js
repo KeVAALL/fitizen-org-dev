@@ -6,15 +6,22 @@ import DIcon2 from "../../assets/img/icons/dicon2.png";
 import DIcon3 from "../../assets/img/icons/dicon3.png";
 import DIcon4 from "../../assets/img/icons/dicon4.png";
 import DIcon5 from "../../assets/img/icons/dicon5.png";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { RestfulApiService } from "../../config/service";
-import { useSelector } from "react-redux";
-import { decryptData } from "../../utils/storage";
+import { useDispatch, useSelector } from "react-redux";
+import { decryptData } from "../../utils/DataEncryption";
 import { Backdrop, CircularProgress } from "@mui/material";
+import { setCurrentEvent } from "../../redux/slices/eventSlice";
+import EventTitle from "./EventTitle";
 
 function EventMain() {
   const { event_id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userProfile);
+  const selectedEvent = useSelector(
+    (state) => state.selectedEvent.currentEvent
+  );
   const [fetchingDetails, setFetchingDetails] = useState(false);
   const [event, setEvent] = useState({});
 
@@ -33,8 +40,11 @@ function EventMain() {
         setFetchingDetails(true);
         const result = await RestfulApiService(reqdata, "organizer/dashboard");
         if (result) {
-          console.log(result?.data?.Result?.Table1);
-          setEvent(result?.data?.Result?.Table1[0]);
+          // setEvent(result?.data?.Result?.Table1[0]);
+          const apiResponse = {
+            currentEvent: result?.data?.Result?.Table1[0],
+          };
+          dispatch(setCurrentEvent(apiResponse));
         }
       } catch (err) {
         console.log(err);
@@ -78,7 +88,7 @@ function EventMain() {
                 </div>
               ) : (
                 <>
-                  <div className="col-xl-12 col-md-12">
+                  {/* <div className="col-xl-12 col-md-12">
                     <div className="py-10 px-15 rounded-8 bg-white border-light">
                       <div className="row y-gap-20 justify-between items-center">
                         <div className="col-1">
@@ -108,7 +118,8 @@ function EventMain() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
+                  <EventTitle />
 
                   <div className="col-xl-4 col-md-6">
                     <div className="py-30 px-15 border-light rounded-16 bg-white">
@@ -121,7 +132,7 @@ function EventMain() {
                             Total Tickets sold till date
                           </div>
                           <div className="text-20 lh-16 fw-700 mt-5">
-                            {event?.TicketSaleCount}
+                            {selectedEvent?.TicketSaleCount}
                           </div>
                         </div>
                       </div>
@@ -139,7 +150,7 @@ function EventMain() {
                             Sales Value
                           </div>
                           <div className="text-20 lh-16 fw-700 mt-5">
-                            ₹ {event?.TicketSaleAmount}
+                            ₹ {selectedEvent?.TicketSaleAmount}
                           </div>
                         </div>
                       </div>
@@ -155,7 +166,7 @@ function EventMain() {
                         <div className="col-8">
                           <div className="fw-500 lh-14 text-12">Page Views</div>
                           <div className="text-20 lh-16 fw-700 mt-5">
-                            {event?.PageCount}
+                            {selectedEvent?.PageCount}
                           </div>
                         </div>
                       </div>

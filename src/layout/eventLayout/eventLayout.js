@@ -20,7 +20,7 @@ import Avatar3 from "../../assets/img/avatars/3.png";
 
 import "../dashboardLayout/layout.css";
 import { HtmlLightTooltip } from "../../utils/Tooltip";
-import { decryptData } from "../../utils/storage";
+import { decryptData } from "../../utils/DataEncryption";
 
 const Header = ({ open, handleDrawerToggle }) => {
   return (
