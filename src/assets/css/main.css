@@ -13768,6 +13768,11 @@ input:-webkit-autofill::first-line {
   justify-content: flex-end; */
   text-align: right;
 }
+.last-header-center th:last-of-type {
+  /* display: flex;
+  justify-content: flex-end; */
+  text-align: center;
+}
 .action-button {
   color: #949494;
   cursor: pointer;

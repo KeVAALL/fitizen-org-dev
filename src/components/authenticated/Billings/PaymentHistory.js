@@ -13,38 +13,24 @@ import {
   useSortBy,
 } from "react-table";
 import {
-  Backdrop,
   Box,
-  Button,
-  CircularProgress,
-  Link,
-  Modal,
   Stack,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  TextField,
 } from "@mui/material";
 import Select from "react-select";
 
 // Project imports
 import {
   DefaultColumnFilter,
-  GlobalFilter,
   renderFilterTypes,
-  SelectColumnFilter,
   StyledTableCell,
   TablePagination,
-  IndeterminateCheckbox,
 } from "../../../utils/ReactTable";
-import { WhiteSingleTooltip, WhiteTooltip } from "../../../utils/Tooltip";
-import {
-  RestfulApiServiceDownload,
-  RestfulApiService,
-} from "../../../config/service";
+import { RestfulApiService } from "../../../config/service";
 import { decryptData } from "../../../utils/DataEncryption";
 import { customRoundedStyles } from "../../../utils/ReactSelectStyles";
 import PaymentHistoryInvoice from "./PaymentHistoryInvoice";

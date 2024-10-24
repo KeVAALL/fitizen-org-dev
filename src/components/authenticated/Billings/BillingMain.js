@@ -15,6 +15,7 @@ import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
 import toast from "react-hot-toast";
 import EventTitle from "../EventTitle";
+import MonthlyInvoice from "./MonthlyInvoice";
 
 function EventBilling() {
   const { event_id } = useParams();
@@ -23,6 +24,7 @@ function EventBilling() {
   const [showBankDetails, setShowBankDetails] = useState(false);
   const [getData, setGetData] = useState([]);
   const [showPaymentHistory, setShowPaymentHistory] = useState(false);
+  const [showMonthlyInvoice, setShowMonthlyInvoice] = useState(false);
   const [showTransactions, setShowTransactions] = useState(false);
   const [showPayout, setShowPayout] = useState(false);
 
@@ -86,10 +88,18 @@ function EventBilling() {
               <EventTitle />
             </div>
             <div className="row pt-30">
-              {showPaymentHistory && !showTransactions ? (
+              {showPaymentHistory &&
+              !showTransactions &&
+              !setShowMonthlyInvoice ? (
                 <PaymentHistory setShowPaymentHistory={setShowPaymentHistory} />
-              ) : !showPaymentHistory && showTransactions ? (
+              ) : !showPaymentHistory &&
+                !setShowMonthlyInvoice &&
+                showTransactions ? (
                 <Transactions setShowTransactions={setShowTransactions} />
+              ) : !showPaymentHistory &&
+                !showTransactions &&
+                showMonthlyInvoice ? (
+                <MonthlyInvoice setShowMonthlyInvoice={setShowMonthlyInvoice} />
               ) : (
                 <>
                   <div className="col-xl-12 col-md-12 mb-30">
@@ -165,7 +175,12 @@ function EventBilling() {
                   </div>
 
                   <div className="col-xl-3 col-md-6">
-                    <div className="py-20 px-15 border-light rounded-16 bg-white cursor-pointer -hover-shadow">
+                    <div
+                      className="py-20 px-15 border-light rounded-16 bg-white cursor-pointer -hover-shadow"
+                      onClick={() => {
+                        setShowMonthlyInvoice(true);
+                      }}
+                    >
                       <div className="row justify-between items-center">
                         <div className="col-5">
                           <img src={PY2} alt="icon" />
