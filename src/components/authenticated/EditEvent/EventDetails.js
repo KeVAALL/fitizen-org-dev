@@ -20,6 +20,7 @@ import toast from "react-hot-toast";
 // MUI imports
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Loader from "../../../utils/BackdropLoader";
 
 const initialFormValues = {
   Event_Name: "",
@@ -46,6 +47,7 @@ function EventDetails() {
   const [takeawayDropdown, setTakeawayDropdown] = useState([]);
   const [facilityDropdown, setFacilityDropdown] = useState([]);
   const [timezoneDropdown, setTimezoneDropdown] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
   const [initialValues, setInitialValues] = useState(initialFormValues);
   const [submitForm, setSubmitForm] = useState(false);
 
@@ -313,28 +315,32 @@ function EventDetails() {
       className="py-30 px-30 border-light rounded-8"
       style={{ boxShadow: "2px 2px 7.5px 0px #0000000D" }}
     >
-      {fetchingDetails ? (
-        <div
-          className="col-xl-12"
-          style={{ position: "relative", height: "300px" }}
+      <div className="col-12 d-flex justify-center">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setIsEditing(!isEditing);
+            if (isEditing) {
+              LoadDetails();
+            }
+          }}
+          className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
         >
-          <Backdrop
-            sx={{
-              color: "#f05736",
-              backgroundColor: "#fff",
-              position: "absolute", // Make Backdrop absolute to the row div
-              top: "50%", // Set the top position to 50%
-              left: "50%", // Set the left position to 50%
-              transform: "translate(-50%, -50%)", // Translate to center
-              width: "100%",
-              height: "100%",
-              zIndex: 1, // Ensure it's above the content inside the row div
-            }}
-            open={fetchingDetails}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        </div>
+          {isEditing ? (
+            <>
+              <i className="fas fa-times text-16"></i>
+              Cancel
+            </>
+          ) : (
+            <>
+              <i className="far fa-edit text-16"></i>
+              Edit Details
+            </>
+          )}
+        </button>
+      </div>
+      {fetchingDetails ? (
+        <Loader fetching={fetchingDetails} />
       ) : (
         <Formik
           initialValues={initialValues}
@@ -346,17 +352,6 @@ function EventDetails() {
           {({ setFieldValue, setFieldTouched, values }) => (
             <Form>
               <div className="row y-gap-30 py-20">
-                <div className="col-12 d-flex justify-center">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                    }}
-                    className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
-                  >
-                    <i className="far fa-edit text-16"></i>
-                    Edit Details
-                  </button>
-                </div>
                 <div className="col-lg-12 col-md-12">
                   <div className="single-field y-gap-10">
                     <label className="text-13 fw-500">
@@ -364,6 +359,7 @@ function EventDetails() {
                     </label>
                     <div className="form-control">
                       <Field
+                        disabled={!isEditing}
                         type="text"
                         className="form-control"
                         placeholder="Add event name"
@@ -400,6 +396,7 @@ function EventDetails() {
                       Event Type <sup className="asc">*</sup>
                     </label>
                     <Select
+                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={eventTypeDropdown}
@@ -420,6 +417,7 @@ function EventDetails() {
                       Time Zone <sup className="asc">*</sup>
                     </label>
                     <Select
+                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={timezoneDropdown}
@@ -440,6 +438,7 @@ function EventDetails() {
                       Race Day takeaways <sup className="asc">*</sup>
                     </label>
                     <CreatableSelect
+                      isDisabled={!isEditing}
                       isMulti
                       styles={{
                         ...selectCustomStyle,
@@ -474,6 +473,7 @@ function EventDetails() {
                       Race Day facilities <sup className="asc">*</sup>
                     </label>
                     <CreatableSelect
+                      isDisabled={!isEditing}
                       isMulti
                       styles={{
                         ...selectCustomStyle,
@@ -505,6 +505,7 @@ function EventDetails() {
                       Pincode <sup className="asc">*</sup>
                     </label>
                     <AsyncSelect
+                      isDisabled={!isEditing}
                       name="Pincode"
                       className="select-color"
                       placeholder="Pincode"
@@ -581,6 +582,7 @@ function EventDetails() {
                     </label>
                     <div className="form-control">
                       <Field
+                        disabled={!isEditing}
                         type="text"
                         className="form-control"
                         placeholder="State"
@@ -618,6 +620,7 @@ function EventDetails() {
                     </label>
                     <div className="form-control">
                       <Field
+                        disabled={!isEditing}
                         type="text"
                         className="form-control"
                         placeholder="City"
@@ -655,6 +658,7 @@ function EventDetails() {
                     </label>
                     <div className="form-control">
                       <Field
+                        disabled={!isEditing}
                         type="text"
                         className="form-control"
                         placeholder="Add full address"
@@ -698,6 +702,7 @@ function EventDetails() {
                     <label className="text-13 fw-600">GST Payable by?</label>
 
                     <Select
+                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={chargesDropdown}
@@ -730,6 +735,7 @@ function EventDetails() {
                     </label>
 
                     <Select
+                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={chargesDropdown}
@@ -754,6 +760,7 @@ function EventDetails() {
                     </label>
 
                     <Select
+                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={chargesDropdown}
@@ -771,19 +778,21 @@ function EventDetails() {
                   </div>
                 </div>
 
-                <div className="col-auto relative">
-                  <button
-                    disabled={submitForm}
-                    type="submit"
-                    className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                  >
-                    {!submitForm ? (
-                      `Save`
-                    ) : (
-                      <span className="btn-spinner"></span>
-                    )}
-                  </button>
-                </div>
+                {isEditing && (
+                  <div className="col-auto relative">
+                    <button
+                      disabled={submitForm}
+                      type="submit"
+                      className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                    >
+                      {!submitForm ? (
+                        `Save`
+                      ) : (
+                        <span className="btn-spinner"></span>
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             </Form>
           )}

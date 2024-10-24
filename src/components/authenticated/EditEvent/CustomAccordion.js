@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -16,6 +16,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import Select from "react-select";
 import {
   disabledCustomStyle,
@@ -36,12 +37,24 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-const CustomAccordion = ({ category, raceDistanceCategory }) => {
+const CustomAccordion = ({
+  id,
+  category,
+  raceDistanceCategory,
+  LoadCategory,
+  isOneAccordionOpen,
+  setIsOneAccordionOpen,
+  handleNewItemDelete,
+  handleNewItemSubmit,
+}) => {
+  // console.log(category);
   const { event_id } = useParams();
   const user = useSelector((state) => state.user.userProfile);
+  const accordionRef = useRef(null);
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploadingRoute, setUploadingRoute] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [eventCategoryName, setEventCategoryName] = useState("");
   const [submitForm, setSubmitForm] = useState(false);
   const genderDropdown = [
@@ -78,12 +91,28 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
       value: "Non-Timed",
     },
   ];
+  const timedLimitDropdown = [
+    {
+      label: "Sec",
+      value: "Sec",
+    },
+    {
+      label: "Mins",
+      value: "Mins",
+    },
+    {
+      label: "Hours",
+      value: "Hours",
+    },
+  ];
   const initialValues = {
     EventCategory_Name: "",
     EventCategory_Id: null,
     Race_Distance: "",
     Race_Distance_Unit: "",
     Timed_Event: null,
+    Time_Limit: "",
+    Time_Limit_Unit: null,
     Ticket_Sale_Start_Date: null,
     Ticket_Sale_Start_Time: null,
     Ticket_Sale_End_Date: null,
@@ -112,6 +141,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
     ],
     // Image_Path: "",
     Image_Name: "",
+    isNew: category.isNew,
   };
   const [formValues, setFormValues] = useState(initialValues);
   const validationSchema = Yup.object(
@@ -134,6 +164,8 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
         otherwise: () => Yup.object().nullable(),
       }),
       Timed_Event: Yup.object().required("Timing is required"),
+      Time_Limit: Yup.string().required("Cut off time is required"),
+      Time_Limit_Unit: Yup.object().required("Time Limit Unit is required"),
       Number_Of_Tickets: Yup.number()
         .min(0, "Number of Tickets should not be less than 0")
         .required("Required"),
@@ -232,89 +264,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
       ["EventCategory_Id", "Race_Distance_Unit"],
     ]
   );
-  const handleEditClick = async (event, eventCategoryId) => {
-    event.stopPropagation(); // Prevent accordion from toggling
 
-    const reqdata = {
-      Method_Name: "Get_CategoryOne",
-      Event_Id: decryptData(event_id),
-      Session_User_Id: user?.User_Id,
-      Session_User_Name: user?.User_Display_Name,
-      Session_Organzier_Id: user?.Organizer_Id,
-      Org_Id: user?.Org_Id,
-      EventCategoryEntry_Id: eventCategoryId,
-    };
-    try {
-      setLoading(true);
-      const result = await RestfulApiService(
-        reqdata,
-        "organizer/geteventcategory"
-      );
-      if (result) {
-        console.log(result?.data?.Result?.Table1);
-
-        const result1 = result?.data?.Result?.Table1?.[0];
-        console.log(result1);
-        setFormValues({
-          ...result1,
-          EventCategory_Name: result1?.EventCategory_Name,
-          EventCategory_Id: raceDistanceCategory?.filter(
-            (cat) => cat.value === result1?.EventCategory_Id
-          )[0],
-          //   Race_Distance: result1?.Race_Distance,
-          Race_Distance_Unit: raceDistanceUnitDropdown?.filter(
-            (unit) => unit.value === result1?.Race_Distance_Unit
-          )[0],
-          Timed_Event: timedEventDropdown?.filter(
-            (t) => t.value === result1?.Timed_Event
-          )[0],
-          Ticket_Sale_Start_Date: dayjs(result1?.Ticket_Sale_Start_Date),
-          Ticket_Sale_Start_Time: combineDateAndTime(
-            result1?.Ticket_Sale_Start_Date,
-            result1?.Ticket_Sale_Start_Time
-          ),
-          Ticket_Sale_End_Date: dayjs(result1?.Ticket_Sale_End_Date),
-          Ticket_Sale_End_Time: combineDateAndTime(
-            result1?.Ticket_Sale_End_Date,
-            result1?.Ticket_Sale_End_Time
-          ),
-          Is_PriceMoneyAwarded: result1?.Is_PriceMoneyAwarded ? "Yes" : "No", // Assuming 0 for boolean fields
-          //   Eligibility_Criteria_MinYear: "",
-          //   Eligibility_Criteria_MaxYear: "",
-          Is_Paid_Event: result1?.Is_Paid_Event ? "Paid" : "Free", // Assuming 0 for boolean fields
-          //   Number_Of_Tickets: "",
-          //   BIB_Number: "",
-          //   Event_Price: 0,
-          Event_Start_Date: dayjs(result1?.Event_Start_Date),
-          Event_Start_Time: combineDateAndTime(
-            result1?.Event_Start_Date,
-            result1?.Event_Start_Time
-          ),
-          Event_End_Date: dayjs(result1?.Event_End_Date),
-          Event_End_Time: combineDateAndTime(
-            result1?.Event_End_Date,
-            result1?.Event_End_Time
-          ),
-          Event_Prize: JSON.parse(result1?.Event_Prize)?.map((prize) => {
-            return {
-              ...prize,
-              Gender: genderDropdown?.filter(
-                (g) => g.value === prize.Gender
-              )[0],
-            };
-          }),
-          ImagePath: result1?.Image_Path,
-          Image_Name: result1?.Image_Name,
-        });
-
-        setAccordionOpen(true);
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
   function formatRaceTiming(data) {
     const startDate = dayjs(data.Event_Start_Date).format("DD MMM YYYY");
     const startTime = dayjs(data.Event_Start_Time).format("HH:mm");
@@ -324,6 +274,17 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
     // Combine into the desired format
     return `${startDate} ${startTime} to ${endDate} ${endTime}`;
   }
+  const combineDateAndTime = (dateString, timeString) => {
+    if (!dateString || !timeString) return null; // Return null if either value is missing
+
+    const date = dayjs(dateString); // Parse the date
+    const [hours, minutes, seconds = 0] = timeString.split(":").map(Number); // Split time into components, default seconds to 0
+
+    return date
+      .set("hour", hours)
+      .set("minute", minutes)
+      .set("second", seconds); // Combine date and time
+  };
   function convertToXML(data) {
     let XMLData = "";
 
@@ -345,7 +306,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
       `${data.Eligibility_Criteria_MinYear} to ${data.Eligibility_Criteria_MaxYear} Years`
     );
     addRow("Time_Limit", data.Time_Limit);
-    addRow("Time_Limit_Unit", data.Time_Limit_Unit);
+    addRow("Time_Limit_Unit", data.Time_Limit_Unit.value);
     addRow("Race_Timing", formatRaceTiming(data));
     addRow(
       "Event_Start_Date",
@@ -376,15 +337,23 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
       ).format("HH:mm")}`
     );
     addRow("Is_PriceMoneyAwarded", data.Is_PriceMoneyAwarded === "Yes" ? 1 : 0);
-    addRow("Is_Active", data.Is_Active);
+    addRow("Is_Active", data.Is_Active ? data.Is_Active : 1);
     addRow("Timed_Event", data.Timed_Event?.value || data.Timed_Event);
 
     // Handle Pills_Name field
     const pillData = data.Timed_Event?.value || data.Timed_Event;
     addRow(
       "Pills_Name",
-      `${data.Race_Distance} ${
-        data.Race_Distance_Unit?.value || data.Race_Distance_Unit
+      `${
+        data.EventCategory_Id.value === "C007003"
+          ? `${data.Race_Distance}`
+          : data.EventCategory_Id.label
+      }${
+        data.Race_Distance_Unit?.value
+          ? ` ${data.Race_Distance_Unit?.value}`
+          : data.Race_Distance_Unit
+          ? ` ${data.Race_Distance_Unit}`
+          : ""
       } ${pillData}`
     );
 
@@ -430,19 +399,24 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
     console.log(convertToXML(values));
     console.log(convertPrizesToXML(values.Event_Prize));
     const reqdata = {
-      Method_Name: "Update",
+      Method_Name: values.isNew ? "Create" : "Update",
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
       Org_Id: user?.Org_Id,
       Event_Id: decryptData(event_id),
-      EventCategoryEntry_Id: values?.EventCategoryEntry_Id,
+      EventCategoryEntry_Id: values?.EventCategoryEntry_Id
+        ? values?.EventCategoryEntry_Id
+        : "",
       EventCategory_Id: values?.EventCategory_Id.value,
       EventCategory_Name: values?.EventCategory_Name,
       ImagePath: values?.ImagePath,
       ImageName: values?.Image_Name,
       XMLData: convertToXML(values),
-      PrizeXMLData: convertPrizesToXML(values.Event_Prize),
+      PrizeXMLData:
+        values.Event_Prize.length > 0
+          ? convertPrizesToXML(values.Event_Prize)
+          : "",
     };
 
     try {
@@ -458,12 +432,23 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
       }
       if (result) {
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+        console.log(values.isNew);
+        // if (values.isNew) {
+        //   handleNewItemSubmit(id);
+        // }
+        setAccordionOpen(false);
+        setIsOneAccordionOpen("");
+        LoadCategory();
         // setEventCategoryName(
         //   `${values.EventCategory_Id.value === "C007003" ? values.Race_Distance : values.EventCategory_Id.label} ${
         //     values.Race_Distance_Unit?.value || values.Race_Distance_Unit
         //   } ${values.Timed_Event?.value} ${values.EventCategory_Name}`
         // );
-        setAccordionOpen(false);
+        // setAccordionOpen(false);
+        // if (values.isNew) {
+        //   setAccordionOpen(false)
+        // }
+        // setIsOneAccordionOpen("");
       }
     } catch (err) {
       toast.error(err?.Result?.Table1[0]?.Result_Description);
@@ -471,7 +456,105 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
       setSubmitForm(false);
     }
   };
-  const handleDelete = (prize, index, remove) => {
+  const handleEditClick = async (event, eventCategoryId) => {
+    event.stopPropagation(); // Prevent accordion from toggling
+    if (category.isNew) {
+      setAccordionOpen(true);
+      // scrollToAccordion();
+      return;
+    }
+
+    const reqdata = {
+      Method_Name: "Get_CategoryOne",
+      Event_Id: decryptData(event_id),
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      EventCategoryEntry_Id: eventCategoryId,
+    };
+    try {
+      setLoading(true);
+      const result = await RestfulApiService(
+        reqdata,
+        "organizer/geteventcategory"
+      );
+      if (result) {
+        const result1 = result?.data?.Result?.Table1?.[0];
+
+        setFormValues({
+          ...result1,
+          EventCategory_Name: result1?.EventCategory_Name,
+          EventCategory_Id: raceDistanceCategory?.filter(
+            (cat) => cat.value === result1?.EventCategory_Id
+          )[0],
+          //   Race_Distance: result1?.Race_Distance,
+          Race_Distance_Unit: raceDistanceUnitDropdown?.filter(
+            (unit) => unit.value === result1?.Race_Distance_Unit
+          )[0],
+          Timed_Event: timedEventDropdown?.filter(
+            (t) => t.value === result1?.Timed_Event
+          )[0],
+          Time_Limit_Unit: timedLimitDropdown?.filter(
+            (t) => t.value === result1?.Time_Limit_Unit
+          )[0],
+          Ticket_Sale_Start_Date: dayjs(result1?.Ticket_Sale_Start_Date),
+          Ticket_Sale_Start_Time: combineDateAndTime(
+            result1?.Ticket_Sale_Start_Date,
+            result1?.Ticket_Sale_Start_Time
+          ),
+          Ticket_Sale_End_Date: dayjs(result1?.Ticket_Sale_End_Date),
+          Ticket_Sale_End_Time: combineDateAndTime(
+            result1?.Ticket_Sale_End_Date,
+            result1?.Ticket_Sale_End_Time
+          ),
+          Is_PriceMoneyAwarded: result1?.Is_PriceMoneyAwarded ? "Yes" : "No", // Assuming 0 for boolean fields
+          //   Eligibility_Criteria_MinYear: "",
+          //   Eligibility_Criteria_MaxYear: "",
+          Is_Paid_Event: result1?.Is_Paid_Event ? "Paid" : "Free", // Assuming 0 for boolean fields
+          //   Number_Of_Tickets: "",
+          //   BIB_Number: "",
+          //   Event_Price: 0,
+          Event_Start_Date: dayjs(result1?.Event_Start_Date),
+          Event_Start_Time: combineDateAndTime(
+            result1?.Event_Start_Date,
+            result1?.Event_Start_Time
+          ),
+          Event_End_Date: dayjs(result1?.Event_End_Date),
+          Event_End_Time: combineDateAndTime(
+            result1?.Event_End_Date,
+            result1?.Event_End_Time
+          ),
+          Event_Prize: JSON.parse(result1?.Event_Prize)?.map((prize) => {
+            return {
+              ...prize,
+              Gender: genderDropdown?.filter(
+                (g) => g.value === prize.Gender
+              )[0],
+            };
+          }),
+          ImagePath: result1?.Image_Path,
+          Image_Name: result1?.Image_Name,
+        });
+
+        // setAccordionOpen(true);
+        // scrollToAccordion();
+        setIsOneAccordionOpen(eventCategoryId);
+        setTimeout(() => {
+          window.scrollBy(-500, -500);
+          // window.scrollBy({
+          //   top: -50, // Negative value to scroll up by 50px
+          //   behavior: "smooth", // Optional: for smooth scrolling effect
+          // });
+        }, 1000);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handlePrizeDelete = (prize, index, remove) => {
     Swal.fire({
       title: "Are you sure?",
       // text: "You won't be able to revert this!",
@@ -534,26 +617,90 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
       }
     });
   };
-  const combineDateAndTime = (dateString, timeString) => {
-    if (!dateString || !timeString) return null; // Return null if either value is missing
-
-    const date = dayjs(dateString); // Parse the date
-    const [hours, minutes, seconds = 0] = timeString.split(":").map(Number); // Split time into components, default seconds to 0
-
-    return date
-      .set("hour", hours)
-      .set("minute", minutes)
-      .set("second", seconds); // Combine date and time
-  };
   const handleCancelClick = (event) => {
     event.stopPropagation(); // Prevent accordion from toggling
-    setAccordionOpen(false); // Close the accordion
+    if (category.isNew) {
+      setAccordionOpen(false);
+    } else {
+      setIsEditing(false);
+      setIsOneAccordionOpen("");
+    }
     setFormValues(initialValues);
   };
-  const handleDeleteClick = (event) => {
+  const handleDeleteClick = (event, eventCategoryId = "") => {
     event.stopPropagation(); // Prevent accordion from toggling
     // Perform delete action
+    Swal.fire({
+      title: "Are you sure?",
+      // text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      preConfirm: async () => {
+        // Show loading on the "Yes, delete it!" button
+        Swal.showLoading();
+
+        if (category.isNew) {
+          handleNewItemDelete(id);
+          return true;
+        }
+
+        const reqdata = {
+          Method_Name: "Delete",
+          Event_Id: decryptData(event_id),
+          Session_User_Id: user?.User_Id,
+          Session_User_Name: user?.User_Display_Name,
+          Session_Organzier_Id: user?.Organizer_Id,
+          Org_Id: user?.Org_Id,
+          EventCategoryEntry_Id: eventCategoryId,
+        };
+
+        try {
+          // Make the API call
+          const result = await RestfulApiService(
+            reqdata,
+            "organizer/addupdatecategory"
+          );
+
+          if (result) {
+            // Assuming the API response includes a 'success' field
+            // Return true if the API call is successful
+            return true;
+          } else {
+            // If the API response indicates failure, show a validation message
+            Swal.showValidationMessage("Failed to delete the review.");
+            return false;
+          }
+        } catch (error) {
+          // If an error occurs, show an error message
+          Swal.showValidationMessage("Request failed: " + error);
+          return false;
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show the success message after the deletion is confirmed
+        Swal.fire({
+          title: "Deleted!",
+          text: "Category has been deleted.",
+          icon: "success",
+        });
+        LoadCategory();
+        // if (category.isNew) {
+        //   return;
+        // }
+      }
+    });
   };
+  useEffect(() => {
+    if (category.isNew) {
+      console.log(category);
+      setAccordionOpen(true);
+      // scrollToAccordion();
+    }
+  }, [category]);
 
   return (
     <Accordion
@@ -565,8 +712,14 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
         },
         boxShadow: "none", // Remove default box shadow
       }}
-      expanded={isAccordionOpen}
-      onChange={() => setAccordionOpen(!isAccordionOpen)}
+      // expanded={isAccordionOpen}
+      expanded={
+        category.isNew
+          ? isAccordionOpen
+          : isOneAccordionOpen === category?.EventCategoryEntry_Id
+      }
+      // onChange={() => setAccordionOpen(!isAccordionOpen)}
+      // onChange={() => setAccordionOpen(!isAccordionOpen)}
     >
       <AccordionSummary
         style={{
@@ -577,80 +730,156 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
         }}
         expandIcon={
           <div style={{ display: "flex", gap: "8px" }}>
-            {isAccordionOpen ? (
-              <IconButton
-                size="small"
-                style={{
-                  backgroundColor: "#949494",
-                  padding: "4px",
-                  borderRadius: 0,
-                  pointerEvents: "auto",
-                  "&:hover": {
-                    backgroundColor: "#f05736",
-                  },
-                }}
-                onClick={handleCancelClick}
-              >
-                <ClearOutlinedIcon
-                  fontSize="inherit"
-                  style={{
-                    color: "#fff",
-                  }}
-                />
-              </IconButton>
-            ) : (
-              <IconButton
-                size="small"
-                sx={{
-                  backgroundColor: "#949494",
-                  padding: "4px",
-                  borderRadius: 0,
-                  pointerEvents: "auto",
-                  "&:hover": {
-                    backgroundColor: "#f05736",
-                  },
-                }}
-                // onClick={handleEditClick}
-                // disabled={loading}
-                onClick={(e) => {
-                  handleEditClick(e, category?.EventCategoryEntry_Id);
-                }}
-              >
-                {loading ? (
-                  <CircularProgress
-                    style={{ color: "#fff", height: "1em", width: "1em" }}
-                  />
+            {category?.isNew ? (
+              <>
+                {" "}
+                {isAccordionOpen ? (
+                  <IconButton
+                    size="small"
+                    style={{
+                      backgroundColor: "#949494",
+                      padding: "4px",
+                      borderRadius: 0,
+                      pointerEvents: "auto",
+                      "&:hover": {
+                        backgroundColor: "#f05736",
+                      },
+                    }}
+                    onClick={handleCancelClick}
+                  >
+                    <ClearOutlinedIcon
+                      fontSize="inherit"
+                      style={{
+                        color: "#fff",
+                      }}
+                    />
+                  </IconButton>
                 ) : (
-                  <EditOutlinedIcon
+                  <IconButton
+                    size="small"
+                    sx={{
+                      backgroundColor: "#949494",
+                      padding: "4px",
+                      borderRadius: 0,
+                      pointerEvents: "auto",
+                      "&:hover": {
+                        backgroundColor: "#f05736",
+                      },
+                    }}
+                    onClick={(e) => {
+                      handleEditClick(e, "");
+                    }}
+                  >
+                    <AddOutlinedIcon
+                      fontSize="inherit"
+                      style={{
+                        color: "#fff",
+                      }}
+                    />
+                  </IconButton>
+                )}
+                <IconButton
+                  size="small"
+                  sx={{
+                    backgroundColor: "#949494",
+                    padding: "4px",
+                    borderRadius: 0,
+                    pointerEvents: "auto",
+                    cursor: "pointer",
+                    "&:hover": {
+                      backgroundColor: "#f05736",
+                    },
+                  }}
+                  onClick={(e) => handleDeleteClick(e, "")}
+                >
+                  <DeleteOutlinedIcon
                     fontSize="inherit"
                     style={{
                       color: "#fff",
                     }}
                   />
+                </IconButton>
+              </>
+            ) : (
+              <>
+                {isOneAccordionOpen === category.EventCategoryEntry_Id ? (
+                  <IconButton
+                    size="small"
+                    style={{
+                      backgroundColor: "#949494",
+                      padding: "4px",
+                      borderRadius: 0,
+                      pointerEvents: "auto",
+                      "&:hover": {
+                        backgroundColor: "#f05736",
+                      },
+                    }}
+                    onClick={handleCancelClick}
+                  >
+                    <ClearOutlinedIcon
+                      fontSize="inherit"
+                      style={{
+                        color: "#fff",
+                      }}
+                    />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    size="small"
+                    sx={{
+                      backgroundColor: "#949494",
+                      padding: "4px",
+                      borderRadius: 0,
+                      pointerEvents: "auto",
+                      "&:hover": {
+                        backgroundColor: "#f05736",
+                      },
+                    }}
+                    // onClick={handleEditClick}
+                    // disabled={loading}
+                    onClick={(e) => {
+                      handleEditClick(e, category?.EventCategoryEntry_Id);
+                    }}
+                  >
+                    {loading ? (
+                      <CircularProgress
+                        style={{ color: "#fff", height: "1em", width: "1em" }}
+                      />
+                    ) : (
+                      <EditOutlinedIcon
+                        fontSize="inherit"
+                        style={{
+                          color: "#fff",
+                        }}
+                      />
+                    )}
+                  </IconButton>
                 )}
-              </IconButton>
+                <IconButton
+                  size="small"
+                  sx={{
+                    backgroundColor: "#949494",
+                    padding: "4px",
+                    borderRadius: 0,
+                    pointerEvents: "auto",
+                    cursor: "pointer",
+                    "&:hover": {
+                      backgroundColor: "#f05736",
+                    },
+                  }}
+                  onClick={(e) =>
+                    handleDeleteClick(e, category?.EventCategoryEntry_Id)
+                  }
+                >
+                  <DeleteOutlinedIcon
+                    fontSize="inherit"
+                    style={{
+                      color: "#fff",
+                    }}
+                  />
+                </IconButton>
+              </>
             )}
-            <IconButton
-              size="small"
-              sx={{
-                backgroundColor: "#949494",
-                padding: "4px",
-                borderRadius: 0,
-                pointerEvents: "auto",
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "#f05736",
-                },
-              }}
-              onClick={handleDeleteClick}
-            >
-              <DeleteOutlinedIcon
-                fontSize="inherit"
-                style={{
-                  color: "#fff",
-                }}
-              />
-            </IconButton>
           </div>
         }
         IconButtonProps={{
@@ -660,9 +889,9 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
         id="panel1-header"
       >
         <div className="text-14 fw-500">
-          {eventCategoryName
-            ? eventCategoryName
-            : category?.EventCategory_Display_Name}
+          {category?.EventCategory_Display_Name
+            ? category?.EventCategory_Display_Name
+            : ""}
         </div>
       </AccordionSummary>
       <AccordionDetails>
@@ -674,18 +903,31 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
             submitCategoryForm(values);
           }}
         >
-          {({ values, setFieldValue, handleChange }) => (
+          {({ values, setFieldValue, setFieldTouched, handleChange }) => (
             <Form>
               <div className="row y-gap-30 py-20">
                 <div className="col-12 d-flex justify-center">
                   <button
                     onClick={(e) => {
                       e.preventDefault();
+                      setIsEditing(!isEditing);
+                      if (isEditing) {
+                        handleEditClick(e, values?.EventCategoryEntry_Id);
+                      }
                     }}
                     className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
                   >
-                    <i className="far fa-edit text-16"></i>
-                    Edit Ticket
+                    {isEditing ? (
+                      <>
+                        <i className="fas fa-times text-16"></i>
+                        Cancel
+                      </>
+                    ) : (
+                      <>
+                        <i className="far fa-edit text-16"></i>
+                        {category.isNew ? "Add" : "Edit"} Ticket
+                      </>
+                    )}
                   </button>
                 </div>
                 <div class="col-lg-6 col-md-6">
@@ -695,6 +937,8 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     </label>
                     <div class="form-control">
                       <Field
+                        ref={accordionRef}
+                        disabled={!isEditing}
                         type="text"
                         className="form-control"
                         placeholder="Add your category name"
@@ -733,6 +977,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                       Race Distance <sup className="asc">*</sup>
                     </label>
                     <Select
+                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={raceDistanceCategory}
@@ -760,7 +1005,10 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     </label>
                     <div class="form-control">
                       <Field
-                        disabled={values.EventCategory_Id?.value !== "C007003"}
+                        disabled={
+                          values.EventCategory_Id?.value !== "C007003" ||
+                          !isEditing
+                        }
                         type="text"
                         className="form-control"
                         placeholder="Enter Distance"
@@ -781,7 +1029,10 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                       Race Distance Unit
                     </label>
                     <Select
-                      isDisabled={values.EventCategory_Id?.value !== "C007003"}
+                      isDisabled={
+                        values.EventCategory_Id?.value !== "C007003" ||
+                        !isEditing
+                      }
                       isSearchable={false}
                       placeholder="Select Unit"
                       styles={
@@ -809,6 +1060,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                       Race Distance
                     </label>
                     <Select
+                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={timedEventDropdown}
@@ -823,6 +1075,68 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                   </div>
                 </div>
 
+                <div className="col-lg-3">
+                  <div className="single-field y-gap-20">
+                    <label className="text-13 fw-500">Cut off time</label>
+                    <div class="form-control">
+                      <Field
+                        disabled={!isEditing}
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter Time"
+                        name="Time_Limit"
+                        // onChange={(e) => {
+                        //   e.preventDefault();
+                        //   const { value } = e.target;
+
+                        //   // const regex = /^\d+$/;
+                        //   const regex = /^\S*$/;
+
+                        //   if (
+                        //     !value ||
+                        //     (regex.test(value.toString()) &&
+                        //       value.length <= 100)
+                        //   ) {
+                        //     setFieldValue("Time_Limit", value);
+                        //   } else {
+                        //     return;
+                        //   }
+                        // }}
+                      />
+                    </div>
+                    <ErrorMessage
+                      name="Time_Limit"
+                      component="div"
+                      className="text-error-2 text-13"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-lg-3">
+                  <div className="y-gap-10">
+                    <label className="text-13 text-white fw-500">
+                      Cut off time
+                    </label>
+                    <Select
+                      isDisabled={!isEditing}
+                      isSearchable={false}
+                      styles={selectCustomStyle}
+                      options={timedLimitDropdown}
+                      value={values.Time_Limit_Unit}
+                      onChange={(value) =>
+                        setFieldValue("Time_Limit_Unit", value)
+                      }
+                    />
+                    <ErrorMessage
+                      name="Time_Limit_Unit"
+                      component="div"
+                      className="text-error-2 text-13"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-6"></div>
+
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
@@ -831,6 +1145,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
+                          disabled={!isEditing}
                           className="form-control"
                           name="Event_Start_Date"
                           format="DD/MM/YYYY"
@@ -883,6 +1198,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <TimePicker
+                          disabled={!isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Event_Start_Time}
@@ -934,6 +1250,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
+                          disabled={!isEditing}
                           className="form-control"
                           name="Event_End_Date"
                           format="DD/MM/YYYY"
@@ -986,6 +1303,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <TimePicker
+                          disabled={!isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Event_End_Time}
@@ -1037,6 +1355,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     </label>
                     <div class="form-control">
                       <Field
+                        disabled={!isEditing}
                         type="number"
                         className="form-control"
                         placeholder="Max Number you want to sell"
@@ -1073,6 +1392,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     </label>
                     <div class="form-control">
                       <Field
+                        disabled={!isEditing}
                         type="number"
                         className="form-control"
                         placeholder="5656"
@@ -1095,6 +1415,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     </label>
                     <div class="form-control">
                       <Field
+                        disabled={!isEditing}
                         type="number"
                         className="form-control"
                         placeholder="Min Age"
@@ -1116,6 +1437,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     </label>
                     <div class="form-control">
                       <Field
+                        disabled={!isEditing}
                         type="number"
                         className="form-control"
                         placeholder="Max Age"
@@ -1153,6 +1475,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                               <div className="form-radio d-flex items-center">
                                 <div className="radio">
                                   <Field
+                                    disabled={!isEditing}
                                     type="radio"
                                     name="Is_PriceMoneyAwarded"
                                     value="Yes"
@@ -1161,6 +1484,10 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                         "Is_PriceMoneyAwarded",
                                         e.target.value
                                       );
+                                      // setFieldTouched(
+                                      //   "Is_PriceMoneyAwarded",
+                                      //   true
+                                      // );
                                       if (
                                         e.target.value === "Yes"
                                         //   &&
@@ -1187,6 +1514,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                               <div className="form-radio d-flex items-center">
                                 <div className="radio">
                                   <Field
+                                    disabled={!isEditing}
                                     type="radio"
                                     name="Is_PriceMoneyAwarded"
                                     value="No"
@@ -1195,6 +1523,10 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                         "Is_PriceMoneyAwarded",
                                         e.target.value
                                       );
+                                      // setFieldTouched(
+                                      //   "Is_PriceMoneyAwarded",
+                                      //   true
+                                      // );
                                       if (e.target.value === "No") {
                                         setFieldValue("Event_Prize", []);
                                         // replace([]); // Replace the Event_Prize array with an empty array
@@ -1232,6 +1564,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                                 <sup className="asc">*</sup>
                                               </label>
                                               <Select
+                                                isDisabled={!isEditing}
                                                 isSearchable={false}
                                                 styles={selectCustomStyle}
                                                 options={genderDropdown}
@@ -1258,6 +1591,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                               </label>
                                               <div class="form-control">
                                                 <Field
+                                                  disabled={!isEditing}
                                                   type="text"
                                                   name={`Event_Prize.${index}.Min_Age`}
                                                   placeholder="Min Age"
@@ -1279,6 +1613,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                               </label>
                                               <div class="form-control">
                                                 <Field
+                                                  disabled={!isEditing}
                                                   type="text"
                                                   name={`Event_Prize.${index}.Max_Age`}
                                                   placeholder="Max Age"
@@ -1300,6 +1635,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                               </label>
                                               <div class="form-control">
                                                 <Field
+                                                  disabled={!isEditing}
                                                   type="text"
                                                   name={`Event_Prize.${index}.First_Prize`}
                                                   placeholder="Winner"
@@ -1320,6 +1656,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                               </label>
                                               <div class="form-control">
                                                 <Field
+                                                  disabled={!isEditing}
                                                   type="text"
                                                   name={`Event_Prize.${index}.Second_Prize`}
                                                   placeholder="1st Runner Up"
@@ -1340,6 +1677,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                               </label>
                                               <div class="form-control">
                                                 <Field
+                                                  disabled={!isEditing}
                                                   type="text"
                                                   name={`Event_Prize.${index}.Third_Prize`}
                                                   placeholder="3rd Runner Up"
@@ -1364,12 +1702,15 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                         <button
                                           onClick={(e) => {
                                             e.preventDefault();
+                                            if (!isEditing) {
+                                              return;
+                                            }
                                             if (
                                               prize.EventPrizeEntry_Id === "New"
                                             ) {
                                               remove(index);
                                             } else {
-                                              handleDelete(
+                                              handlePrizeDelete(
                                                 prize,
                                                 index,
                                                 remove
@@ -1400,6 +1741,9 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                 <button
                                   onClick={(e) => {
                                     e.preventDefault();
+                                    if (!isEditing) {
+                                      return;
+                                    }
                                     push({
                                       Gender: null,
                                       Max_Age: "",
@@ -1442,7 +1786,9 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                       <div
                         onClick={(e) => {
                           e.preventDefault();
+                          if (!isEditing) return;
                           setFieldValue("Is_Paid_Event", "Paid");
+                          // setFieldTouched("Is_Paid_Event", true);
                         }}
                         className={`button w-150 rounded-24 py-12 px-15 border-primary-bold cursor-pointer fw-500 text-16 d-flex gap-10${
                           values.Is_Paid_Event === "Paid"
@@ -1455,7 +1801,9 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                       <div
                         onClick={(e) => {
                           e.preventDefault();
+                          if (!isEditing) return;
                           setFieldValue("Is_Paid_Event", "Free");
+                          // setFieldTouched("Is_Paid_Event", true);
                         }}
                         className={`button w-150 rounded-24 py-12 px-15 border-primary-bold cursor-pointer fw-500 text-16 d-flex gap-10${
                           values.Is_Paid_Event === "Free"
@@ -1487,6 +1835,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                           <div className="col-3">
                             <Select
                               placeholder="INR"
+                              isDisabled={!isEditing}
                               isSearchable={false}
                               styles={selectCustomStyle}
                               options={[]}
@@ -1500,6 +1849,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                             <div class="single-field">
                               <div class="form-control mb-10">
                                 <Field
+                                  disabled={!isEditing}
                                   type="number"
                                   className="form-control"
                                   placeholder="Add Price"
@@ -1530,6 +1880,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
+                          disabled={!isEditing}
                           className="form-control"
                           name="Ticket_Sale_Start_Date"
                           format="DD/MM/YYYY"
@@ -1585,6 +1936,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <TimePicker
+                          disabled={!isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Ticket_Sale_Start_Time}
@@ -1639,6 +1991,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
+                          disabled={!isEditing}
                           className="form-control"
                           name="Ticket_Sale_End_Date"
                           format="DD/MM/YYYY"
@@ -1695,6 +2048,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <TimePicker
+                          disabled={!isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Ticket_Sale_End_Time}
@@ -1784,6 +2138,7 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                           accept="image/*"
                           disabled={uploadingRoute}
                           onChange={async (event) => {
+                            if (!isEditing) return;
                             const file = event.currentTarget.files[0];
 
                             // Check if the file size is above 2MB (2 * 1024 * 1024 bytes)
@@ -1812,10 +2167,12 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                                         "Image_Name",
                                         result?.data?.Result
                                       );
+                                      // setFieldTouched("Image_Name", true);
                                       setFieldValue(
                                         "ImagePath",
                                         result?.data?.Description
                                       );
+                                      // setFieldTouched("ImagePath", true);
                                     }
                                     return "Uploaded successfully!";
                                   },
@@ -1847,21 +2204,23 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                   </div>
                 </div>
 
-                <div className="col-12">
-                  <div className="col-auto relative">
-                    <button
-                      disabled={submitForm}
-                      type="submit"
-                      className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                    >
-                      {!submitForm ? (
-                        `Save`
-                      ) : (
-                        <span className="btn-spinner"></span>
-                      )}
-                    </button>
+                {isEditing && (
+                  <div className="col-12">
+                    <div className="col-auto relative">
+                      <button
+                        disabled={submitForm}
+                        type="submit"
+                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                      >
+                        {!submitForm ? (
+                          `Save`
+                        ) : (
+                          <span className="btn-spinner"></span>
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </Form>
           )}

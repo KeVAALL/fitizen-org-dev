@@ -1548,13 +1548,13 @@ function EventParticipants() {
                                 </div>
                               </Stack>
 
-                              <button
+                              {/* <button
                                 style={{ marginTop: "16px" }}
                                 className="button w-220 h-50 rounded-24 py-4 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25"
                               >
                                 Download File
                                 <i className="fas fa-download text-14"></i>
-                              </button>
+                              </button> */}
                             </Stack>
                           </div>
                         </form>

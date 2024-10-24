@@ -21,9 +21,24 @@ function EventTicket() {
     (state) => state.category.categorySelected
   );
   const [fetchingCategory, setFetchingCategory] = useState(false);
+  const [isOneAccordionOpen, setIsOneAccordionOpen] = useState("");
   const [allCategory, setAllCategory] = useState([]);
   const [raceDistanceCategory, setRaceDistanceCategory] = useState([]);
 
+  const handleNewItemDelete = (id) => {
+    const updatedForms = allCategory.filter((form, catId) => catId !== id);
+    setAllCategory(updatedForms);
+  };
+  const handleNewItemSubmit = (id) => {
+    const updatedForms = allCategory.map((form, catId) => {
+      if (catId === id) {
+        return { ...form, isNew: false };
+      } else {
+        return form;
+      }
+    });
+    setAllCategory(updatedForms);
+  };
   async function LoadCategory() {
     const reqdata = {
       Method_Name: "Get_Category",
@@ -41,14 +56,13 @@ function EventTicket() {
         "organizer/geteventcategory"
       );
       if (result) {
-        console.log(result?.data?.Result?.Table1);
-
         const result1 = result?.data?.Result?.Table1?.map((category) => {
           return {
             ...category,
-            isOpen: false,
-            isFetching: false,
-            isEditing: false,
+            isNew: false,
+            // isOpen: false,
+            // isFetching: false,
+            // isEditing: false,
           };
         });
         console.log(result1);
@@ -71,8 +85,6 @@ function EventTicket() {
       };
       const response = await RestfulApiService(reqdata, "master/Getdropdown");
 
-      console.log(response.data.Result.Table1);
-
       setRaceDistanceCategory(response.data.Result.Table1);
     } catch (error) {
       return [];
@@ -94,15 +106,72 @@ function EventTicket() {
         <Loader fetching={fetchingCategory} />
       ) : (
         <Stack spacing={4}>
-          {allCategory?.map((category) => {
+          {allCategory?.map((category, id) => {
             return (
               <CustomAccordion
+                id={id}
                 category={category}
+                LoadCategory={LoadCategory}
                 raceDistanceCategory={raceDistanceCategory}
+                isOneAccordionOpen={isOneAccordionOpen}
+                setIsOneAccordionOpen={setIsOneAccordionOpen}
+                handleNewItemDelete={handleNewItemDelete}
+                handleNewItemSubmit={handleNewItemSubmit}
               />
             );
           })}
         </Stack>
+      )}
+
+      {!allCategory.some((item) => item.isNew) && (
+        <div className="mt-30 w-full d-flex justify-center">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+
+              // if (allCategory.some(item => item.isNew)) {
+              //   toast.error("Please complete and submit before proceeding.")
+              // }
+
+              setAllCategory([
+                ...allCategory,
+                {
+                  EventCategory_Name: "",
+                  EventCategory_Id: null,
+                  Race_Distance: "",
+                  Race_Distance_Unit: "",
+                  Timed_Event: null,
+                  Time_Limit: "",
+                  Time_Limit_Unit: null,
+                  Ticket_Sale_Start_Date: null,
+                  Ticket_Sale_Start_Time: null,
+                  Ticket_Sale_End_Date: null,
+                  Ticket_Sale_End_Time: null,
+                  Is_PriceMoneyAwarded: "", // Assuming 0 for boolean fields
+                  Eligibility_Criteria_MinYear: "",
+                  Eligibility_Criteria_MaxYear: "",
+                  Is_Paid_Event: "", // Assuming 0 for boolean fields
+                  Number_Of_Tickets: "",
+                  BIB_Number: "",
+                  Event_Price: 0,
+                  Event_Start_Date: null,
+                  Event_Start_Time: null,
+                  Event_End_Date: null,
+                  Event_End_Time: null,
+                  Event_Prize: [],
+                  Image_Name: "",
+                  // isOpen: false,
+                  // isFetching: false,
+                  // isEditing: false,
+                  isNew: true,
+                },
+              ]);
+            }}
+            className="button w-200 border-dark-1 rounded-22 px-20 py-10 text-dark-1 text-12 -primary-1"
+          >
+            Add Ticket <span className="text-16 ml-5">+</span>
+          </button>
+        </div>
       )}
     </div>
   );

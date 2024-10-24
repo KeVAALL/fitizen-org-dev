@@ -344,7 +344,7 @@ function EventParticipant() {
       style={{ boxShadow: "2px 2px 7.5px 0px #0000000D" }}
     >
       <div className="row y-gap-30 py-20">
-        <div className="col-12 d-flex justify-center">
+        {/* <div className="col-12 d-flex justify-center">
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -354,7 +354,7 @@ function EventParticipant() {
             <i className="far fa-edit text-16"></i>
             Edit Participant Form
           </button>
-        </div>
+        </div> */}
         <div className="col-12">
           <Stack spacing={3}>
             <Accordion

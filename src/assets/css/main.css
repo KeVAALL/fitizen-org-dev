@@ -13899,6 +13899,9 @@ input:-webkit-autofill::first-line {
 .ql-editor {
   height: 100%;
 }
+.ql-disabled {
+  background-color: #3353d10d;
+}
 .int-checkbox .MuiSvgIcon-root {
   font-size: 1.2rem !important;
 }
