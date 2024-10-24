@@ -1,14 +1,19 @@
+// React imports
 import React, { createRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RestfulApiService } from "../../../config/service";
-import { decryptData } from "../../../utils/DataEncryption";
-import toast from "react-hot-toast";
+
+// Third-party imports
+import * as Yup from "yup";
+import { ErrorMessage, Form, Formik } from "formik";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { Modal } from "@mui/material";
-import * as Yup from "yup";
-import { ErrorMessage, Form, Formik } from "formik";
+import toast from "react-hot-toast";
+
+// Project-specific imports
+import { RestfulApiService } from "../../../config/service";
+import { decryptData } from "../../../utils/DataEncryption";
 import Loader from "../../../utils/BackdropLoader";
 import { MEDIA_URL } from "../../../config/url";
 
@@ -234,12 +239,12 @@ function EventBanner() {
                     >
                       <div className="d-flex flex-column items-end mb-10">
                         <button
-                          class="pointer"
+                          className="pointer"
                           onClick={() => {
                             setOpenCropper(false);
                           }}
                         >
-                          <i class="far fa-times-circle text-primary text-25"></i>
+                          <i className="far fa-times-circle text-primary text-25"></i>
                         </button>
                       </div>
                       <div
@@ -258,8 +263,6 @@ function EventBanner() {
                           zoomTo={0.5}
                           // initialAspectRatio={1} // Set the initial aspect ratio to 2:1
                           // aspectRatio={1} // Maintain the aspect ratio of 2:1
-                          // minCropBoxWidth={800}
-                          // minCropBoxHeight={50}
                           initialAspectRatio={16 / 9} // Set the initial aspect ratio to 16:9
                           aspectRatio={16 / 9} // Maintain a landscape aspect ratio of 16:9
                           minCropBoxWidth={400} // Set to a reasonable width for landscape images
@@ -289,13 +292,13 @@ function EventBanner() {
                               onClick={zoomIn}
                               className="button h-30 w-30 px-5 text-black bg-white -grey-1 rounded-8"
                             >
-                              <i class="fas fa-search-plus text-primary text-14"></i>
+                              <i className="fas fa-search-plus text-primary text-14"></i>
                             </button>
                             <button
                               onClick={zoomOut}
                               className="button h-30 w-30 px-5 text-black bg-white -grey-1 rounded-8"
                             >
-                              <i class="fas fa-search-minus text-primary text-14"></i>
+                              <i className="fas fa-search-minus text-primary text-14"></i>
                             </button>
                           </div>
                         </div>
@@ -310,7 +313,9 @@ function EventBanner() {
                           className="button h-50 px-30 text-white bg-primary -grey-1 rounded-16 load-button relative w-200 mt-20"
                         >
                           {!uploadingImage && "Crop & Upload"}
-                          {uploadingImage && <span class="btn-spinner"></span>}
+                          {uploadingImage && (
+                            <span className="btn-spinner"></span>
+                          )}
                         </button>
                       </div>
                     </div>
@@ -323,12 +328,14 @@ function EventBanner() {
                       }`}
                     >
                       {values.Image_Name ? (
-                        <img
-                          className="w-full"
-                          style={{ borderRadius: "25px", height: "450px" }}
-                          src={`${MEDIA_URL}/${values.Image_Path}`}
-                          alt="banner"
-                        />
+                        <div className="d-flex flex-column gap-10">
+                          <img
+                            className="w-full"
+                            style={{ borderRadius: "25px", height: "450px" }}
+                            src={`${MEDIA_URL}/${values.Image_Path}`}
+                            alt="banner"
+                          />
+                        </div>
                       ) : (
                         <div className="file-upload-banner">
                           <p className="text-14 text-reading fw-600">
@@ -351,32 +358,32 @@ function EventBanner() {
                     </div>
                   </div>
 
-                  {/* <div className="col-5">
-          <div className="banner-parent w-full">
-            <div className="file-upload-banner">
-              <p className="text-14 text-reading fw-600">
-                Thumbnail Image : (Size 1920X1080)
-              </p>
-              <i className="fas fa-upload text-80 text-primary mt-30"></i>
-              <p className="text-16 text-reading fw-600 mt-20">
-                Click box to upload
-              </p>
-              <p className="text-14 text-reading fw-500">
-                JPEG or PNGS smaller than 10mb
-              </p>
-              <input type="file" />
-            </div>
-          </div>
-        </div> */}
+                  {values.Image_Name && (
+                    <div className="col-12">
+                      <div className="parent">
+                        <div className="file-upload-ticket">
+                          <i className="fas fa-upload text-20 text-primary"></i>
+
+                          <p className="text-reading mt-0">Upload New Banner</p>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            // disabled={uploadingRoute}
+                            onChange={handleFileChange}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="col-md-4">
                     <div className="single-field y-gap-20">
                       <label className="text-13 fw-600">Event Banner</label>
-                      <div class="form-control">
+                      <div className="form-control">
                         <input
                           disabled
                           type="text"
-                          class="form-control"
+                          className="form-control"
                           value={values.Image_Name}
                           placeholder="Event Banner"
                           name="Image_Name"
@@ -416,3 +423,21 @@ function EventBanner() {
 }
 
 export default EventBanner;
+
+/* <div className="col-5">
+          <div className="banner-parent w-full">
+            <div className="file-upload-banner">
+              <p className="text-14 text-reading fw-600">
+                Thumbnail Image : (Size 1920X1080)
+              </p>
+              <i className="fas fa-upload text-80 text-primary mt-30"></i>
+              <p className="text-16 text-reading fw-600 mt-20">
+                Click box to upload
+              </p>
+              <p className="text-14 text-reading fw-500">
+                JPEG or PNGS smaller than 10mb
+              </p>
+              <input type="file" />
+            </div>
+          </div>
+        </div> */

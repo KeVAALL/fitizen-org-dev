@@ -1,14 +1,18 @@
+// React imports
 import React, { useCallback, useEffect, useState } from "react";
-import Event5 from "../../../assets/img/events/event5.png";
+
+// Third-party imports
 import Select from "react-select";
-import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
-import { toUpper } from "lodash";
+import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+
+// Project imports
+import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
-import toast from "react-hot-toast";
 import EventTitle from "../EventTitle";
+
 const options = [
   { label: "Every Week", value: "W" },
   { label: "Every Month", value: "M" },

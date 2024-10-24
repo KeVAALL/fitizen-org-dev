@@ -1,10 +1,11 @@
 import React from "react";
 // React imports
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 // Third-party imports
+// React Router and Redux imports
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   useTable,
   usePagination,
@@ -13,24 +14,17 @@ import {
   useRowSelect,
   useSortBy,
 } from "react-table";
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Link,
-  Modal,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-} from "@mui/material";
 import Select from "react-select";
 import Swal from "sweetalert2";
+
+// MUI imports
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
 // Project imports
 import {
@@ -39,7 +33,6 @@ import {
   TablePagination,
   StyledDotedTableCell,
 } from "../../utils/ReactTable";
-
 import { decryptData } from "../../utils/DataEncryption";
 import { WhiteSingleTooltip } from "../../utils/Tooltip";
 import { RestfulApiService } from "../../config/service";
@@ -259,18 +252,11 @@ function Reviews() {
 
           return (
             <Stack direction="row" spacing={4}>
-              {/* {isDeleting ? (
-                <CircularProgress
-                  color="inherit"
-                  style={{ height: "12px", width: "12px" }}
-                />
-              ) : ( */}
               <WhiteSingleTooltip placement="top" title="Delete">
                 <i
                   className="fas fa-trash-alt text-18"
                   onClick={() => {
                     console.log(row?.original);
-                    // setReview(row?.original);
                     handleDelete(row?.original);
                   }}
                 ></i>

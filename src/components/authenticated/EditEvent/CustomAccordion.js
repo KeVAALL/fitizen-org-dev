@@ -699,6 +699,22 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                         className="form-control"
                         placeholder="Add your category name"
                         name="EventCategory_Name"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+
+                          const regex = /^[^\s].*$/;
+
+                          if (
+                            !value ||
+                            (regex.test(value.toString()) &&
+                              value.length <= 200)
+                          ) {
+                            setFieldValue("EventCategory_Name", value);
+                          } else {
+                            return;
+                          }
+                        }}
                       />
                     </div>
                     <ErrorMessage
@@ -1025,6 +1041,21 @@ const CustomAccordion = ({ category, raceDistanceCategory }) => {
                         className="form-control"
                         placeholder="Max Number you want to sell"
                         name="Number_Of_Tickets"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+                          if (e.key === "E" || e.key === "e") {
+                            return;
+                          }
+
+                          const regex = /^\d+$/;
+
+                          if (!value || regex.test(value.toString())) {
+                            setFieldValue("Number_Of_Tickets", value);
+                          } else {
+                            return;
+                          }
+                        }}
                       />
                     </div>
                     <ErrorMessage

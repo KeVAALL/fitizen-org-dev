@@ -1,20 +1,18 @@
+// React imports
 import React, { useEffect, useState } from "react";
-import { Autocomplete, Checkbox, Chip, TextField } from "@mui/material";
 
-import Select from "react-select";
-import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import * as Yup from "yup";
+// Third-party imports
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { decryptData } from "../../../utils/DataEncryption";
-import { RestfulApiService } from "../../../config/service";
-import { Backdrop, CircularProgress } from "@mui/material";
-import AsyncSelect from "react-select/async";
-import CreatableSelect from "react-select/creatable";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import * as Yup from "yup";
 import toast from "react-hot-toast";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+
+// Project imports
+import { decryptData } from "../../../utils/DataEncryption";
+import { RestfulApiService } from "../../../config/service";
 import Loader from "../../../utils/BackdropLoader";
 
 const initialFormValues = {

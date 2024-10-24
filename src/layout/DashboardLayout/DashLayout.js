@@ -1,28 +1,32 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
-import { AppBar, Toolbar, Box, Avatar } from "@mui/material";
-import { styled, useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { Menu, Sidebar } from "react-pro-sidebar";
-import { Outlet } from "react-router-dom";
+// React imports
+import React, { useState } from "react";
 
+// React Router imports
+import { useLocation, useNavigate, Outlet } from "react-router-dom";
+
+// MUI imports (separated)
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
+import useTheme from "@mui/material/styles/useTheme";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
+// Third-party imports
+import { Menu, Sidebar } from "react-pro-sidebar";
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
+
+// Asset imports
 import DarkLogo from "../../assets/img/general/logo-dark.png";
 import FavLogo from "../../assets/img/general/favicon.png";
-import Avatar3 from "../../assets/img/avatars/3.png";
 
+// Project-specific imports
 import "./DashboardLayout.css";
 import { HtmlLightTooltip } from "../../utils/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2";
 import { clearProfile } from "../../redux/slices/userSlice";
-import toast from "react-hot-toast";
 
 const Header = ({ open, handleDrawerToggle }) => {
   const user = useSelector((state) => state.user.userProfile);

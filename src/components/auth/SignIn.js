@@ -1,20 +1,25 @@
+// React imports
 import React, { useEffect, useState } from "react";
+
+// Asset imports
 import SignInBanner from "../../assets/img/masthead/h-banner.png";
 import DarkLogo from "../../assets/img/general/logo-dark.png";
 import Org1 from "../../assets/img/masthead/org-1.gif";
 import Org2 from "../../assets/img/masthead/org-2.gif";
 import Org3 from "../../assets/img/masthead/org-3.gif";
 
+// React Router imports
 import { useNavigate } from "react-router-dom";
 
+// Third-party imports
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import toast from "react-hot-toast";
-import { RestfulApiService } from "../../config/service";
 
-import "./auth.css";
+// Project-specific imports
+import { RestfulApiService } from "../../config/service";
 import OtpInput from "../../utils/OtpInput";
 import { useDispatch, useSelector } from "react-redux";
 import {

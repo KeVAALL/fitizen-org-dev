@@ -1,17 +1,25 @@
+// React imports
 import React, { useEffect, useState } from "react";
+
+// Third-party imports
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+// Project imports
 import Select from "react-select";
+import AsyncSelect from "react-select/async";
+import CreatableSelect from "react-select/creatable";
 import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { setSelectedCategory } from "../../../redux/slices/categorySlice";
 import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
-import { Backdrop, CircularProgress } from "@mui/material";
-import AsyncSelect from "react-select/async";
-import CreatableSelect from "react-select/creatable";
 import toast from "react-hot-toast";
+
+// MUI imports
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const initialFormValues = {
   Event_Name: "",
@@ -360,6 +368,22 @@ function EventDetails() {
                         className="form-control"
                         placeholder="Add event name"
                         name="Event_Name"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+
+                          const regex = /^[^\s].*$/;
+
+                          if (
+                            !value ||
+                            (regex.test(value.toString()) &&
+                              value.length <= 200)
+                          ) {
+                            setFieldValue("Event_Name", value);
+                          } else {
+                            return;
+                          }
+                        }}
                       />
                     </div>
                     <ErrorMessage
@@ -561,6 +585,22 @@ function EventDetails() {
                         className="form-control"
                         placeholder="State"
                         name="State"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+
+                          const regex = /^[^\s].*$/;
+
+                          if (
+                            !value ||
+                            (regex.test(value.toString()) &&
+                              value.length <= 100)
+                          ) {
+                            setFieldValue("State", value);
+                          } else {
+                            return;
+                          }
+                        }}
                       />
                     </div>
                     <ErrorMessage
@@ -582,6 +622,22 @@ function EventDetails() {
                         className="form-control"
                         placeholder="City"
                         name="City"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+
+                          const regex = /^[^\s].*$/;
+
+                          if (
+                            !value ||
+                            (regex.test(value.toString()) &&
+                              value.length <= 100)
+                          ) {
+                            setFieldValue("City", value);
+                          } else {
+                            return;
+                          }
+                        }}
                       />
                     </div>
                     <ErrorMessage
@@ -603,6 +659,22 @@ function EventDetails() {
                         className="form-control"
                         placeholder="Add full address"
                         name="Event_Venue"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+
+                          const regex = /^[^\s].*$/;
+
+                          if (
+                            !value ||
+                            (regex.test(value.toString()) &&
+                              value.length <= 500)
+                          ) {
+                            setFieldValue("Event_Venue", value);
+                          } else {
+                            return;
+                          }
+                        }}
                       />
                     </div>
                     <ErrorMessage

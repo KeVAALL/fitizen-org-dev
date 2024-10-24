@@ -1,28 +1,14 @@
+// React imports
 import React, { useEffect, useState } from "react";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Autocomplete,
-  Checkbox,
-  Chip,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import {
-  DesktopDatePicker,
-  LocalizationProvider,
-  TimePicker,
-} from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import Select from "react-select";
-import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
+
+// Third-party imports
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+
+// MUI imports
+import Stack from "@mui/material/Stack";
+
+// Project imports
 import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
 import Loader from "../../../utils/BackdropLoader";

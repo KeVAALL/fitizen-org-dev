@@ -1,16 +1,24 @@
+// React imports
 import React, { useEffect, useState } from "react";
 
-import Event5 from "../../assets/img/events/event5.png";
-import { RestfulApiService } from "../../config/service";
+// Third-party imports
+// React Router and Redux imports
 import { useParams } from "react-router-dom";
-import { decryptData } from "../../utils/DataEncryption";
 import { useSelector } from "react-redux";
-import { Backdrop, Box, CircularProgress, Modal, Stack } from "@mui/material";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import Select from "react-select";
 import * as Yup from "yup";
-import { selectCustomStyle } from "../../utils/ReactSelectStyles";
+import Select from "react-select";
 import toast from "react-hot-toast";
+
+// MUI imports
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Stack from "@mui/material/Stack";
+
+// Project imports
+import { RestfulApiService } from "../../config/service";
+import { decryptData } from "../../utils/DataEncryption";
+import { selectCustomStyle } from "../../utils/ReactSelectStyles";
 import EventTitle from "./EventTitle";
 import Loader from "../../utils/BackdropLoader";
 

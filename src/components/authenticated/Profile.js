@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 import UploadIcon from "../../assets/img/icons/upload.png";
-// facebook instagram linkedin youtube twitter/
 import FaceBookIcon from "../../assets/img/icons/facebook.png";
 import InstagramIcon from "../../assets/img/icons/instagram.png";
 import LinkedinIcon from "../../assets/img/icons/linkedin.png";

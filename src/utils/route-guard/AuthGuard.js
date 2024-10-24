@@ -1,8 +1,17 @@
+// Third-party imports
 import PropTypes from "prop-types";
+
+// React imports
 import { useEffect, useState } from "react";
+
+// React Router imports
 import { useNavigate } from "react-router-dom";
+
+// Redux imports
 import { useSelector, useDispatch } from "react-redux";
 import { clearProfile } from "../../redux/slices/userSlice";
+
+// Project-specific imports
 import { verifyToken } from "../UtilityFunctions";
 
 // ==============================|| AUTH GUARD ||============================== //

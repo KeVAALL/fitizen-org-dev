@@ -1,7 +1,5 @@
 // React imports
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 // Third-party imports
 import {
@@ -12,16 +10,19 @@ import {
   useRowSelect,
   useSortBy,
 } from "react-table";
-import {
-  Box,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@mui/material";
 import Select from "react-select";
+import dayjs from "dayjs";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+// MUI imports
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
 // Project imports
 import {
@@ -34,10 +35,8 @@ import { RestfulApiService } from "../../../config/service";
 import { decryptData } from "../../../utils/DataEncryption";
 import { customRoundedStyles } from "../../../utils/ReactSelectStyles";
 import PaymentHistoryInvoice from "./PaymentHistoryInvoice";
-import { inrCurrency } from "../../../utils/UtilityFunctions";
-import { downloadExcel } from "../../../utils/UtilityFunctions";
+import { inrCurrency, downloadExcel } from "../../../utils/UtilityFunctions";
 import TableLoader from "../TableLoader";
-import dayjs from "dayjs";
 
 function PaymentHistory({ setShowPaymentHistory }) {
   const user = useSelector((state) => state.user.userProfile);

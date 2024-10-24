@@ -1,7 +1,5 @@
 // React imports
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 // Third-party imports
 import {
@@ -12,16 +10,19 @@ import {
   useRowSelect,
   useSortBy,
 } from "react-table";
-import {
-  Box,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Select from "react-select";
+import dayjs from "dayjs";
+
+// MUI imports
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
 // Project imports
 import {
@@ -30,14 +31,11 @@ import {
   StyledTableCell,
   TablePagination,
 } from "../../../utils/ReactTable";
-
 import { RestfulApiService } from "../../../config/service";
 import { decryptData } from "../../../utils/DataEncryption";
 import { customRoundedStyles } from "../../../utils/ReactSelectStyles";
 import { inrCurrency } from "../../../utils/UtilityFunctions";
-import { downloadExcel } from "../../../utils/UtilityFunctions";
 import TableLoader from "../TableLoader";
-import dayjs from "dayjs";
 
 function MonthlyInvoice({ setShowMonthlyInvoice }) {
   const user = useSelector((state) => state.user.userProfile);
@@ -99,7 +97,7 @@ function MonthlyInvoice({ setShowMonthlyInvoice }) {
                 direction="row"
                 alignItems="center"
               >
-                <i className="fas fa-download"></i>
+                <i className="fas fa-download text-18"></i>
               </Stack>
             </Stack>
           );

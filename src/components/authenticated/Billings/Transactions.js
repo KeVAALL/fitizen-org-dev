@@ -1,7 +1,5 @@
 // React imports
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 // Third-party imports
 import {
@@ -12,50 +10,33 @@ import {
   useRowSelect,
   useSortBy,
 } from "react-table";
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Link,
-  Modal,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-} from "@mui/material";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Select from "react-select";
-import toast from "react-hot-toast";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import * as Yup from "yup";
+import dayjs from "dayjs";
+
+// MUI imports
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
 // Project imports
 import {
   DefaultColumnFilter,
   GlobalFilter,
   renderFilterTypes,
-  SelectColumnFilter,
   StyledTableCell,
   TablePagination,
-  IndeterminateCheckbox,
 } from "../../../utils/ReactTable";
-import { WhiteSingleTooltip, WhiteTooltip } from "../../../utils/Tooltip";
-import {
-  RestfulApiServiceDownload,
-  RestfulApiService,
-} from "../../../config/service";
+import { RestfulApiService } from "../../../config/service";
 import { decryptData } from "../../../utils/DataEncryption";
-import {
-  customRoundedStyles,
-  selectCustomStyle,
-} from "../../../utils/ReactSelectStyles";
-import TableLoader from "../TableLoader";
+import { customRoundedStyles } from "../../../utils/ReactSelectStyles";
 import { downloadExcel, inrCurrency } from "../../../utils/UtilityFunctions";
-import dayjs from "dayjs";
+import TableLoader from "../TableLoader";
 
 function Transactions({ setShowTransactions }) {
   const user = useSelector((state) => state.user.userProfile);

@@ -1,14 +1,24 @@
+// React imports
 import React, { useEffect, useState } from "react";
+
+// Redux imports
 import { useSelector } from "react-redux";
+
+// Project-specific imports
 import { RestfulApiService } from "../../config/service";
 import { MEDIA_URL } from "../../config/url";
-import { Backdrop, Box, CircularProgress, Modal, Stack } from "@mui/material";
-import toast from "react-hot-toast";
 import { encryptData } from "../../utils/DataEncryption";
-import * as Yup from "yup";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import { set } from "lodash";
 import Loader from "../../utils/BackdropLoader";
+
+// MUI imports (separated)
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Stack from "@mui/material/Stack";
+
+// Third-party imports
+import toast from "react-hot-toast";
+import * as Yup from "yup";
+import { ErrorMessage, Field, Formik } from "formik";
 
 function AllEvents() {
   const user = useSelector((state) => state.user.userProfile);
@@ -235,6 +245,7 @@ function AllEvents() {
                       errors,
                       touched,
                       validateForm,
+                      setFieldValue,
                       submitForm,
                     }) => (
                       <form onSubmit={handleSubmit}>
@@ -249,6 +260,22 @@ function AllEvents() {
                                   name="Event_Name"
                                   className="form-control"
                                   placeholder="Event Name"
+                                  onChange={(e) => {
+                                    e.preventDefault();
+                                    const { value } = e.target;
+
+                                    const regex = /^[^\s].*$/;
+
+                                    if (
+                                      !value ||
+                                      (regex.test(value.toString()) &&
+                                        value.length <= 200)
+                                    ) {
+                                      setFieldValue("Event_Name", value);
+                                    } else {
+                                      return;
+                                    }
+                                  }}
                                 />
                               </div>
                               <ErrorMessage

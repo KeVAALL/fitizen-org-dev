@@ -1,21 +1,29 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Checkbox,
-  CircularProgress,
-  IconButton,
-  Stack,
-} from "@mui/material";
-import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+// React imports
 import React, { useState } from "react";
-import { RestfulApiService } from "../../../config/service";
+
+// Third-party imports
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+
+// MUI imports
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Checkbox from "@mui/material/Checkbox";
+import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
+
+// Icons imports
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+
+// Project imports
+import { RestfulApiService } from "../../../config/service";
 import { decryptData } from "../../../utils/DataEncryption";
-// import { useDrag, useDrop } from "react-dnd";
-// import update from "immutability-helper"; // To handle immutability when updating state
+
+// DnD imports
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -30,9 +38,6 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import toast from "react-hot-toast";
-
-const ItemType = "QUESTION"; // Define a type for the draggable item
 
 // Draggable Question Component
 // const DraggableQuestion = ({ question, index, moveQuestion }) => {

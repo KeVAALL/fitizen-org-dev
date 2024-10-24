@@ -1,33 +1,35 @@
+// React imports
 import React, { useEffect, useState } from "react";
 
-import Event5 from "../../assets/img/events/event5.png";
-import { Backdrop, CircularProgress, TextField } from "@mui/material";
+// MUI imports
 import {
   DesktopDatePicker,
   LocalizationProvider,
   TimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
-import * as Yup from "yup";
+import TextField from "@mui/material/TextField";
+
+// Third-party imports
+// React Router and Redux imports
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RestfulApiService } from "../../config/service";
-import { decryptData } from "../../utils/DataEncryption";
+// Formik and Yup imports
+import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
+import * as Yup from "yup";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc"; // Import UTC plugin for working with UTC
 import timezone from "dayjs/plugin/timezone";
 import toast from "react-hot-toast";
+
+// Project imports
+import { RestfulApiService } from "../../config/service";
+import { decryptData } from "../../utils/DataEncryption";
 import EventTitle from "./EventTitle";
 import Loader from "../../utils/BackdropLoader";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-// const convertToIST = (time) => {
-//   return dayjs(time)
-//     .tz("Asia/Kolkata") // Convert to IST
-//     .format("hh:mm A"); // Format as 12-hour time with AM/PM
-// };
 
 function BIBExpo() {
   const { event_id } = useParams();
@@ -35,7 +37,6 @@ function BIBExpo() {
   const [showAddForm, setShowAddForm] = useState(true);
   const [fetchingBib, setFetchingBib] = useState(false);
   const [addingBib, setAddingBib] = useState(false);
-  const [allBib, setAllBib] = useState([]);
   const [initialValues, setInitialValues] = useState({
     Expo_Venue: "",
     Expo_Remarks: "",
@@ -262,7 +263,7 @@ function BIBExpo() {
                                         if (
                                           !value ||
                                           (regex.test(value.toString()) &&
-                                            value.length <= 50)
+                                            value.length <= 500)
                                         ) {
                                           setFieldValue("Expo_Venue", value);
                                         } else {

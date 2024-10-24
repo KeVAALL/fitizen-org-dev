@@ -1,30 +1,33 @@
-import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-
+// React imports
 import React, { useCallback, useEffect, useState } from "react";
+
+// MUI imports (separated)
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+
+// Third-party imports
 import Select from "react-select";
-import { customRoundedStyles } from "../../utils/ReactSelectStyles";
-import { StyledTableCell } from "../../utils/ReactTable";
+import toast from "react-hot-toast";
+
+// MUI X-Chart imports (separated)
 import {
   LineChart,
   lineElementClasses,
   markElementClasses,
   PieChart,
 } from "@mui/x-charts";
+
+// Project-specific imports
+import { customRoundedStyles } from "../../utils/ReactSelectStyles";
+import { StyledTableCell } from "../../utils/ReactTable";
 import { RestfulApiService } from "../../config/service";
 import { useSelector } from "react-redux";
-import toast from "react-hot-toast";
-import Loader from "../../utils/BackdropLoader";
 import { downloadExcel, inrCurrency } from "../../utils/UtilityFunctions";
+import Loader from "../../utils/BackdropLoader";
 
 const initialValues = {
   Select_Event: null,

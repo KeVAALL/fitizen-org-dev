@@ -1,23 +1,27 @@
+// React imports
+// React imports
 import React, { useCallback, useEffect, useState } from "react";
 
-import Event5 from "../../../assets/img/events/event5.png";
+// Third-party imports
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+// Project imports
 import PY1 from "../../../assets/img/icons/py1.png";
 import PY2 from "../../../assets/img/icons/py2.png";
 import PY3 from "../../../assets/img/icons/py3.png";
 import PY4 from "../../../assets/img/icons/py4.png";
+import { decryptData } from "../../../utils/DataEncryption";
+import { RestfulApiService } from "../../../config/service";
 import BankDetails from "./BankDetails";
 import Payout from "./Payout";
 import PaymentHistory from "./PaymentHistory";
 import Transactions from "./Transactions";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { decryptData } from "../../../utils/DataEncryption";
-import { RestfulApiService } from "../../../config/service";
-import toast from "react-hot-toast";
-import EventTitle from "../EventTitle";
 import MonthlyInvoice from "./MonthlyInvoice";
+import EventTitle from "../EventTitle";
 
-function EventBilling() {
+function BillingMain() {
   const { event_id } = useParams();
   const user = useSelector((state) => state.user.userProfile);
 
@@ -243,4 +247,4 @@ function EventBilling() {
   );
 }
 
-export default EventBilling;
+export default BillingMain;

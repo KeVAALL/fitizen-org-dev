@@ -1,9 +1,9 @@
 // React imports
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import React, { useEffect, useMemo, useState } from "react";
 
 // Third-party imports
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   useTable,
   usePagination,
@@ -12,24 +12,22 @@ import {
   useRowSelect,
   useSortBy,
 } from "react-table";
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Link,
-  Modal,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TextField,
-} from "@mui/material";
-import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
-import { IconButton } from "@mui/material";
 
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Link from "@mui/material/Link";
+import Modal from "@mui/material/Modal";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+
+import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
 import Select from "react-select";
 import { PieChart } from "@mui/x-charts";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -42,7 +40,6 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 
 // Project imports
-import Event5 from "../../assets/img/events/event5.png";
 import {
   DefaultColumnFilter,
   GlobalFilter,
@@ -2119,12 +2116,28 @@ function EventParticipants() {
                                                 name="TransferToName"
                                                 className="form-control"
                                                 placeholder="Transfer To Name"
-                                                onChange={(e) =>
-                                                  setFieldValue(
-                                                    "TransferToName",
-                                                    e.target.value
-                                                  )
-                                                }
+                                                onChange={(e) => {
+                                                  e.preventDefault();
+                                                  const { value } = e.target;
+
+                                                  const regex =
+                                                    /^[a-zA-Z][a-zA-Z\s]*$/;
+
+                                                  if (
+                                                    !value ||
+                                                    (regex.test(
+                                                      value.toString()
+                                                    ) &&
+                                                      value.length <= 50)
+                                                  ) {
+                                                    setFieldValue(
+                                                      "TransferToName",
+                                                      e.target.value
+                                                    );
+                                                  } else {
+                                                    return;
+                                                  }
+                                                }}
                                               />
                                             </div>
                                             <ErrorMessage
@@ -2464,6 +2477,7 @@ function EventParticipants() {
                                   </Stack>
                                 }
                                 arrow
+                                // open={true}
                               >
                                 <button className="button rounded-24 py-4 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
                                   Download File
