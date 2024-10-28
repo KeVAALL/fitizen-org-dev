@@ -44,7 +44,7 @@ function SignIn() {
   const validationSchema = Yup.object({
     phone: Yup.string()
       .required("Phone number is required")
-      .matches(/^\d{10}$/, "Phone number is not valid"),
+      .matches(/^[6-9]\d{9}$/, "Phone number is not valid"),
   });
   const handlePhoneChange = (phone, formik) => {
     // Remove the country code (+91)
@@ -214,7 +214,7 @@ function SignIn() {
                 />
               ) : (
                 <div
-                  className={`px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16${
+                  className={`px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16 relative${
                     scrolled ? " fixed-card" : ""
                   }`}
                 >

@@ -79,9 +79,9 @@ function BillingMain() {
     handleGetData();
   }, [handleGetData]);
 
-  return showBankDetails && !showPayout ? (
+  return showBankDetails ? (
     <BankDetails handleShowBankDetails={setShowBankDetails} />
-  ) : showPayout && !showBankDetails ? (
+  ) : showPayout ? (
     <Payout setShowPayout={setShowPayout} getData={getData?.[0]} />
   ) : (
     <div className="dashboard__main">
@@ -92,17 +92,11 @@ function BillingMain() {
               <EventTitle />
             </div>
             <div className="row pt-30">
-              {showPaymentHistory &&
-              !showTransactions &&
-              !setShowMonthlyInvoice ? (
+              {showPaymentHistory ? (
                 <PaymentHistory setShowPaymentHistory={setShowPaymentHistory} />
-              ) : !showPaymentHistory &&
-                !setShowMonthlyInvoice &&
-                showTransactions ? (
+              ) : showTransactions ? (
                 <Transactions setShowTransactions={setShowTransactions} />
-              ) : !showPaymentHistory &&
-                !showTransactions &&
-                showMonthlyInvoice ? (
+              ) : showMonthlyInvoice ? (
                 <MonthlyInvoice setShowMonthlyInvoice={setShowMonthlyInvoice} />
               ) : (
                 <>
@@ -162,6 +156,7 @@ function BillingMain() {
                     <div
                       className="py-20 px-15 border-light rounded-16 bg-white cursor-pointer -hover-shadow"
                       onClick={() => {
+                        console.log("CLick");
                         setShowPaymentHistory(true);
                       }}
                     >
@@ -245,6 +240,7 @@ function BillingMain() {
       </div>
     </div>
   );
+  // );
 }
 
 export default BillingMain;

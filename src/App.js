@@ -37,6 +37,9 @@ const AllEvents = lazy(() => import("./components/authenticated/AllEvents"));
 const Reports = lazy(() => import("./components/authenticated/Reports"));
 const Profile = lazy(() => import("./components/authenticated/Profile"));
 const Support = lazy(() => import("./components/authenticated/Support"));
+const AddEventMain = lazy(() =>
+  import("./components/authenticated/AddEvent/Main")
+);
 // Event Dashboard
 const EventMain = lazy(() => import("./components/authenticated/EventMain"));
 const Main = lazy(() => import("./components/authenticated/EditEvent/Main"));
@@ -120,6 +123,10 @@ const appLayout = createBrowserRouter([
       {
         path: "support",
         element: <Support />,
+      },
+      {
+        path: "add-event",
+        element: <AddEventMain />,
       },
     ],
   },

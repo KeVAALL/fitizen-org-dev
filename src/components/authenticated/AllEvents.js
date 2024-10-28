@@ -19,9 +19,11 @@ import Stack from "@mui/material/Stack";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import { ErrorMessage, Field, Formik } from "formik";
+import { replace, useNavigate } from "react-router-dom";
 
 function AllEvents() {
   const user = useSelector((state) => state.user.userProfile);
+  const navigate = useNavigate();
 
   const [fetchingDashboard, setFetchingDashboard] = useState(false);
   const [cloneModal, setCloneModal] = useState(false);
@@ -117,44 +119,86 @@ function AllEvents() {
       Session_Organzier_Id: user?.Organizer_Id,
     };
     try {
+      setFetchingDashboard(true);
+      const result = await RestfulApiService(reqdata, "organizer/dashboard");
+
+      // Check if result is successful and update state
+      if (result) {
+        setEvents((prevEvents) =>
+          prevEvents.map((event, i) =>
+            i === index
+              ? { ...event, Is_Active: event.Is_Active === 1 ? 0 : 1 }
+              : event
+          )
+        );
+        // console.log(isActive ? "Event deactivated successfully!" : "Event activated successfully!");
+      } else {
+        console.log("Action completed!");
+      }
       // Remove Toast
-      await toast.promise(
-        RestfulApiService(reqdata, "organizer/dashboard"),
-        {
-          loading: isActive ? "Deactivating event..." : "Activating event...",
-          success: (result) => {
-            if (result) {
-              // Update the event state only if the API request is successful
-              setEvents((prevEvents) =>
-                prevEvents.map((event, i) =>
-                  i === index
-                    ? { ...event, Is_Active: event.Is_Active === 1 ? 0 : 1 }
-                    : event
-                )
-              );
-              return isActive
-                ? "Event deactivated successfully!"
-                : "Event activated successfully!";
-            }
-            return "Action completed!";
-          },
-          error: (err) => {
-            const errorMessage =
-              err?.Result?.Table1[0]?.Result_Description ||
-              "Event update failed";
-            return errorMessage;
-          },
-        },
-        {
-          success: {
-            duration: 3000,
-          },
-        }
-      );
+      // await toast.promise(
+      //   RestfulApiService(reqdata, "organizer/dashboard"),
+      //   {
+      //     loading: isActive ? "Deactivating event..." : "Activating event...",
+      //     success: (result) => {
+      //       if (result) {
+      //         // Update the event state only if the API request is successful
+      //         setEvents((prevEvents) =>
+      //           prevEvents.map((event, i) =>
+      //             i === index
+      //               ? { ...event, Is_Active: event.Is_Active === 1 ? 0 : 1 }
+      //               : event
+      //           )
+      //         );
+      //         return isActive
+      //           ? "Event deactivated successfully!"
+      //           : "Event activated successfully!";
+      //       }
+      //       return "Action completed!";
+      //     },
+      //     error: (err) => {
+      //       const errorMessage =
+      //         err?.Result?.Table1[0]?.Result_Description ||
+      //         "Event update failed";
+      //       return errorMessage;
+      //     },
+      //   },
+      //   {
+      //     success: {
+      //       duration: 3000,
+      //     },
+      //   }
+      // );
     } catch (error) {
-      console.error("Event update failed:", error);
+      const errorMessage =
+        error?.Result?.Table1[0]?.Result_Description || "Event update failed";
+      console.error(errorMessage);
     } finally {
       setFetchingDashboard(false);
+    }
+  };
+  const shareContent = async (eventId, displayName) => {
+    const encryptedParam = encryptData(eventId);
+    // const url1 = window.location.href;
+    // const url = `${url1}event-details/${removeSpace(
+    //   displayName
+    // )}/${encryptedParam}`;
+    const url = `http://localhost:3000/event/dashboard/${encryptedParam}`;
+    const message = `${displayName}\n${url}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check out this awesome content!",
+          text: message, // Full message including the URL
+          // Omitting url property
+        });
+        console.log("Content shared successfully");
+      } catch (error) {
+        console.error("Error sharing content:", error);
+      }
+    } else {
+      console.log("Share API not supported");
+      // Optionally provide a fallback here
     }
   };
   useEffect(() => {
@@ -200,7 +244,10 @@ function AllEvents() {
               </div>
               <div className="col-lg-2">
                 <button
-                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/dashboard/add-event");
+                  }}
                   className="button w-full border-dark-1 rounded-22 px-20 py-10 text-dark-1 text-12 -primary-1"
                 >
                   Create Event <span className="text-16 ml-5">+</span>
@@ -481,7 +528,16 @@ function AllEvents() {
                                 >
                                   <i className="fas fa-solid fa-copy text-12"></i>
                                 </button>
-                                <button className="button -primary-1 bg-white size-30 rounded-full shadow-2 text-primary">
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    shareContent(
+                                      ev?.Event_Id,
+                                      ev?.Display_Name
+                                    );
+                                  }}
+                                  className="button -primary-1 bg-white size-30 rounded-full shadow-2 text-primary"
+                                >
                                   <i className="fas fa-share text-12"></i>
                                 </button>
                               </div>

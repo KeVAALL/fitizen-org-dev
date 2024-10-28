@@ -167,9 +167,9 @@ function EventTicket() {
                 },
               ]);
             }}
-            className="button w-200 border-dark-1 rounded-22 px-20 py-10 text-dark-1 text-12 -primary-1"
+            className="button w-200 border-dark-1 fw-400 rounded-22 px-20 py-10 text-dark-1 text-14 -primary-1 d-flex justify-center gap-10"
           >
-            Add Ticket <span className="text-16 ml-5">+</span>
+            <i className="fas fa-plus" /> Add Ticket
           </button>
         </div>
       )}
