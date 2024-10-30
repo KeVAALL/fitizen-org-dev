@@ -1,6 +1,6 @@
 // React imports
 import React, { createRef, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 // Third-party imports
@@ -16,6 +16,7 @@ import { RestfulApiService } from "../../../config/service";
 import { decryptData } from "../../../utils/DataEncryption";
 import Loader from "../../../utils/BackdropLoader";
 import { MEDIA_URL } from "../../../config/url";
+import Swal from "sweetalert2";
 
 function AddEventBanner({ handleStep, prevIndex }) {
   const user = useSelector((state) => state.user.userProfile);
@@ -30,8 +31,36 @@ function AddEventBanner({ handleStep, prevIndex }) {
     Image_Path: "",
     Image_Name: "",
   });
+  const navigate = useNavigate();
   const cropperRef = createRef();
 
+  const handleCreate = () => {
+    Swal.fire({
+      title: "Are you sure you want to publish event?",
+      // text: "You won't be able to revert this!",
+      icon: "success",
+      showCancelButton: true,
+      confirmButtonColor: "#eb6400",
+      // cancelButtonColor: "#fff",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      preConfirm: async () => {
+        // Show loading on the "Yes, delete it!" button
+        Swal.showLoading();
+
+        navigate("/dashboard/all-events");
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show the success message after the deletion is confirmed
+        Swal.fire({
+          title: "Event Created!",
+          text: "Event has been created.",
+          icon: "success",
+        });
+      }
+    });
+  };
   const handleFileChange = async (event) => {
     const file = event.currentTarget.files[0];
 
@@ -306,7 +335,7 @@ function AddEventBanner({ handleStep, prevIndex }) {
                             getCropData(setFieldValue, setUploadingImage);
                           }}
                           type="submit"
-                          className="button h-50 px-30 text-white bg-primary -grey-1 rounded-16 load-button relative w-200 mt-20"
+                          className="button h-40 px-30 text-white bg-primary -grey-1 rounded-16 load-button relative w-200 mt-20"
                         >
                           {!uploadingImage && "Crop & Upload"}
                           {uploadingImage && (
@@ -403,19 +432,24 @@ function AddEventBanner({ handleStep, prevIndex }) {
                           onClick={() => {
                             handleStep(prevIndex);
                           }}
-                          className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
+                          className="button bg-white w-150 h-40 rounded-24 px-15 text-primary text-12 border-primary load-button"
                         >
                           Back
                         </button>
                       </div>
                       <div className="col-auto relative">
                         <button
-                          disabled={submitForm}
-                          type="submit"
-                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                          // disabled={submitForm}
+                          // type="submit"
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleCreate();
+                          }}
+                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
                         >
                           {!submitForm ? (
-                            `Save`
+                            `Publish Now`
                           ) : (
                             <span className="btn-spinner"></span>
                           )}

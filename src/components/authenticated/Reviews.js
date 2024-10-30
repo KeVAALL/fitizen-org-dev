@@ -248,7 +248,7 @@ function Reviews() {
         Header: "Actions",
         right: true,
         Cell: ({ value, row }) => {
-          const [isApproving, setIsApproving] = useState(false);
+          console.log(row);
 
           return (
             <Stack direction="row" spacing={4}>

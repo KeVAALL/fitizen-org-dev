@@ -50,6 +50,7 @@ function AllEvents() {
       (value) => Object.values(value).some((v) => v === true)
     ),
   });
+  const [cloneEventValues, setCloneEventValues] = useState(initialValues);
 
   async function CloneEvent(values) {
     const reqdata = {
@@ -279,7 +280,8 @@ function AllEvents() {
                     CLONE EVENT
                   </div>
                   <Formik
-                    initialValues={initialValues}
+                    enableReinitialize
+                    initialValues={cloneEventValues}
                     validationSchema={validationSchema}
                     onSubmit={(values) => {
                       console.log(values);
@@ -520,9 +522,22 @@ function AllEvents() {
                                 <button
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    console.log(ev);
                                     setCloneEventDetails(ev);
-                                    setCloneModal(true);
+                                    setCloneEventValues({
+                                      Event_Name: `${ev?.Display_Name} Copy`,
+                                      checkboxes: {
+                                        Ticket_Price_Setting: false,
+                                        Event_Category: false,
+                                        Discount_Details: false,
+                                        Assets: false,
+                                        RaceDay_Takeaway: false,
+                                        Participant_Form: false,
+                                        BIB_Expo_Details: false,
+                                      },
+                                    });
+                                    setTimeout(() => {
+                                      setCloneModal(true);
+                                    });
                                   }}
                                   className="button -primary-1 bg-white size-30 rounded-full shadow-2 text-primary"
                                 >

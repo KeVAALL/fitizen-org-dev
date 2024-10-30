@@ -27,6 +27,7 @@ import "./DashboardLayout.css";
 import { HtmlLightTooltip } from "../../utils/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { clearProfile } from "../../redux/slices/userSlice";
+import { removeCurrentEventId } from "../../redux/slices/addEventSlice";
 
 const Header = ({ open, handleDrawerToggle }) => {
   const user = useSelector((state) => state.user.userProfile);
@@ -131,6 +132,27 @@ const ReactSidebar = ({ open, menu, navigate }) => {
 
   const isCurrentPage = (url) => location.pathname.includes(url);
 
+  const clearLocalStorageItems = () => {
+    console.log("clearing");
+
+    dispatch(removeCurrentEventId());
+  };
+  const handleNavigationClick = (e, path) => {
+    if (location.pathname.includes("/dashboard/add-event")) {
+      const confirmLeave = window.confirm(
+        "Are you sure you want to leave? Your changes won't be saved."
+      );
+      if (!confirmLeave) {
+        e.preventDefault(); // Prevent navigation if user cancels
+        return;
+      } else {
+        navigate(path, { replace: true }); // Use react-router navigate to prevent full reload
+        clearLocalStorageItems();
+      }
+    } else {
+      navigate(path);
+    }
+  };
   async function Logout() {
     const shouldDelete = await Swal.fire({
       title: "Are you sure you want to logout?",
@@ -179,6 +201,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                   height: "100%",
                   width: "190px",
                 }}
+                alt="logo"
               />
             </Box>
           ) : (
@@ -200,6 +223,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                   height: "100%",
                   width: "50px",
                 }}
+                alt="fav-logo"
               />
             </Box>
           )}
@@ -213,12 +237,15 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 <div className="sidebar__item">
                   <div className="sidebar__button">
                     <a
-                      href="/dashboard/all-events"
+                      href="#"
                       className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/dashboard/all-events")
                           ? " active-link"
                           : ""
                       }`}
+                      onClick={(e) =>
+                        handleNavigationClick(e, "/dashboard/all-events")
+                      }
                     >
                       <i className="fas fa-trophy mr-15"></i>
                       All Events
@@ -230,12 +257,15 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                   <div className="sidebar__item">
                     <div className="sidebar__button">
                       <a
-                        href="/dashboard/all-events"
+                        href="#"
                         className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/dashboard/all-events")
                             ? " active-link"
                             : ""
                         }`}
+                        onClick={(e) =>
+                          handleNavigationClick(e, "/dashboard/all-events")
+                        }
                       >
                         <i className="fas fa-trophy mr-15"></i>
                       </a>
@@ -267,12 +297,15 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 <div className="sidebar__item">
                   <div className="sidebar__button ">
                     <a
-                      href="/dashboard/reports"
+                      href="#"
                       className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/dashboard/reports")
                           ? " active-link"
                           : ""
                       }`}
+                      onClick={(e) =>
+                        handleNavigationClick(e, "/dashboard/reports")
+                      }
                     >
                       <i className="fas fa-poll-h mr-15"></i>
                       Reports
@@ -284,12 +317,15 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                   <div className="sidebar__item">
                     <div className="sidebar__button ">
                       <a
-                        href="/dashboard/reports"
+                        href="#"
                         className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/dashboard/reports")
                             ? " active-link"
                             : ""
                         }`}
+                        onClick={(e) =>
+                          handleNavigationClick(e, "/dashboard/reports")
+                        }
                       >
                         <i className="fas fa-poll-h mr-15"></i>
                       </a>
@@ -301,12 +337,15 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 <div className="sidebar__item">
                   <div className="sidebar__button ">
                     <a
-                      href="/dashboard/support"
+                      href="#"
                       className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/dashboard/support")
                           ? " active-link"
                           : ""
                       }`}
+                      onClick={(e) =>
+                        handleNavigationClick(e, "/dashboard/support")
+                      }
                     >
                       <i className="fas fa-phone-alt mr-15"></i>
                       Support
@@ -318,12 +357,15 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                   <div className="sidebar__item">
                     <div className="sidebar__button ">
                       <a
-                        href="/dashboard/support"
+                        href="#"
                         className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/dashboard/support")
                             ? " active-link"
                             : ""
                         }`}
+                        onClick={(e) =>
+                          handleNavigationClick(e, "/dashboard/support")
+                        }
                       >
                         <i className="fas fa-phone-alt mr-15"></i>
                       </a>
@@ -335,12 +377,15 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 <div className="sidebar__item">
                   <div className="sidebar__button ">
                     <a
-                      href="/dashboard/profile"
+                      href="#"
                       className={`d-flex items-center text-14 lh-1${
                         isCurrentPage("/dashboard/profile")
                           ? " active-link"
                           : ""
                       }`}
+                      onClick={(e) =>
+                        handleNavigationClick(e, "/dashboard/profile")
+                      }
                     >
                       <i className="far fa-user-circle mr-15"></i>
                       Profile
@@ -352,12 +397,15 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                   <div className="sidebar__item">
                     <div className="sidebar__button ">
                       <a
-                        href="/dashboard/profile"
+                        href="#"
                         className={`d-flex items-center text-14 lh-1${
                           isCurrentPage("/dashboard/profile")
                             ? " active-link"
                             : ""
                         }`}
+                        onClick={(e) =>
+                          handleNavigationClick(e, "/dashboard/profile")
+                        }
                       >
                         <i className="far fa-user-circle mr-15"></i>
                       </a>

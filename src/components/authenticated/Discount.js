@@ -994,7 +994,7 @@ function Discount() {
                       onClick={() => {
                         setShowDiscountForm(true);
                       }}
-                      class="button bg-primary rounded-22 px-30 py-10 text-white text-16 -grey-1 w-100 d-flex gap-10"
+                      class="button bg-primary w-150 h-40 px-30 rounded-24 text-white text-16 -grey-1 d-flex gap-10"
                     >
                       ADD
                       <i className="fas fa-plus text-16"></i>

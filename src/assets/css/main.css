@@ -13742,7 +13742,7 @@ input:-webkit-autofill::first-line {
 .otp-back-btn {
   position: absolute;
   top: 25px;
-  left: 25px;
+  left: 0px;
   /* box-shadow: 2.64px 2.64px 10.48px 0px rgba(0, 0, 0, 0.51); */
 }
 .otp-modal-back-btn {
@@ -13989,5 +13989,5 @@ input:-webkit-autofill::first-line {
   position: fixed;
   top: 120px;
   width: 480px;
-  height: calc(100% -20%);
+  /* height: calc(100% -20%); */
 }

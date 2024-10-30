@@ -2204,18 +2204,20 @@ const AddCustomAccordion = ({
 
                 {isEditing && (
                   <div className="col-12">
-                    <div className="col-auto relative">
-                      <button
-                        disabled={submitForm}
-                        type="submit"
-                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                      >
-                        {!submitForm ? (
-                          `Save`
-                        ) : (
-                          <span className="btn-spinner"></span>
-                        )}
-                      </button>
+                    <div className="row">
+                      <div className="col-auto relative">
+                        <button
+                          disabled={submitForm}
+                          type="submit"
+                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
+                        >
+                          {!submitForm ? (
+                            `Save`
+                          ) : (
+                            <span className="btn-spinner"></span>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}

@@ -38,6 +38,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import CheckboxCard from "../../../utils/CheckboxCard";
 
 // Draggable Question Component
 // const DraggableQuestion = ({ question, index, moveQuestion }) => {
@@ -408,55 +409,36 @@ function EventParticipant() {
                 }}
               >
                 <div className="row y-gap-30 py-20">
-                  <div class="col-lg-12 col-md-12">
-                    <div
-                      className="py-15 px-15 border-light rounded-8"
-                      style={{
-                        boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
-                      }}
-                    >
-                      <div className="row">
-                        <div className="col-1 d-flex">
-                          <Checkbox />
-                        </div>
-                        <div className="col-3">
-                          <div class="y-gap-5">
-                            <label class="text-13 fw-500">
-                              Participant Name <sup className="asc">*</sup>
-                            </label>
-                            <div class="d-flex gap-20">
-                              <label class="text-error-2 text-13">
-                                Mandatory Field
-                              </label>
-                              <div className="form-switch d-flex ">
-                                <div className="switch">
-                                  <input
-                                    type="checkbox"
-                                    onChange={(e) => {
-                                      console.log(e);
-                                    }}
-                                  />
-                                  <span className="switch__slider"></span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-4 d-flex items-center">
-                          <div class="single-field w-full">
-                            <div class="form-control">
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder="Add Name"
-                                name="name"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <CheckboxCard
+                    fieldName="Participant Name"
+                    fieldPlaceholder="Add Name"
+                    fieldType="text"
+                  />
+                  <CheckboxCard
+                    fieldName="Email ID"
+                    fieldPlaceholder="Add Email ID"
+                    fieldType="text"
+                  />
+                  <CheckboxCard
+                    fieldName="Phone Number"
+                    fieldPlaceholder="9893399393"
+                    fieldType="text"
+                  />
+                  <CheckboxCard
+                    fieldName="Date of Birth"
+                    fieldPlaceholder="Date of Birth"
+                    fieldType="text"
+                  />
+                  <CheckboxCard
+                    fieldName="Gender"
+                    fieldPlaceholder="Gender"
+                    fieldType="select"
+                  />
+                  <CheckboxCard
+                    fieldName="Blood Group"
+                    fieldPlaceholder="Add Blood Group"
+                    fieldType="select"
+                  />
                 </div>
               </AccordionDetails>
             </Accordion>
@@ -512,55 +494,41 @@ function EventParticipant() {
                 }}
               >
                 <div className="row y-gap-30 py-20">
-                  <div class="col-lg-12 col-md-12">
-                    <div
-                      className="py-15 px-15 border-light rounded-8"
-                      style={{
-                        boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
-                      }}
-                    >
-                      <div className="row">
-                        <div className="col-1 d-flex">
-                          <Checkbox />
-                        </div>
-                        <div className="col-3">
-                          <div class="y-gap-5">
-                            <label class="text-13 fw-500">
-                              Pincode <sup className="asc">*</sup>
-                            </label>
-                            <div class="d-flex gap-20">
-                              <label class="text-error-2 text-13">
-                                Mandatory Field
-                              </label>
-                              <div className="form-switch d-flex ">
-                                <div className="switch">
-                                  <input
-                                    type="checkbox"
-                                    onChange={(e) => {
-                                      console.log(e);
-                                    }}
-                                  />
-                                  <span className="switch__slider"></span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-4 d-flex items-center">
-                          <div class="single-field w-full">
-                            <div class="form-control">
-                              <input
-                                type="text"
-                                class="form-control"
-                                placeholder="Add Name"
-                                name="name"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <CheckboxCard
+                    fieldName="Pincode"
+                    fieldPlaceholder="Add Pincode"
+                    fieldType="text"
+                  />
+                  <CheckboxCard
+                    fieldName="Country"
+                    fieldPlaceholder="Country"
+                    fieldType="select"
+                  />
+                  <CheckboxCard
+                    fieldName="Address"
+                    fieldPlaceholder="Add Address"
+                    fieldType="text"
+                  />
+                  <CheckboxCard
+                    fieldName="State"
+                    fieldPlaceholder="State"
+                    fieldType="select"
+                  />
+                  <CheckboxCard
+                    fieldName="City"
+                    fieldPlaceholder="City"
+                    fieldType="select"
+                  />
+                  <CheckboxCard
+                    fieldName="Street"
+                    fieldPlaceholder="Add Street"
+                    fieldType="text"
+                  />
+                  <CheckboxCard
+                    fieldName="Landmark"
+                    fieldPlaceholder="Add Landmark"
+                    fieldType="text"
+                  />
                 </div>
               </AccordionDetails>
             </Accordion>

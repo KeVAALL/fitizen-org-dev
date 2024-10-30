@@ -734,18 +734,22 @@ function BIBExpo() {
                                   Save
                                 </button>
                               </div> */}
-                              <div className="col-auto relative">
-                                <button
-                                  disabled={addingBib}
-                                  type="submit"
-                                  className="button bg-primary w-100 h-50 rounded-24 py-15 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                                >
-                                  {!addingBib ? (
-                                    `Save`
-                                  ) : (
-                                    <span className="btn-spinner"></span>
-                                  )}
-                                </button>
+                              <div className="col-12 d-flex">
+                                <div className="row">
+                                  <div className="col-auto relative">
+                                    <button
+                                      disabled={addingBib}
+                                      type="submit"
+                                      className="button bg-primary w-150 h-50 rounded-24 px-15 text-white border-light load-button"
+                                    >
+                                      {!addingBib ? (
+                                        `Save`
+                                      ) : (
+                                        <span className="btn-spinner"></span>
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>

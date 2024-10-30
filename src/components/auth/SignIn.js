@@ -214,102 +214,104 @@ function SignIn() {
                 />
               ) : (
                 <div
-                  className={`px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16 relative${
+                  className={`px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16${
                     scrolled ? " fixed-card" : ""
                   }`}
                 >
-                  {showOtpInput && (
-                    <div
-                      className="fas fa-arrow-left border-primary text-12 text-primary fw-600 rounded-full px-10 py-10 text-center cursor-pointer h-30 w-30 button otp-back-btn"
-                      onClick={() => {
-                        setShowOtpInput(false);
-                      }}
-                    ></div>
-                  )}
-                  <div className="row y-gap-20">
-                    <div class="col-12 text-center">
-                      <img
-                        src={DarkLogo}
-                        alt="logo-icon"
-                        style={{ width: "150px" }}
-                      />
-                    </div>
-                    {!showOtpInput ? (
-                      <>
-                        <Formik
-                          initialValues={{ phone: otpOwner ? otpOwner : "" }}
-                          validationSchema={validationSchema}
-                          onSubmit={(values) => {
-                            console.log("Form values:", values);
+                  <div className="relative">
+                    {showOtpInput && (
+                      <div
+                        className="fas fa-arrow-left border-primary text-12 text-primary fw-600 rounded-full px-10 py-10 text-center cursor-pointer h-30 w-30 button otp-back-btn"
+                        onClick={() => {
+                          setShowOtpInput(false);
+                        }}
+                      ></div>
+                    )}
+                    <div className="row y-gap-20">
+                      <div class="col-12 text-center">
+                        <img
+                          src={DarkLogo}
+                          alt="logo-icon"
+                          style={{ width: "150px" }}
+                        />
+                      </div>
+                      {!showOtpInput ? (
+                        <>
+                          <Formik
+                            initialValues={{ phone: otpOwner ? otpOwner : "" }}
+                            validationSchema={validationSchema}
+                            onSubmit={(values) => {
+                              console.log("Form values:", values);
 
-                            handleSendOtp(values.phone);
-                          }}
-                        >
-                          {(formik) => (
-                            <form onSubmit={formik.handleSubmit}>
-                              <div className="col-12 mt-20 y-gap-10">
-                                <div className="col-12 mt-20">
-                                  <div className="single-field y-gap-20">
-                                    <label className="text-13 fw-500">
-                                      Phone Number
-                                    </label>
-                                    <div className="form-control">
-                                      <PhoneInput
-                                        disableDialCodePrefill
-                                        disableDialCodeAndPrefix
-                                        showDisabledDialCodeAndPrefix
-                                        placeholder="00000-00000"
-                                        defaultCountry="in"
-                                        value={formik.values.phone}
-                                        onChange={(phone, e) => {
-                                          // formik.setFieldValue("phone", phone);
-                                          handlePhoneChange(phone, formik);
-                                        }}
-                                        inputStyle={{
-                                          borderLeft: "0px",
-                                        }}
-                                        countrySelectorStyleProps={{
-                                          paddingRight: "8px",
-                                          paddingLeft: "8px",
-                                        }}
-                                      />
-                                    </div>
-                                    {formik.touched.phone &&
-                                    formik.errors.phone ? (
-                                      <div className="text-red-1 text-13">
-                                        {formik.errors.phone}
+                              handleSendOtp(values.phone);
+                            }}
+                          >
+                            {(formik) => (
+                              <form onSubmit={formik.handleSubmit}>
+                                <div className="col-12 mt-20 y-gap-10">
+                                  <div className="col-12 mt-20">
+                                    <div className="single-field y-gap-20">
+                                      <label className="text-13 fw-500">
+                                        Phone Number
+                                      </label>
+                                      <div className="form-control">
+                                        <PhoneInput
+                                          disableDialCodePrefill
+                                          disableDialCodeAndPrefix
+                                          showDisabledDialCodeAndPrefix
+                                          placeholder="00000-00000"
+                                          defaultCountry="in"
+                                          value={formik.values.phone}
+                                          onChange={(phone, e) => {
+                                            // formik.setFieldValue("phone", phone);
+                                            handlePhoneChange(phone, formik);
+                                          }}
+                                          inputStyle={{
+                                            borderLeft: "0px",
+                                          }}
+                                          countrySelectorStyleProps={{
+                                            paddingRight: "8px",
+                                            paddingLeft: "8px",
+                                          }}
+                                        />
                                       </div>
-                                    ) : null}
+                                      {formik.touched.phone &&
+                                      formik.errors.phone ? (
+                                        <div className="text-red-1 text-13">
+                                          {formik.errors.phone}
+                                        </div>
+                                      ) : null}
+                                    </div>
+                                  </div>
+
+                                  <div className="col-12 mt-20 relative">
+                                    <button
+                                      disabled={verifyingMobile}
+                                      type="submit"
+                                      className="button w-full h-50 px-20 -grey-1 bg-grey text-white rounded-100 load-button"
+                                    >
+                                      {!verifyingMobile && "Send OTP"}
+                                      {verifyingMobile && (
+                                        <span class="btn-spinner"></span>
+                                      )}
+                                    </button>
                                   </div>
                                 </div>
-
-                                <div className="col-12 mt-20 relative">
-                                  <button
-                                    disabled={verifyingMobile}
-                                    type="submit"
-                                    className="button w-full h-50 px-20 -grey-1 bg-grey text-white rounded-100 load-button"
-                                  >
-                                    {!verifyingMobile && "Send OTP"}
-                                    {verifyingMobile && (
-                                      <span class="btn-spinner"></span>
-                                    )}
-                                  </button>
-                                </div>
-                              </div>
-                            </form>
-                          )}
-                        </Formik>
-                      </>
-                    ) : (
-                      <OtpInput
-                        verifyingDevice={verifyingMobile}
-                        verifyingOtp={verifyingOtp}
-                        otpSentMessage={`Verification Code sent on +91 ${otpOwner}`}
-                        onOtpSubmit={handleVerifyOtp}
-                        resendOtp={handleResendOTP}
-                        detail={otpOwner}
-                      />
-                    )}
+                              </form>
+                            )}
+                          </Formik>
+                        </>
+                      ) : (
+                        <OtpInput
+                          verifyingDevice={verifyingMobile}
+                          verifyingOtp={verifyingOtp}
+                          otpSentMessage={`Verification Code sent on +91 ${otpOwner}`}
+                          onOtpSubmit={handleVerifyOtp}
+                          resendOtp={handleResendOTP}
+                          detail={otpOwner}
+                        />
+                      )}
+                    </div>
                   </div>
                   {/* <div className="row y-gap-20 pt-10">
                     <div className="col-12">

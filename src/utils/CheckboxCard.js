@@ -50,6 +50,7 @@ function CheckboxCard({ fieldName, fieldPlaceholder, fieldType }) {
               <div class="single-field w-full">
                 <div class="form-control">
                   <input
+                    disabled
                     type="text"
                     class="form-control"
                     placeholder={fieldPlaceholder}
