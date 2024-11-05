@@ -21,14 +21,12 @@ import { useDispatch, useSelector } from "react-redux";
 
 function EventMain() {
   const { event_id } = useParams();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userProfile);
   const selectedEvent = useSelector(
     (state) => state.selectedEvent.currentEvent
   );
   const [fetchingDetails, setFetchingDetails] = useState(false);
-  const [event, setEvent] = useState({});
 
   useEffect(() => {
     async function LoadEvent() {

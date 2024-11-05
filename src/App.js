@@ -35,7 +35,9 @@ const AuthGuard = lazy(() => import("./utils/route-guard/AuthGuard"));
 // User Dashboard
 const AllEvents = lazy(() => import("./components/authenticated/AllEvents"));
 const Reports = lazy(() => import("./components/authenticated/Reports"));
-const Profile = lazy(() => import("./components/authenticated/Profile"));
+const Profile = lazy(() =>
+  import("./components/authenticated/Profile/Profile")
+);
 const Support = lazy(() => import("./components/authenticated/Support"));
 const AddEventMain = lazy(() =>
   import("./components/authenticated/AddEvent/Main")

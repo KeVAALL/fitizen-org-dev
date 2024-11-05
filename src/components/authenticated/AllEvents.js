@@ -1,5 +1,5 @@
 // React imports
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 // Redux imports
 import { useSelector } from "react-redux";
@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { RestfulApiService } from "../../config/service";
 import { MEDIA_URL } from "../../config/url";
 import { encryptData } from "../../utils/DataEncryption";
+import { customRoundedStyles } from "../../utils/ReactSelectStyles";
 import Loader from "../../utils/BackdropLoader";
 
 // MUI imports (separated)
@@ -18,8 +19,11 @@ import Stack from "@mui/material/Stack";
 // Third-party imports
 import toast from "react-hot-toast";
 import * as Yup from "yup";
+import Select from "react-select";
 import { ErrorMessage, Field, Formik } from "formik";
-import { replace, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { debounce } from "lodash";
+import dayjs from "dayjs";
 
 function AllEvents() {
   const user = useSelector((state) => state.user.userProfile);
@@ -30,6 +34,20 @@ function AllEvents() {
   const [events, setEvents] = useState([]);
   const [cloneEventDetails, setCloneEventDetails] = useState(null);
   const [submitModalForm, setSubmitModalForm] = useState(false);
+  const [selectedTimeline, setSelectedTimeline] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+  const eventFilter = [
+    {
+      label: "Past Events",
+      value: "Past",
+    },
+    {
+      label: "Future Events",
+      value: "Future",
+    },
+  ];
   const initialValues = {
     Event_Name: "",
     checkboxes: {
@@ -42,6 +60,7 @@ function AllEvents() {
       BIB_Expo_Details: false,
     },
   };
+  const [cloneEventValues, setCloneEventValues] = useState(initialValues);
   const validationSchema = Yup.object().shape({
     Event_Name: Yup.string().required("Event name is required"),
     checkboxes: Yup.object().test(
@@ -50,8 +69,6 @@ function AllEvents() {
       (value) => Object.values(value).some((v) => v === true)
     ),
   });
-  const [cloneEventValues, setCloneEventValues] = useState(initialValues);
-
   async function CloneEvent(values) {
     const reqdata = {
       Method_Name: "Create",
@@ -92,6 +109,8 @@ function AllEvents() {
       SearchBy: "",
       TypeEvent: "",
       EventId: "",
+      FromDate: "",
+      ToDate: "",
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
@@ -109,6 +128,97 @@ function AllEvents() {
       setFetchingDashboard(false);
     }
   }
+  const handleDateFilter = async (eventTimeline) => {
+    let From_Date = "";
+    let To_Date = "";
+
+    const today = dayjs().format("YYYY-MM-DD"); // Current date
+    if (eventTimeline === "Past") {
+      From_Date = dayjs().subtract(2, "year").format("YYYY-MM-DD");
+      To_Date = today;
+      // setFromDate(dayjs().subtract(2, "year").format("YYYY-MM-DD"));
+      // setToDate(today);
+    } else if (eventTimeline === "Future") {
+      From_Date = today;
+      To_Date = dayjs().add(2, "year").format("YYYY-MM-DD");
+      // setFromDate(today);
+      // setToDate(dayjs().add(2, "year").format("YYYY-MM-DD"));
+    }
+
+    const reqdata = {
+      Method_Name: "HomePage",
+      SearchBy: "",
+      TypeEvent: "",
+      EventId: "",
+      FromDate: From_Date,
+      ToDate: To_Date,
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+    };
+    try {
+      setFetchingDashboard(true);
+      const result = await RestfulApiService(reqdata, "organizer/dashboard");
+      if (result) {
+        console.log(result?.data?.Result?.Table1);
+        setEvents(result?.data?.Result?.Table1);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setFetchingDashboard(false);
+    }
+  };
+  const handleSearch = async (eventValue) => {
+    const today = dayjs().format("YYYY-MM-DD");
+    const reqdata = {
+      Method_Name: "HomePage",
+      SearchBy: eventValue, // Pass the search term here
+      TypeEvent: "",
+      EventId: "",
+      FromDate:
+        selectedTimeline?.value === "Past"
+          ? dayjs().subtract(2, "year").format("YYYY-MM-DD")
+          : selectedTimeline?.value === "Future"
+          ? today
+          : "",
+      ToDate:
+        selectedTimeline?.value === "Past"
+          ? today
+          : selectedTimeline?.value === "Future"
+          ? dayjs().add(2, "year").format("YYYY-MM-DD")
+          : "",
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+    };
+
+    try {
+      setFetchingDashboard(true);
+      const result = await RestfulApiService(reqdata, "organizer/dashboard");
+      if (result) {
+        console.log(result?.data?.Result?.Table1);
+        setEvents(result?.data?.Result?.Table1);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setFetchingDashboard(false);
+    }
+  };
+  // Create a debounced version of handleSearch
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedSearch = useCallback(
+    debounce((value) => handleSearch(value), 500), // Adjust delay as needed
+    []
+  );
+
+  // Update searchTerm on input change and call debounced search
+  const handleInputChange = (e) => {
+    const { value } = e.target;
+    setSearchTerm(value);
+    debouncedSearch(value);
+  };
   const toggleSwitch = async (index, isActive, EventId) => {
     const reqdata = {
       Method_Name: isActive ? "InActive" : "Active",
@@ -213,18 +323,19 @@ function AllEvents() {
           <div className="container">
             <div className="row justify-between items-center relative mb-20">
               <div className="col-lg-2">
-                <div className="single-field py-10">
-                  <select
-                    name="evtype"
-                    id="evtype"
-                    className="form-control border-dark-1 rounded-25 py-10 px-10"
-                  >
-                    <option value="Active" selected>
-                      Active Events
-                    </option>
-                    <option value="Past Events">Past Events</option>
-                    <option value="Future Events">Future Events</option>
-                  </select>
+                <div className="py-10">
+                  <Select
+                    // menuIsOpen={true}
+                    isSearchable={false}
+                    styles={customRoundedStyles}
+                    options={eventFilter}
+                    value={selectedTimeline}
+                    onChange={async (e) => {
+                      console.log(e);
+                      setSelectedTimeline(e);
+                      handleDateFilter(e.value);
+                    }}
+                  />
                 </div>
               </div>
               <div className="col-lg-6">
@@ -238,6 +349,8 @@ function AllEvents() {
                       type="text"
                       name="search-input"
                       placeholder="Search Events, City, Sports, etc..."
+                      value={searchTerm}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
