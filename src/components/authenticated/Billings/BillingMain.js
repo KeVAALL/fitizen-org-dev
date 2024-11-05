@@ -1,23 +1,28 @@
+// React imports
+// React imports
 import React, { useCallback, useEffect, useState } from "react";
 
-import Event5 from "../../../assets/img/events/event5.png";
+// Third-party imports
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+// Project imports
 import PY1 from "../../../assets/img/icons/py1.png";
 import PY2 from "../../../assets/img/icons/py2.png";
 import PY3 from "../../../assets/img/icons/py3.png";
 import PY4 from "../../../assets/img/icons/py4.png";
+import { decryptData } from "../../../utils/DataEncryption";
+import { RestfulApiService } from "../../../config/service";
 import BankDetails from "./BankDetails";
 import Payout from "./Payout";
 import PaymentHistory from "./PaymentHistory";
 import Transactions from "./Transactions";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { decryptData } from "../../../utils/DataEncryption";
-import { RestfulApiService } from "../../../config/service";
-import toast from "react-hot-toast";
-import EventTitle from "../EventTitle";
 import MonthlyInvoice from "./MonthlyInvoice";
+import EventTitle from "../EventTitle";
+import Loader from "../../../utils/BackdropLoader";
 
-function EventBilling() {
+function BillingMain() {
   const { event_id } = useParams();
   const user = useSelector((state) => state.user.userProfile);
 
@@ -75,9 +80,9 @@ function EventBilling() {
     handleGetData();
   }, [handleGetData]);
 
-  return showBankDetails && !showPayout ? (
+  return showBankDetails ? (
     <BankDetails handleShowBankDetails={setShowBankDetails} />
-  ) : showPayout && !showBankDetails ? (
+  ) : showPayout ? (
     <Payout setShowPayout={setShowPayout} getData={getData?.[0]} />
   ) : (
     <div className="dashboard__main">
@@ -88,76 +93,71 @@ function EventBilling() {
               <EventTitle />
             </div>
             <div className="row pt-30">
-              {showPaymentHistory &&
-              !showTransactions &&
-              !setShowMonthlyInvoice ? (
+              {showPaymentHistory ? (
                 <PaymentHistory setShowPaymentHistory={setShowPaymentHistory} />
-              ) : !showPaymentHistory &&
-                !setShowMonthlyInvoice &&
-                showTransactions ? (
+              ) : showTransactions ? (
                 <Transactions setShowTransactions={setShowTransactions} />
-              ) : !showPaymentHistory &&
-                !showTransactions &&
-                showMonthlyInvoice ? (
+              ) : showMonthlyInvoice ? (
                 <MonthlyInvoice setShowMonthlyInvoice={setShowMonthlyInvoice} />
               ) : (
                 <>
                   <div className="col-xl-12 col-md-12 mb-30">
-                    {getData?.length > 0
-                      ? getData.map((curData) => {
-                          return (
-                            <div
-                              className="py-30 px-30 border-light rounded-8 bg-skin"
-                              style={{
-                                boxShadow: "2px 2px 7.5px 0px #0000000D",
-                              }}
-                            >
-                              <div className="row y-gap-20 justify-between items-center">
-                                <div className="col-lg-5">
-                                  <div className="fw-500 lh-14 text-11 text-light-1">
-                                    Next Payout On (Only for transactions till{" "}
-                                    {curData?.transactiontill ?? ""})
-                                  </div>
-                                  <div className="text-15 text-primary lh-16 fw-600 mt-5">
-                                    {curData?.next_cycledate ?? ""}{" "}
-                                  </div>
+                    {getData?.length > 0 ? (
+                      getData.map((curData) => {
+                        return (
+                          <div
+                            className="py-30 px-30 border-light rounded-8 bg-skin"
+                            style={{
+                              boxShadow: "2px 2px 7.5px 0px #0000000D",
+                            }}
+                          >
+                            <div className="row y-gap-20 justify-between items-center">
+                              <div className="col-lg-5">
+                                <div className="fw-500 lh-14 text-11 text-light-1">
+                                  Next Payout On (Only for transactions till{" "}
+                                  {curData?.transactiontill ?? ""})
                                 </div>
-                                <div className="col-lg-5">
-                                  <div className="fw-500 lh-14 text-11 text-light-1">
-                                    Payout Cycle
-                                  </div>
-                                  <div className="text-15 text-primary lh-16 fw-600 mt-5">
-                                    {curData?.Payment_Feq ?? ""} to{" "}
-                                    {curData?.Bank_Name ?? ""}
-                                    {curData?.Account_Number
-                                      ? `••••${curData.Account_Number.slice(
-                                          -4
-                                        )}`
-                                      : ""}
-                                  </div>
-                                </div>
-                                <div className="col-lg-2">
-                                  <button
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      setShowPayout(true);
-                                    }}
-                                    className="button -primary-1 rounded-22 px-20 py-10 text-primary border-primary bg-white text-12 mx-auto"
-                                  >
-                                    Manage Payout
-                                  </button>
+                                <div className="text-15 text-primary lh-16 fw-600 mt-5">
+                                  {curData?.next_cycledate ?? ""}{" "}
                                 </div>
                               </div>
+                              <div className="col-lg-5">
+                                <div className="fw-500 lh-14 text-11 text-light-1">
+                                  Payout Cycle
+                                </div>
+                                <div className="text-15 text-primary lh-16 fw-600 mt-5">
+                                  {curData?.Payment_Feq ?? ""} to{" "}
+                                  {curData?.Bank_Name ?? ""}
+                                  {curData?.Account_Number
+                                    ? `••••${curData.Account_Number.slice(-4)}`
+                                    : ""}
+                                </div>
+                              </div>
+                              <div className="col-lg-2">
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowPayout(true);
+                                  }}
+                                  className="button -primary-1 rounded-22 px-20 py-10 text-primary border-primary bg-white text-12 mx-auto"
+                                >
+                                  Manage Payout
+                                </button>
+                              </div>
                             </div>
-                          );
-                        })
-                      : "No data found"}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <Loader fetching={getData?.length < 1} />
+                    )}
                   </div>
 
                   <div className="col-xl-3 col-md-6">
                     <div
                       className="py-20 px-15 border-light rounded-16 bg-white cursor-pointer -hover-shadow"
                       onClick={() => {
+                        console.log("CLick");
                         setShowPaymentHistory(true);
                       }}
                     >
@@ -241,6 +241,7 @@ function EventBilling() {
       </div>
     </div>
   );
+  // );
 }
 
-export default EventBilling;
+export default BillingMain;

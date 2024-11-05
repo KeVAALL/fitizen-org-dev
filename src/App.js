@@ -1,32 +1,58 @@
+// CSS import
 import "./App.css";
+
+// React imports
+import { lazy, Suspense } from "react";
+
+// React Router imports
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import AuthGuard from "./utils/route-guard/AuthGuard";
 
+// Project-specific imports
+import { ToasterProvider } from "./context/ToasterContext";
+import Loader from "./utils/BackdropLoader";
+
+// MUI imports
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+// React Drag n Drop imports
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 
-import { ToasterProvider } from "./context/ToasterContext";
-import SignIn from "./components/auth/SignIn";
-import AuthLayout from "./layout/AuthHeader/AuthLayout";
-import DashboardLayout from "./layout/DashboardLayout/DashLayout";
-import Profile from "./components/authenticated/Profile";
-import AllEvents from "./components/authenticated/AllEvents";
-import { EventLayout } from "./layout/eventLayout/eventLayout";
-import EventMain from "./components/authenticated/EventMain";
-import EventParticipants from "./components/authenticated/EventParticipants";
-import EventBilling from "./components/authenticated/Billings/BillingMain";
-import BIBExpo from "./components/authenticated/BIBExpo";
-import Discount from "./components/authenticated/Discount";
-import Polls from "./components/authenticated/Polls";
-import Reviews from "./components/authenticated/Reviews";
-import Reports from "./components/authenticated/Reports";
-import Main from "./components/authenticated/EditEvent/Main";
-import Support from "./components/authenticated/Support";
+// Layout
+const AuthLayout = lazy(() => import("./layout/AuthHeader/AuthLayout"));
+const DashboardLayout = lazy(() =>
+  import("./layout/DashboardLayout/DashLayout")
+);
+const EventLayout = lazy(() => import("./layout/eventLayout/eventLayout"));
+// Lazy-loaded components
+const SignIn = lazy(() => import("./components/auth/SignIn"));
+// Auth Guard
+const AuthGuard = lazy(() => import("./utils/route-guard/AuthGuard"));
+// User Dashboard
+const AllEvents = lazy(() => import("./components/authenticated/AllEvents"));
+const Reports = lazy(() => import("./components/authenticated/Reports"));
+const Profile = lazy(() => import("./components/authenticated/Profile"));
+const Support = lazy(() => import("./components/authenticated/Support"));
+const AddEventMain = lazy(() =>
+  import("./components/authenticated/AddEvent/Main")
+);
+// Event Dashboard
+const EventMain = lazy(() => import("./components/authenticated/EventMain"));
+const Main = lazy(() => import("./components/authenticated/EditEvent/Main"));
+const BillingMain = lazy(() =>
+  import("./components/authenticated/Billings/BillingMain")
+);
+const EventParticipants = lazy(() =>
+  import("./components/authenticated/EventParticipants")
+);
+const BIBExpo = lazy(() => import("./components/authenticated/BIBExpo"));
+const Discount = lazy(() => import("./components/authenticated/Discount"));
+const Polls = lazy(() => import("./components/authenticated/Polls"));
+const Reviews = lazy(() => import("./components/authenticated/Reviews"));
 
 const theme = createTheme({
   breakpoints: {
@@ -58,6 +84,7 @@ const theme = createTheme({
   },
   // You can add other theme customizations here
 });
+
 const appLayout = createBrowserRouter([
   {
     path: `/`,
@@ -97,6 +124,10 @@ const appLayout = createBrowserRouter([
         path: "support",
         element: <Support />,
       },
+      {
+        path: "add-event",
+        element: <AddEventMain />,
+      },
     ],
   },
   {
@@ -121,7 +152,7 @@ const appLayout = createBrowserRouter([
       },
       {
         path: "billings/:event_id",
-        element: <EventBilling />,
+        element: <BillingMain />,
       },
       {
         path: "bib-expo/:event_id",
@@ -153,7 +184,9 @@ function App() {
       <ThemeProvider theme={theme}>
         <ToasterProvider>
           <DndProvider backend={HTML5Backend}>
-            <RouterProvider router={appLayout} />
+            <Suspense fallback={<Loader fetching={true} />}>
+              <RouterProvider router={appLayout} />
+            </Suspense>
           </DndProvider>
         </ToasterProvider>
       </ThemeProvider>

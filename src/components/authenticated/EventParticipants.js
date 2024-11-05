@@ -1,9 +1,9 @@
 // React imports
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import React, { useEffect, useMemo, useState } from "react";
 
 // Third-party imports
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   useTable,
   usePagination,
@@ -12,24 +12,22 @@ import {
   useRowSelect,
   useSortBy,
 } from "react-table";
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Link,
-  Modal,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TextField,
-} from "@mui/material";
-import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
-import { IconButton } from "@mui/material";
 
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Link from "@mui/material/Link";
+import Modal from "@mui/material/Modal";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+
+import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
 import Select from "react-select";
 import { PieChart } from "@mui/x-charts";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -42,7 +40,6 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 
 // Project imports
-import Event5 from "../../assets/img/events/event5.png";
 import {
   DefaultColumnFilter,
   GlobalFilter,
@@ -590,7 +587,7 @@ function EventParticipants() {
           groupByBoundary: true,
           Header: ({ getToggleAllPageRowsSelectedProps }) => (
             <IndeterminateCheckbox
-              indeterminate
+              // indeterminate
               {...getToggleAllPageRowsSelectedProps()}
             />
           ),
@@ -769,6 +766,28 @@ function EventParticipants() {
                                               name="Participant_Name"
                                               className="form-control text-primary"
                                               placeholder="Participant Name"
+                                              onChange={(e) => {
+                                                e.preventDefault();
+                                                const { value } = e.target;
+
+                                                const regex =
+                                                  /^[A-Za-z][A-Za-z\s]*$/;
+
+                                                if (
+                                                  !value ||
+                                                  (regex.test(
+                                                    value.toString()
+                                                  ) &&
+                                                    value.length <= 100)
+                                                ) {
+                                                  setFieldValue(
+                                                    "Participant_Name",
+                                                    value
+                                                  );
+                                                } else {
+                                                  return;
+                                                }
+                                              }}
                                             />
                                           </div>
                                           <ErrorMessage
@@ -807,8 +826,29 @@ function EventParticipants() {
                                               name="Phone_Number"
                                               className="form-control text-primary auto-fill-field"
                                               placeholder="Phone Number"
+                                              onChange={(e) => {
+                                                e.preventDefault();
+                                                const { value } = e.target;
+
+                                                const regex = /^\d+$/;
+
+                                                if (
+                                                  !value ||
+                                                  (regex.test(
+                                                    value.toString()
+                                                  ) &&
+                                                    value.length <= 10)
+                                                ) {
+                                                  setFieldValue(
+                                                    "Phone_Number",
+                                                    value
+                                                  );
+                                                } else {
+                                                  return;
+                                                }
+                                              }}
                                             />
-                                          </div>{" "}
+                                          </div>
                                           <ErrorMessage
                                             name="Phone_Number"
                                             component="div"
@@ -895,7 +935,7 @@ function EventParticipants() {
                                         </div>
                                       </div>
                                       <div className="col-xl-3 pl-0 pt-20">
-                                        <div className="single-field">
+                                        <div className="y-gap-10">
                                           <label className="text-13 text-reading fw-500">
                                             Blood Group
                                           </label>
@@ -903,6 +943,7 @@ function EventParticipants() {
                                             <Field name="Blood_Group">
                                               {({ field }) => (
                                                 <Select
+                                                  isSearchable={false}
                                                   placeholder="Select"
                                                   styles={selectCustomStyle}
                                                   onChange={(e) => {
@@ -947,6 +988,27 @@ function EventParticipants() {
                                               name="Address"
                                               className="form-control text-primary auto-fill-field"
                                               placeholder="Address"
+                                              onChange={(e) => {
+                                                e.preventDefault();
+                                                const { value } = e.target;
+
+                                                const regex = /^[^\s].*$/;
+
+                                                if (
+                                                  !value ||
+                                                  (regex.test(
+                                                    value.toString()
+                                                  ) &&
+                                                    value.length <= 200)
+                                                ) {
+                                                  setFieldValue(
+                                                    "Address",
+                                                    value
+                                                  );
+                                                } else {
+                                                  return;
+                                                }
+                                              }}
                                             />
                                           </div>
                                           <ErrorMessage
@@ -966,6 +1028,27 @@ function EventParticipants() {
                                               name="Pincode"
                                               className="form-control text-primary auto-fill-field"
                                               placeholder="Pincode"
+                                              onChange={(e) => {
+                                                e.preventDefault();
+                                                const { value } = e.target;
+
+                                                const regex = /^\d+$/;
+
+                                                if (
+                                                  !value ||
+                                                  (regex.test(
+                                                    value.toString()
+                                                  ) &&
+                                                    value.length <= 6)
+                                                ) {
+                                                  setFieldValue(
+                                                    "Pincode",
+                                                    value
+                                                  );
+                                                } else {
+                                                  return;
+                                                }
+                                              }}
                                             />
                                           </div>
                                           <ErrorMessage
@@ -985,6 +1068,25 @@ function EventParticipants() {
                                               name="City"
                                               className="form-control text-primary auto-fill-field"
                                               placeholder="City"
+                                              onChange={(e) => {
+                                                e.preventDefault();
+                                                const { value } = e.target;
+
+                                                const regex =
+                                                  /^[A-Za-z][A-Za-z\s]*$/;
+
+                                                if (
+                                                  !value ||
+                                                  (regex.test(
+                                                    value.toString()
+                                                  ) &&
+                                                    value.length <= 50)
+                                                ) {
+                                                  setFieldValue("City", value);
+                                                } else {
+                                                  return;
+                                                }
+                                              }}
                                             />
                                           </div>
                                           <ErrorMessage
@@ -1004,6 +1106,25 @@ function EventParticipants() {
                                               name="State"
                                               className="form-control text-primary auto-fill-field"
                                               placeholder="State"
+                                              onChange={(e) => {
+                                                e.preventDefault();
+                                                const { value } = e.target;
+
+                                                const regex =
+                                                  /^[A-Za-z][A-Za-z\s]*$/;
+
+                                                if (
+                                                  !value ||
+                                                  (regex.test(
+                                                    value.toString()
+                                                  ) &&
+                                                    value.length <= 50)
+                                                ) {
+                                                  setFieldValue("State", value);
+                                                } else {
+                                                  return;
+                                                }
+                                              }}
                                             />
                                           </div>
                                           <ErrorMessage
@@ -1527,37 +1648,43 @@ function EventParticipants() {
                                 spacing={2}
                                 sx={{ width: "100%", marginTop: "16px" }}
                               >
-                                <button
-                                  className="button w-150 rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    window.location.reload();
-                                  }}
-                                >
-                                  Cancel
-                                </button>
-
-                                <div className="col-auto relative">
+                                <div className="col-auto">
                                   <button
-                                    type="submit"
-                                    className="button bg-primary w-150 h-50 rounded-24 py-15 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                                    className="button w-150 rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      window.location.reload();
+                                    }}
                                   >
-                                    {!submitForm ? (
-                                      "Save"
-                                    ) : (
-                                      <span className="btn-spinner"></span>
-                                    )}
+                                    Cancel
                                   </button>
+                                </div>
+
+                                <div className="col-6">
+                                  <div className="row">
+                                    <div className="col-auto relative">
+                                      <button
+                                        type="submit"
+                                        className="button bg-primary w-150 h-50 rounded-24 py-15 px-15 text-white border-light load-button"
+                                      >
+                                        {!submitForm ? (
+                                          "Save"
+                                        ) : (
+                                          <span className="btn-spinner"></span>
+                                        )}
+                                      </button>
+                                    </div>
+                                  </div>
                                 </div>
                               </Stack>
 
-                              <button
+                              {/* <button
                                 style={{ marginTop: "16px" }}
                                 className="button w-220 h-50 rounded-24 py-4 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25"
                               >
                                 Download File
                                 <i className="fas fa-download text-14"></i>
-                              </button>
+                              </button> */}
                             </Stack>
                           </div>
                         </form>
@@ -2119,12 +2246,28 @@ function EventParticipants() {
                                                 name="TransferToName"
                                                 className="form-control"
                                                 placeholder="Transfer To Name"
-                                                onChange={(e) =>
-                                                  setFieldValue(
-                                                    "TransferToName",
-                                                    e.target.value
-                                                  )
-                                                }
+                                                onChange={(e) => {
+                                                  e.preventDefault();
+                                                  const { value } = e.target;
+
+                                                  const regex =
+                                                    /^[a-zA-Z][a-zA-Z\s]*$/;
+
+                                                  if (
+                                                    !value ||
+                                                    (regex.test(
+                                                      value.toString()
+                                                    ) &&
+                                                      value.length <= 50)
+                                                  ) {
+                                                    setFieldValue(
+                                                      "TransferToName",
+                                                      e.target.value
+                                                    );
+                                                  } else {
+                                                    return;
+                                                  }
+                                                }}
                                               />
                                             </div>
                                             <ErrorMessage
@@ -2464,6 +2607,7 @@ function EventParticipants() {
                                   </Stack>
                                 }
                                 arrow
+                                // open={true}
                               >
                                 <button className="button rounded-24 py-4 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
                                   Download File

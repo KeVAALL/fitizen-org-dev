@@ -1,3 +1,4 @@
+// React imports
 import React, {
   Fragment,
   useCallback,
@@ -6,24 +7,22 @@ import React, {
   useState,
 } from "react";
 
-import Event5 from "../../assets/img/events/event5.png";
-import Select from "react-select";
-import { selectCustomStyle } from "../../utils/ReactSelectStyles";
-import { TextField } from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import {
-  DesktopDatePicker,
-  LocalizationProvider,
-  TimePicker,
-} from "@mui/x-date-pickers";
+// Third-party imports
+// React Router and Redux imports
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { decryptData } from "../../utils/DataEncryption";
-import { RestfulApiService } from "../../config/service";
-import { Category } from "@mui/icons-material";
-import dayjs from "dayjs";
+import Select from "react-select";
+import { TextField } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import dayjs from "dayjs";
+
+// Project imports
+import { selectCustomStyle } from "../../utils/ReactSelectStyles";
+import { decryptData } from "../../utils/DataEncryption";
+import { RestfulApiService } from "../../config/service";
 import EventTitle from "./EventTitle";
 
 function Discount() {
@@ -995,7 +994,7 @@ function Discount() {
                       onClick={() => {
                         setShowDiscountForm(true);
                       }}
-                      class="button bg-primary rounded-22 px-30 py-10 text-white text-16 -grey-1 w-100 d-flex gap-10"
+                      class="button bg-primary w-150 h-40 px-30 rounded-24 text-white text-16 -grey-1 d-flex gap-10"
                     >
                       ADD
                       <i className="fas fa-plus text-16"></i>

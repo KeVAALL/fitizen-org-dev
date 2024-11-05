@@ -1,20 +1,18 @@
+// React imports
 import React, { useEffect, useState } from "react";
-import { Autocomplete, Checkbox, Chip, TextField } from "@mui/material";
 
-import Select from "react-select";
-import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import * as Yup from "yup";
+// Third-party imports
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { decryptData } from "../../../utils/DataEncryption";
-import { RestfulApiService } from "../../../config/service";
-import { Backdrop, CircularProgress } from "@mui/material";
-import AsyncSelect from "react-select/async";
-import CreatableSelect from "react-select/creatable";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import * as Yup from "yup";
 import toast from "react-hot-toast";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+
+// Project imports
+import { decryptData } from "../../../utils/DataEncryption";
+import { RestfulApiService } from "../../../config/service";
 import Loader from "../../../utils/BackdropLoader";
 
 const initialFormValues = {
@@ -28,6 +26,7 @@ function EventDescription() {
   const user = useSelector((state) => state.user.userProfile);
   const [initialValues, setInitialValues] = useState(initialFormValues);
   const [fetchingDescription, setFetchingDescription] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [submitForm, setSubmitForm] = useState(false);
 
   const validationSchema = Yup.object().shape({
@@ -117,6 +116,30 @@ function EventDescription() {
       className="py-30 px-30 border-light rounded-8"
       style={{ boxShadow: "2px 2px 7.5px 0px #0000000D" }}
     >
+      <div className="col-12 d-flex justify-center">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setIsEditing(!isEditing);
+            if (isEditing) {
+              LoadDescription();
+            }
+          }}
+          className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
+        >
+          {isEditing ? (
+            <>
+              <i className="fas fa-times text-16"></i>
+              Cancel
+            </>
+          ) : (
+            <>
+              <i className="far fa-edit text-16"></i>
+              Edit Description
+            </>
+          )}
+        </button>
+      </div>
       {fetchingDescription ? (
         <Loader fetching={fetchingDescription} />
       ) : (
@@ -130,18 +153,6 @@ function EventDescription() {
           {({ setFieldValue }) => (
             <Form>
               <div className="row y-gap-20 py-20">
-                <div className="col-12 d-flex justify-center">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                    }}
-                    className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
-                  >
-                    <i className="far fa-edit text-16"></i>
-                    Edit Description
-                  </button>
-                </div>
-
                 <div className="col-12">
                   <div className="single-field w-full y-gap-10">
                     <label className="text-13 fw-500">
@@ -150,6 +161,7 @@ function EventDescription() {
                     <Field name="Event_Description">
                       {({ field, form }) => (
                         <ReactQuill
+                          readOnly={!isEditing}
                           theme="snow"
                           value={field.value}
                           onChange={(content) =>
@@ -175,6 +187,7 @@ function EventDescription() {
                     <Field name="Refund_Cancellation">
                       {({ field, form }) => (
                         <ReactQuill
+                          readOnly={!isEditing}
                           theme="snow"
                           value={field.value}
                           onChange={(content) =>
@@ -200,6 +213,7 @@ function EventDescription() {
                     <Field name="Rules_Regulations">
                       {({ field, form }) => (
                         <ReactQuill
+                          readOnly={!isEditing}
                           theme="snow"
                           value={field.value}
                           onChange={(content) =>
@@ -217,19 +231,21 @@ function EventDescription() {
                   </div>
                 </div>
 
-                <div className="col-auto relative">
-                  <button
-                    disabled={submitForm}
-                    type="submit"
-                    className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                  >
-                    {!submitForm ? (
-                      `Save`
-                    ) : (
-                      <span className="btn-spinner"></span>
-                    )}
-                  </button>
-                </div>
+                {isEditing && (
+                  <div className="col-auto relative">
+                    <button
+                      disabled={submitForm}
+                      type="submit"
+                      className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                    >
+                      {!submitForm ? (
+                        `Save`
+                      ) : (
+                        <span className="btn-spinner"></span>
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             </Form>
           )}

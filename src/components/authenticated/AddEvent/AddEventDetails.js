@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 
 // Third-party imports
-import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 // Project imports
@@ -13,12 +12,12 @@ import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { setSelectedCategory } from "../../../redux/slices/categorySlice";
-import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
 import toast from "react-hot-toast";
 
 // MUI imports
 import Loader from "../../../utils/BackdropLoader";
+import { setCurrentEventId } from "../../../redux/slices/addEventSlice";
 
 const initialFormValues = {
   Event_Name: "",
@@ -26,7 +25,10 @@ const initialFormValues = {
   RaceDay_Takeaways: [],
   RaceDay_Facilities: [],
   Pincode: null,
-  Country: null,
+  Country: {
+    value: "India",
+    label: "India",
+  },
   State: "",
   City: "",
   Event_Venue: "",
@@ -36,10 +38,10 @@ const initialFormValues = {
   Is_Gst: null,
 };
 
-function EventDetails() {
-  const { event_id } = useParams();
+function AddEventDetails({ handleStep, index }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userProfile);
+  const newEventId = useSelector((state) => state.newEvent.currentEventId);
   const [fetchingDetails, setFetchingDetails] = useState(false);
   const [eventTypeDropdown, setEventTypeDropdown] = useState([]);
   const [takeawayDropdown, setTakeawayDropdown] = useState([]);
@@ -71,7 +73,8 @@ function EventDetails() {
     RaceDay_Takeaways: Yup.array().min(1, "At least one takeaway is required"),
     RaceDay_Facilities: Yup.array().min(1, "At least one facility is required"),
     Pincode: Yup.object().required("Pincode is required"),
-    Country: Yup.object().required("Country is required"),
+    // Country: Yup.object().required("Country is required"),
+    Country: Yup.object().nullable(),
     State: Yup.string().required("State is required"),
     City: Yup.string().required("City is required"),
     Event_Venue: Yup.string().required("Event Venue is required"),
@@ -150,7 +153,7 @@ function EventDetails() {
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>Pincode</FN><FV>" +
-      values?.Pincode.label +
+      values?.Pincode.value +
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>State</FN><FV>" + values?.State + "</FV><FT>Text</FT></R>";
@@ -203,8 +206,9 @@ function EventDetails() {
   };
   const submitDetailsForm = async (values) => {
     const reqdata = {
-      Method_Name: "Update",
-      Event_Id: decryptData(event_id),
+      Method_Name: newEventId ? "Update" : "Create",
+      // Event_Id: decryptData(event_id),
+      Event_Id: newEventId ? newEventId : "",
       Event_Name: values?.Event_Name,
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
@@ -229,21 +233,62 @@ function EventDetails() {
       }
       if (result) {
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
-        const apiResponse = {
+        const apiResponse1 = {
           categorySelected: values?.EventType_Id,
         };
-        dispatch(setSelectedCategory(apiResponse));
+        dispatch(setSelectedCategory(apiResponse1));
+        const apiResponse = {
+          currentEventId: result?.data?.Result?.Table1[0]?.Result_Extra_Key,
+        };
+        dispatch(setCurrentEventId(apiResponse));
       }
     } catch (err) {
       toast.error(err?.Result?.Table1[0]?.Result_Description);
     } finally {
+      handleStep(index);
       setSubmitForm(false);
     }
   };
+
+  async function LoadDropdownOptions() {
+    const reqdata = {
+      Method_Name: "GetDropdownEvent",
+      // Event_Id: decryptData(event_id),
+      Event_Id: "",
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      Event_Name: "",
+      Event_Period: "",
+      EventType_Id: "",
+    };
+    try {
+      setFetchingDetails(true);
+      const result = await RestfulApiService(reqdata, "organizer/GetEvent");
+      if (result) {
+        const result1 = result?.data?.Result?.Table1[0];
+        const apiResponse = {
+          categorySelected: result?.data?.Result?.Table3?.filter(
+            (type) => type.value === result1?.EventType_Id
+          )[0],
+        };
+        // dispatch(setSelectedCategory(apiResponse));
+        setTimezoneDropdown(result?.data?.Result?.Table1);
+        setEventTypeDropdown(result?.data?.Result?.Table2);
+        setTakeawayDropdown(result?.data?.Result?.Table5);
+        setFacilityDropdown(result?.data?.Result?.Table6);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setFetchingDetails(false);
+    }
+  }
   async function LoadDetails() {
     const reqdata = {
       Method_Name: "Get_One",
-      Event_Id: decryptData(event_id),
+      Event_Id: newEventId,
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
@@ -303,17 +348,21 @@ function EventDetails() {
     }
   }
   useEffect(() => {
-    if (event_id) {
+    // if (event_id) {
+    LoadDropdownOptions();
+    // }
+    if (newEventId) {
+      console.log(newEventId);
       LoadDetails();
     }
-  }, [event_id]);
+  }, [newEventId]);
 
   return (
     <div
       className="py-30 px-30 border-light rounded-8"
       style={{ boxShadow: "2px 2px 7.5px 0px #0000000D" }}
     >
-      <div className="col-12 d-flex justify-center">
+      {/* <div className="col-12 d-flex justify-center">
         <button
           onClick={(e) => {
             e.preventDefault();
@@ -336,7 +385,7 @@ function EventDetails() {
             </>
           )}
         </button>
-      </div>
+      </div> */}
       {fetchingDetails ? (
         <Loader fetching={fetchingDetails} />
       ) : (
@@ -357,7 +406,6 @@ function EventDetails() {
                     </label>
                     <div className="form-control">
                       <Field
-                        disabled={!isEditing}
                         type="text"
                         className="form-control"
                         placeholder="Add event name"
@@ -394,7 +442,6 @@ function EventDetails() {
                       Event Type <sup className="asc">*</sup>
                     </label>
                     <Select
-                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={eventTypeDropdown}
@@ -415,7 +462,6 @@ function EventDetails() {
                       Time Zone <sup className="asc">*</sup>
                     </label>
                     <Select
-                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={timezoneDropdown}
@@ -436,7 +482,6 @@ function EventDetails() {
                       Race Day takeaways <sup className="asc">*</sup>
                     </label>
                     <CreatableSelect
-                      isDisabled={!isEditing}
                       isMulti
                       styles={{
                         ...selectCustomStyle,
@@ -471,7 +516,6 @@ function EventDetails() {
                       Race Day facilities <sup className="asc">*</sup>
                     </label>
                     <CreatableSelect
-                      isDisabled={!isEditing}
                       isMulti
                       styles={{
                         ...selectCustomStyle,
@@ -503,7 +547,6 @@ function EventDetails() {
                       Pincode <sup className="asc">*</sup>
                     </label>
                     <AsyncSelect
-                      isDisabled={!isEditing}
                       name="Pincode"
                       className="select-color"
                       placeholder="Pincode"
@@ -550,8 +593,8 @@ function EventDetails() {
                       Country <sup className="asc">*</sup>
                     </label>
                     <Select
-                      isSearchable={false}
                       isDisabled={true}
+                      isSearchable={false}
                       styles={selectCustomStyle}
                       options={[
                         {
@@ -580,7 +623,6 @@ function EventDetails() {
                     </label>
                     <div className="form-control">
                       <Field
-                        disabled={!isEditing}
                         type="text"
                         className="form-control"
                         placeholder="State"
@@ -618,7 +660,6 @@ function EventDetails() {
                     </label>
                     <div className="form-control">
                       <Field
-                        disabled={!isEditing}
                         type="text"
                         className="form-control"
                         placeholder="City"
@@ -656,7 +697,6 @@ function EventDetails() {
                     </label>
                     <div className="form-control">
                       <Field
-                        disabled={!isEditing}
                         type="text"
                         className="form-control"
                         placeholder="Add full address"
@@ -700,7 +740,6 @@ function EventDetails() {
                     <label className="text-13 fw-600">GST Payable by?</label>
 
                     <Select
-                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={chargesDropdown}
@@ -733,7 +772,6 @@ function EventDetails() {
                     </label>
 
                     <Select
-                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={chargesDropdown}
@@ -758,7 +796,6 @@ function EventDetails() {
                     </label>
 
                     <Select
-                      isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={chargesDropdown}
@@ -776,21 +813,23 @@ function EventDetails() {
                   </div>
                 </div>
 
-                {isEditing && (
-                  <div className="col-auto relative">
-                    <button
-                      disabled={submitForm}
-                      type="submit"
-                      className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                    >
-                      {!submitForm ? (
-                        `Save`
-                      ) : (
-                        <span className="btn-spinner"></span>
-                      )}
-                    </button>
+                <div className="col-12 d-flex justify-end">
+                  <div className="row">
+                    <div className="col-auto relative">
+                      <button
+                        disabled={submitForm}
+                        type="submit"
+                        className="button bg-primary w-150 h-50 rounded-24 px-15 text-white border-light load-button"
+                      >
+                        {!submitForm ? (
+                          `Save & Next`
+                        ) : (
+                          <span className="btn-spinner"></span>
+                        )}
+                      </button>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             </Form>
           )}
@@ -800,4 +839,4 @@ function EventDetails() {
   );
 }
 
-export default EventDetails;
+export default AddEventDetails;

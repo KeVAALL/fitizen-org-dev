@@ -1,19 +1,23 @@
+// React imports
 import React, { useEffect, useState } from "react";
 
-import Event5 from "../../assets/img/events/event5.png";
+// Project-specific imports
 import DIcon1 from "../../assets/img/icons/dicon1.png";
 import DIcon2 from "../../assets/img/icons/dicon2.png";
 import DIcon3 from "../../assets/img/icons/dicon3.png";
 import DIcon4 from "../../assets/img/icons/dicon4.png";
 import DIcon5 from "../../assets/img/icons/dicon5.png";
-import { useNavigate, useParams } from "react-router-dom";
 import { RestfulApiService } from "../../config/service";
-import { useDispatch, useSelector } from "react-redux";
 import { decryptData } from "../../utils/DataEncryption";
-import { Backdrop, CircularProgress } from "@mui/material";
 import { setCurrentEvent } from "../../redux/slices/eventSlice";
 import EventTitle from "./EventTitle";
 import Loader from "../../utils/BackdropLoader";
+
+// React Router imports
+import { useNavigate, useParams } from "react-router-dom";
+
+// Redux imports
+import { useDispatch, useSelector } from "react-redux";
 
 function EventMain() {
   const { event_id } = useParams();

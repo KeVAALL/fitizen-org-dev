@@ -27,7 +27,7 @@
   background-color: inherit;
 }
 .main-toolbar {
-  width: calc(100% - 95px);
+  width: calc(100% - 250px);
   background-color: transparent !important;
   box-shadow: none;
   position: fixed;

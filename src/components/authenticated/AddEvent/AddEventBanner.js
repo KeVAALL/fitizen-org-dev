@@ -1,6 +1,6 @@
 // React imports
 import React, { createRef, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 // Third-party imports
@@ -16,10 +16,11 @@ import { RestfulApiService } from "../../../config/service";
 import { decryptData } from "../../../utils/DataEncryption";
 import Loader from "../../../utils/BackdropLoader";
 import { MEDIA_URL } from "../../../config/url";
+import Swal from "sweetalert2";
 
-function EventBanner() {
-  const { event_id } = useParams();
+function AddEventBanner({ handleStep, prevIndex }) {
   const user = useSelector((state) => state.user.userProfile);
+  const newEventId = useSelector((state) => state.newEvent.currentEventId);
   const [loadingBanner, setLoadingBanner] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [openCropper, setOpenCropper] = useState(false);
@@ -30,8 +31,36 @@ function EventBanner() {
     Image_Path: "",
     Image_Name: "",
   });
+  const navigate = useNavigate();
   const cropperRef = createRef();
 
+  const handleCreate = () => {
+    Swal.fire({
+      title: "Are you sure you want to publish event?",
+      // text: "You won't be able to revert this!",
+      icon: "success",
+      showCancelButton: true,
+      confirmButtonColor: "#eb6400",
+      // cancelButtonColor: "#fff",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      preConfirm: async () => {
+        // Show loading on the "Yes, delete it!" button
+        Swal.showLoading();
+
+        navigate("/dashboard/all-events");
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show the success message after the deletion is confirmed
+        Swal.fire({
+          title: "Event Created!",
+          text: "Event has been created.",
+          icon: "success",
+        });
+      }
+    });
+  };
   const handleFileChange = async (event) => {
     const file = event.currentTarget.files[0];
 
@@ -127,7 +156,7 @@ function EventBanner() {
   const submitBannerForm = async (values) => {
     const reqdata = {
       Method_Name: "Create",
-      Event_Id: decryptData(event_id),
+      Event_Id: newEventId,
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
@@ -159,7 +188,7 @@ function EventBanner() {
   async function LoadBanners() {
     const reqdata = {
       Method_Name: "Assets",
-      Event_Id: decryptData(event_id),
+      Event_Id: newEventId,
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
@@ -187,10 +216,10 @@ function EventBanner() {
     }
   }
   useEffect(() => {
-    if (event_id) {
+    if (newEventId) {
       LoadBanners();
     }
-  }, [event_id]);
+  }, [newEventId]);
 
   return (
     <div
@@ -261,8 +290,6 @@ function EventBanner() {
                           }}
                           ref={cropperRef}
                           zoomTo={0.5}
-                          // initialAspectRatio={1} // Set the initial aspect ratio to 2:1
-                          // aspectRatio={1} // Maintain the aspect ratio of 2:1
                           initialAspectRatio={16 / 9} // Set the initial aspect ratio to 16:9
                           aspectRatio={16 / 9} // Maintain a landscape aspect ratio of 16:9
                           minCropBoxWidth={400} // Set to a reasonable width for landscape images
@@ -270,8 +297,6 @@ function EventBanner() {
                           preview=".img-preview"
                           src={image}
                           viewMode={1}
-                          // minCropBoxHeight={10}
-                          // minCropBoxWidth={10}
                           background={false}
                           responsive={true}
                           autoCropArea={1}
@@ -310,7 +335,7 @@ function EventBanner() {
                             getCropData(setFieldValue, setUploadingImage);
                           }}
                           type="submit"
-                          className="button h-50 px-30 text-white bg-primary -grey-1 rounded-16 load-button relative w-200 mt-20"
+                          className="button h-40 px-30 text-white bg-primary -grey-1 rounded-16 load-button relative w-200 mt-20"
                         >
                           {!uploadingImage && "Crop & Upload"}
                           {uploadingImage && (
@@ -399,18 +424,38 @@ function EventBanner() {
 
                   <div className="col-md-8"></div>
 
-                  <div className="col-auto relative">
-                    <button
-                      disabled={submitForm}
-                      type="submit"
-                      className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                    >
-                      {!submitForm ? (
-                        `Save`
-                      ) : (
-                        <span className="btn-spinner"></span>
-                      )}
-                    </button>
+                  <div className="col-12 d-flex justify-end">
+                    <div className="row">
+                      <div className="col-auto relative">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleStep(prevIndex);
+                          }}
+                          className="button bg-white w-150 h-40 rounded-24 px-15 text-primary text-12 border-primary load-button"
+                        >
+                          Back
+                        </button>
+                      </div>
+                      <div className="col-auto relative">
+                        <button
+                          // disabled={submitForm}
+                          // type="submit"
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleCreate();
+                          }}
+                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
+                        >
+                          {!submitForm ? (
+                            `Publish Now`
+                          ) : (
+                            <span className="btn-spinner"></span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Form>
@@ -422,22 +467,4 @@ function EventBanner() {
   );
 }
 
-export default EventBanner;
-
-/* <div className="col-5">
-          <div className="banner-parent w-full">
-            <div className="file-upload-banner">
-              <p className="text-14 text-reading fw-600">
-                Thumbnail Image : (Size 1920X1080)
-              </p>
-              <i className="fas fa-upload text-80 text-primary mt-30"></i>
-              <p className="text-16 text-reading fw-600 mt-20">
-                Click box to upload
-              </p>
-              <p className="text-14 text-reading fw-500">
-                JPEG or PNGS smaller than 10mb
-              </p>
-              <input type="file" />
-            </div>
-          </div>
-        </div> */
+export default AddEventBanner;

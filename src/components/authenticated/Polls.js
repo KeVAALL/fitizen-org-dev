@@ -1,16 +1,24 @@
+// React imports
 import React, { useEffect, useState } from "react";
 
-import Event5 from "../../assets/img/events/event5.png";
-import { RestfulApiService } from "../../config/service";
+// Third-party imports
+// React Router and Redux imports
 import { useParams } from "react-router-dom";
-import { decryptData } from "../../utils/DataEncryption";
 import { useSelector } from "react-redux";
-import { Backdrop, Box, CircularProgress, Modal, Stack } from "@mui/material";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import Select from "react-select";
 import * as Yup from "yup";
-import { selectCustomStyle } from "../../utils/ReactSelectStyles";
+import Select from "react-select";
 import toast from "react-hot-toast";
+
+// MUI imports
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Stack from "@mui/material/Stack";
+
+// Project imports
+import { RestfulApiService } from "../../config/service";
+import { decryptData } from "../../utils/DataEncryption";
+import { selectCustomStyle } from "../../utils/ReactSelectStyles";
 import EventTitle from "./EventTitle";
 import Loader from "../../utils/BackdropLoader";
 
@@ -265,9 +273,9 @@ function Polls() {
                                 gap: "16px",
                               }}
                             >
-                              <div className="single-field w-full">
+                              <div className="single-field w-full y-gap-10">
                                 <label className="text-13 text-reading fw-500">
-                                  Poll Name
+                                  Poll Name <sup className="asc">*</sup>
                                 </label>
                                 <div className="form-control">
                                   <Field
@@ -299,9 +307,9 @@ function Polls() {
                                 />
                               </div>
 
-                              <div className="single-field w-full">
+                              <div className="single-field w-full y-gap-10">
                                 <label className="text-13 text-reading fw-500">
-                                  Add Question
+                                  Add Question <sup className="asc">*</sup>
                                 </label>
                                 <div className="form-control">
                                   <Field
@@ -335,7 +343,7 @@ function Polls() {
 
                               <div className="y-gap-10">
                                 <label className="text-13 text-reading fw-500">
-                                  Select Type
+                                  Select Type <sup className="asc">*</sup>
                                 </label>
                                 <div className="p-0">
                                   <Select
@@ -358,9 +366,9 @@ function Polls() {
 
                               {/* Mini Rating Field */}
 
-                              <div className="single-field w-full">
+                              <div className="single-field w-full y-gap-10">
                                 <label className="text-13 text-reading fw-500">
-                                  Minimum Rating
+                                  Minimum Rating <sup className="asc">*</sup>
                                 </label>
                                 <div className="form-control">
                                   <Field
@@ -378,9 +386,9 @@ function Polls() {
                               </div>
 
                               {/* Max Rating Field */}
-                              <div className="single-field w-full">
+                              <div className="single-field w-full y-gap-10">
                                 <label className="text-13 text-reading fw-500">
-                                  Maximum Rating
+                                  Maximum Rating <sup className="asc">*</sup>
                                 </label>
                                 <div className="form-control">
                                   <Field
@@ -408,7 +416,7 @@ function Polls() {
                                   <button
                                     disabled={addingPoll}
                                     type="submit"
-                                    className="button bg-primary w-200 h-50 rounded-24 py-15 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                                    className="button bg-primary w-150 h-50 rounded-24 px-15 text-white border-light load-button"
                                   >
                                     {!addingPoll ? (
                                       `Save`

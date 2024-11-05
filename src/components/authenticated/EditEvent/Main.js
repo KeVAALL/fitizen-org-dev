@@ -1,16 +1,12 @@
-import { TabContext } from "@mui/lab";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  IconButton,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import { ErrorMessage, Field } from "formik";
+// React imports
 import React, { useState } from "react";
+
+// MUI imports
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+
+// Project imports
 import EventTicket from "./EventTicket";
 import EventDetails from "./EventDetails";
 import EventDescription from "./EventDescription";
@@ -31,13 +27,6 @@ function CustomTabPanel(props) {
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
-}
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
 }
 
 function Main() {
@@ -84,7 +73,7 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
-                      fontSize: "16px",
+                      fontSize: "14px",
                       fontWeight: 600,
                     }}
                   />
@@ -104,6 +93,7 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
+                      fontSize: "14px",
                       fontWeight: 600,
                     }}
                   />
@@ -123,6 +113,7 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
+                      fontSize: "14px",
                       fontWeight: 600,
                     }}
                   />
@@ -142,6 +133,7 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
+                      fontSize: "14px",
                       fontWeight: 600,
                     }}
                   />
@@ -161,6 +153,7 @@ function Main() {
                       paddingTop: "4px",
                       height: "30px",
                       minHeight: "30px",
+                      fontSize: "14px",
                       fontWeight: 600,
                     }}
                   />

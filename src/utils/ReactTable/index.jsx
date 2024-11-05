@@ -624,7 +624,7 @@ export const IndeterminateCheckbox = forwardRef(
             fontSize: "1.2rem",
           },
         }}
-        indeterminate={indeterminate}
+        // indeterminate={indeterminate}
         ref={resolvedRef}
         {...rest}
       />

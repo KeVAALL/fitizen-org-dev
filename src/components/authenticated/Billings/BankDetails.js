@@ -1,19 +1,22 @@
+// React imports
 import React, { useCallback, useEffect, useState } from "react";
-import Event5 from "../../../assets/img/events/event5.png";
+
+// Third-party imports
 import { Box, Modal, Stack } from "@mui/material";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import * as Yup from "yup";
-import { RestfulApiService } from "../../../config/service";
-import { useSelector } from "react-redux";
-import { decryptData } from "../../../utils/DataEncryption";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import * as Yup from "yup";
 import toast from "react-hot-toast";
 import Select from "react-select";
-import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import Swal from "sweetalert2";
+
+// Project imports
+import { RestfulApiService } from "../../../config/service";
+import { decryptData } from "../../../utils/DataEncryption";
+import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import EventTitle from "../EventTitle";
 
-// import Bank from "../../assets/img/icons/bank.png";
 const dropDwonAccountType = [
   {
     label: "Saving",

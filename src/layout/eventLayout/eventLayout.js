@@ -1,24 +1,28 @@
 /* eslint-disable react/prop-types */
+// React imports
 import React, { useState } from "react";
-import {
-  BrowserRouter as Router,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import { AppBar, Toolbar, Box, Avatar } from "@mui/material";
+
+// React Router imports
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+
+// MUI imports (separated)
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+
+// Third-party imports
 import { Menu, Sidebar } from "react-pro-sidebar";
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux"; // Correctly placed under third-party imports
 
+// Project-specific imports
 import DarkLogo from "../../assets/img/general/logo-dark.png";
 import FavLogo from "../../assets/img/general/favicon.png";
-import Avatar3 from "../../assets/img/avatars/3.png";
-
 import "../DashboardLayout/DashboardLayout.css";
 import { HtmlLightTooltip } from "../../utils/Tooltip";
-import { useSelector } from "react-redux";
 
 const Header = ({ open, handleDrawerToggle }) => {
   const user = useSelector((state) => state.user.userProfile);
@@ -481,7 +485,7 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
   );
 };
 
-export const EventLayout = () => {
+const EventLayout = () => {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const theme = useTheme();
@@ -576,3 +580,5 @@ export const EventLayout = () => {
     </Box>
   );
 };
+
+export default EventLayout;

@@ -37,7 +37,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-const CustomAccordion = ({
+const AddCustomAccordion = ({
   id,
   category,
   raceDistanceCategory,
@@ -48,8 +48,8 @@ const CustomAccordion = ({
   handleNewItemSubmit,
 }) => {
   // console.log(category);
-  const { event_id } = useParams();
   const user = useSelector((state) => state.user.userProfile);
+  const newEventId = useSelector((state) => state.newEvent.currentEventId);
   const accordionRef = useRef(null);
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -404,7 +404,7 @@ const CustomAccordion = ({
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
       Org_Id: user?.Org_Id,
-      Event_Id: decryptData(event_id),
+      Event_Id: newEventId,
       EventCategoryEntry_Id: values?.EventCategoryEntry_Id
         ? values?.EventCategoryEntry_Id
         : "",
@@ -466,7 +466,7 @@ const CustomAccordion = ({
 
     const reqdata = {
       Method_Name: "Get_CategoryOne",
-      Event_Id: decryptData(event_id),
+      Event_Id: newEventId,
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
@@ -573,7 +573,7 @@ const CustomAccordion = ({
           Session_User_Name: user?.User_Display_Name,
           Session_Organzier_Id: user?.Organizer_Id,
           Org_Id: user?.Org_Id,
-          Event_Id: decryptData(event_id),
+          Event_Id: newEventId,
           EventCategoryEntry_Id: prize.EventPrizeEntry_Id,
           EventCategory_Id: "",
           EventCategory_Name: "",
@@ -649,7 +649,7 @@ const CustomAccordion = ({
 
         const reqdata = {
           Method_Name: "Delete",
-          Event_Id: decryptData(event_id),
+          Event_Id: newEventId,
           Session_User_Id: user?.User_Id,
           Session_User_Name: user?.User_Display_Name,
           Session_Organzier_Id: user?.Organizer_Id,
@@ -698,7 +698,6 @@ const CustomAccordion = ({
     if (category.isNew) {
       console.log(category);
       setAccordionOpen(true);
-      // scrollToAccordion();
     }
   }, [category]);
 
@@ -732,7 +731,6 @@ const CustomAccordion = ({
           <div style={{ display: "flex", gap: "8px" }}>
             {category?.isNew ? (
               <>
-                {" "}
                 {isAccordionOpen ? (
                   <IconButton
                     size="small"
@@ -937,7 +935,7 @@ const CustomAccordion = ({
                     </label>
                     <div class="form-control">
                       <Field
-                        ref={accordionRef}
+                        // ref={accordionRef}
                         disabled={!isEditing}
                         type="text"
                         className="form-control"
@@ -2206,18 +2204,20 @@ const CustomAccordion = ({
 
                 {isEditing && (
                   <div className="col-12">
-                    <div className="col-auto relative">
-                      <button
-                        disabled={submitForm}
-                        type="submit"
-                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                      >
-                        {!submitForm ? (
-                          `Save`
-                        ) : (
-                          <span className="btn-spinner"></span>
-                        )}
-                      </button>
+                    <div className="row">
+                      <div className="col-auto relative">
+                        <button
+                          disabled={submitForm}
+                          type="submit"
+                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
+                        >
+                          {!submitForm ? (
+                            `Save`
+                          ) : (
+                            <span className="btn-spinner"></span>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -2230,14 +2230,4 @@ const CustomAccordion = ({
   );
 };
 
-export default CustomAccordion;
-
-// Mock API function
-const fetchYourData = async () => {
-  // Simulate an API call delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true });
-    }, 1000);
-  });
-};
+export default AddCustomAccordion;
