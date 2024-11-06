@@ -15,6 +15,7 @@ import userReducer from "./slices/userSlice";
 import categoryReducer from "./slices/categorySlice";
 import eventReducer from "./slices/eventSlice";
 import newEventReducer from "./slices/addEventSlice";
+import profileReducer from "./slices/profileSlice";
 import { encryptTransform } from "redux-persist-transform-encrypt";
 
 const rootReducer = combineReducers({
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   category: categoryReducer,
   selectedEvent: eventReducer,
   newEvent: newEventReducer,
+  orgProfile: profileReducer,
 });
 
 const encryptor = encryptTransform({

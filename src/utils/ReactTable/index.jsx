@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useMemo, useRef, useState } from "react";
 
 // material-ui
 import { styled, useTheme } from "@mui/material/styles";
@@ -9,11 +9,7 @@ import {
   Grid,
   ListItemText,
   MenuItem,
-  OutlinedInput,
-  Pagination,
-  // Select,
   Stack,
-  Tooltip,
   Typography,
   Pagination as MuiPagination,
   InputAdornment,
@@ -31,7 +27,6 @@ import { BootstrapInput } from "../Input/Textfield";
 import { matchSorter } from "match-sorter";
 import Select, { components } from "react-select";
 
-// assets
 export function GlobalFilter({ globalFilter, setGlobalFilter, ...props }) {
   return (
     // <FormControl variant="standard" fullWidth>

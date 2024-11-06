@@ -1,18 +1,113 @@
 import React, { useState } from "react";
 
-import FaceBookIcon from "../../../assets/img/icons/facebook.png";
-import InstagramIcon from "../../../assets/img/icons/instagram.png";
-import LinkedinIcon from "../../../assets/img/icons/linkedin.png";
-import YoutubeIcon from "../../../assets/img/icons/youtube.png";
-import TwitterIcon from "../../../assets/img/icons/twitter.png";
+// Third-party imports
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+
+// Project component imports
 import Personal from "./Personal";
+import BankDetails from "./BankDetails";
+import Social from "./Social";
+
+// Utility imports
+import { setOrgProfile } from "../../../redux/slices/profileSlice";
+import { RestfulApiService } from "../../../config/service";
 
 function Profile() {
   const [activeTab, setActiveTab] = useState(1);
+  const user = useSelector((state) => state.user.userProfile);
+  const orgProfile = useSelector((state) => state.orgProfile.profile);
+  const dispatch = useDispatch();
 
   const updateTab = (tabNumber) => {
     setActiveTab(tabNumber);
   };
+  function generateXML(data) {
+    let XMLData = "";
+
+    // Define the fields to include in the XML and their corresponding values from the data object
+    const fields = [
+      { field: "Contact_Name", value: data.Contact_Name },
+      { field: "Has_GST_No", value: data.Has_GST_No === "no" ? "-1" : "1" },
+      { field: "Mobile_Number", value: data.Mobile_Number },
+      { field: "Email_Id", value: data.Email_Id },
+      { field: "PAN_No", value: data.PAN_No },
+      { field: "GST_No", value: data.GST_No },
+      { field: "BankAccount_Name", value: data.BankAccount_Name },
+      { field: "BankAccount_No", value: data.BankAccount_No },
+      {
+        field: "BankAccountType_Id",
+        value: data.BankAccountType_Id.value
+          ? data.BankAccountType_Id.value
+          : data.BankAccountType_Id,
+      },
+      { field: "BankIFSC_Code", value: data.BankIFSC_Code },
+      { field: "Bank_Name", value: data.Bank_Name },
+      { field: "BankBranch_Name", value: data.BankBranch_Name },
+      { field: "Org_Website", value: data.Org_Website },
+      { field: "Org_Facebook", value: data.Org_Facebook },
+      { field: "Org_Instagram", value: data.Org_Instagram },
+      { field: "Org_LinkedIn", value: data.Org_LinkedIn },
+      { field: "Org_Youtube", value: data.Org_Youtube },
+      { field: "Logo_Path", value: data.Logo_Path },
+      { field: "Is_Active", value: data.Is_Active },
+      { field: "Is_Deleted", value: "0" }, // Set Is_Deleted to 0 as per your requirement
+    ];
+
+    // Loop through each field and add it to the XML structure
+    fields.forEach(({ field, value }) => {
+      XMLData += `<R><FN>${field}</FN><FV>${value}</FV><FT>Text</FT></R>`;
+    });
+
+    // Wrap XML data in the root element
+    XMLData = `<D>${XMLData}</D>`;
+
+    return XMLData;
+  }
+  async function UpdateProfile(values, currindex, nextIndex, setAdding) {
+    console.log(values);
+
+    const reqdata = {
+      Method_Name: "Update",
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      Organizer_Name: "",
+      XMLData: generateXML(values),
+    };
+    try {
+      setAdding(true);
+
+      const result = await RestfulApiService(
+        reqdata,
+        "organizer/updateorganizer"
+      );
+      if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+        toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
+        return;
+      }
+      if (result) {
+        toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+        const apiResponse = {
+          orgProfile: {
+            ...orgProfile,
+            ...values,
+          },
+        };
+        dispatch(setOrgProfile(apiResponse));
+        if (currindex === 3) {
+          return;
+        }
+        updateTab(nextIndex);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setAdding(false);
+    }
+  }
+  // ${typeof value === "number" ? "Number" : "Text"}
 
   return (
     <div className="dashboard__main">
@@ -97,7 +192,12 @@ function Profile() {
                       activeTab === 1 ? " is-tab-el-active -tab-item-1" : ""
                     } px-40 rounded-8 border-light pb-20`}
                   >
-                    <Personal />
+                    <Personal
+                      updateTab={updateTab}
+                      nextIndex={2}
+                      generateXML={generateXML}
+                      UpdateProfile={UpdateProfile}
+                    />
                   </div>
                 )}
                 {activeTab === 2 && (
@@ -106,140 +206,13 @@ function Profile() {
                       activeTab === 2 ? " is-tab-el-active -tab-item-2" : ""
                     } border-light px-40 rounded-8 pb-20`}
                   >
-                    <div className="row justify-between pt-20">
-                      <div className="col-lg-4">
-                        <div className="single-field py-10">
-                          <label className="text-13 fw-500">
-                            Name of Account Holder
-                            <sup className="asc">*</sup>
-                          </label>
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Account Holder Name"
-                              name="ah-name"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-4">
-                        <div className="single-field py-10">
-                          <label className="text-13 fw-500">
-                            Bank Name <sup className="asc">*</sup>
-                          </label>
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Bank Name"
-                              name="bname"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-4">
-                        <div className="single-field py-10">
-                          <label className="text-13 fw-500">
-                            Account Number <sup className="asc">*</sup>
-                          </label>
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Account Number"
-                              name="ac-number"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-4">
-                        <div className="single-field py-10">
-                          <label className="text-13 fw-500">
-                            Account Type <sup className="asc">*</sup>
-                          </label>
-                          <select
-                            name="actype"
-                            id="actype"
-                            className="form-control"
-                          >
-                            <option value="" disabled selected>
-                              Select Type
-                            </option>
-                            <option value="Current">Current</option>
-                            <option value="Saving">Saving</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div className="col-lg-4">
-                        <div className="single-field py-10">
-                          <label className="text-13 fw-500">
-                            IFSC Code <sup className="asc">*</sup>
-                          </label>
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="IFSC Code"
-                              name="ifscode"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-4">
-                        <div className="single-field py-10">
-                          <label className="text-13 fw-500">
-                            Branch Name <sup className="asc">*</sup>
-                          </label>
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Branch Name"
-                              name="brname"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row justify-between">
-                      <div className="col-lg-4">
-                        <div className="single-field py-10 upload">
-                          <label className="text-13 fw-500">
-                            Upload Cancelled Cheque Image
-                          </label>
-                          <div className="form-control mt-10">
-                            <button className="upload__btn">
-                              Upload Image
-                            </button>
-                            <input
-                              type="file"
-                              className="form-control upload__input"
-                              placeholder="Upload"
-                              name="idproof"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-4 d-flex pt-20 justify-end">
-                        <button
-                          className="button w-full px-30 py-10 text-12 h-40 border-primary text-primary rounded-22 -primary-1 js-prev"
-                          onClick={() => {
-                            updateTab(1);
-                          }}
-                        >
-                          Previous
-                        </button>
-                        <button
-                          className="button w-full px-30 py-10 text-12 h-40 text-white rounded-22 bg-primary -dark-1 ml-20 js-next"
-                          onClick={() => {
-                            updateTab(3);
-                          }}
-                        >
-                          Next
-                        </button>
-                      </div>
-                    </div>
+                    <BankDetails
+                      updateTab={updateTab}
+                      nextIndex={3}
+                      prevIndex={1}
+                      generateXML={generateXML}
+                      UpdateProfile={UpdateProfile}
+                    />
                   </div>
                 )}
                 {activeTab === 3 && (
@@ -248,112 +221,12 @@ function Profile() {
                       activeTab === 3 ? " is-tab-el-active -tab-item-3" : ""
                     } border-light px-40 rounded-8 pb-20`}
                   >
-                    <div className="row pt-20">
-                      <p className="text-13 fw-600 text-dark-1">
-                        Add Social Media Accounts
-                      </p>
-                      <div className="col-lg-6">
-                        <div className="single-field d-flex items-center gap-20 py-10">
-                          <img
-                            src={FaceBookIcon}
-                            alt="facebook"
-                            style={{ width: "35px" }}
-                          />
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Add Url"
-                              name="facebook"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="col-lg-6">
-                        <div className="single-field d-flex items-center gap-20 py-10">
-                          <img
-                            src={InstagramIcon}
-                            alt="instagram"
-                            style={{ width: "35px" }}
-                          />
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Add Url"
-                              name="instagram"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6">
-                        <div className="single-field d-flex items-center gap-20 py-10">
-                          <img
-                            src={LinkedinIcon}
-                            alt="linkedin"
-                            style={{ width: "35px" }}
-                          />
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Add Url"
-                              name="linkedin"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6">
-                        <div className="single-field d-flex items-center gap-20 py-10">
-                          <img
-                            src={YoutubeIcon}
-                            alt="youtube"
-                            style={{ width: "40px" }}
-                          />
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Add Url"
-                              name="youtube"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6">
-                        <div className="single-field d-flex items-center gap-20 py-10">
-                          <img
-                            src={TwitterIcon}
-                            alt="twitter"
-                            style={{ width: "35px" }}
-                          />
-                          <div className="form-control">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Add Url"
-                              name="twitter"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row justify-end pt-20">
-                      <div className="col-auto d-flex">
-                        <button
-                          className="button px-30 py-10 border-primary text-primary text-12 rounded-22 -primary-1 js-prev"
-                          onClick={() => {
-                            updateTab(2);
-                          }}
-                        >
-                          Previous
-                        </button>
-                        <button className="button w-full px-30 py-10 text-white text-12 rounded-22 bg-primary ml-20 -dark-1">
-                          Submit
-                        </button>
-                      </div>
-                    </div>
+                    <Social
+                      updateTab={updateTab}
+                      prevIndex={2}
+                      generateXML={generateXML}
+                      UpdateProfile={UpdateProfile}
+                    />
                   </div>
                 )}
               </div>
