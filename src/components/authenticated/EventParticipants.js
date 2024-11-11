@@ -73,6 +73,7 @@ function EventParticipants() {
   const [cityData, setCityData] = useState([]);
   const [stateData, setStateData] = useState([]);
   const [openDate, setDateOpen] = useState(false);
+  const [singleMessage, setSingleMessage] = useState([]);
   const [announceModal, setAnnounceModal] = useState(false);
   const [transferTicketModal, setTransferTicketModal] = useState(false);
   const [transferTicketData, setTransferTicketData] = useState(null);
@@ -406,6 +407,10 @@ function EventParticipants() {
                       direction="row"
                       alignItems="center"
                       spacing={2}
+                      onClick={() => {
+                        setSingleMessage([row.original]);
+                        setAnnounceModal(true);
+                      }}
                     >
                       <i
                         className="far fa-envelope"
@@ -419,7 +424,6 @@ function EventParticipants() {
                       alignItems="center"
                       spacing={2}
                       onClick={() => {
-                        debugger;
                         setTransferTicketData(row?.original ?? {});
                         setTransferTicketModal((prevState) => {
                           return !prevState;
@@ -1724,6 +1728,7 @@ function EventParticipants() {
                               <i
                                 onClick={() => {
                                   setAnnounceModal(false);
+                                  setSingleMessage([]);
                                 }}
                                 class="fas fa-times text-16 text-primary cursor-pointer"
                               ></i>
@@ -1750,24 +1755,28 @@ function EventParticipants() {
                                 console.log(
                                   values.Message.replace(/<\/?[^>]+(>|$)/g, "")
                                 );
-                                const uniqueEmails = selectedFlatRows
-                                  ?.map((row) => row.original)
-                                  .reduce((acc, current) => {
-                                    const email = current.Attendee_Email;
+                                const uniqueEmails =
+                                  singleMessage.length > 0
+                                    ? singleMessage
+                                    : selectedFlatRows
+                                        ?.map((row) => row.original)
+                                        .reduce((acc, current) => {
+                                          const email = current.Attendee_Email;
 
-                                    // Check if the email is already in the accumulator
-                                    const exists = acc.some(
-                                      (participant) =>
-                                        participant.Attendee_Email === email
-                                    );
+                                          // Check if the email is already in the accumulator
+                                          const exists = acc.some(
+                                            (participant) =>
+                                              participant.Attendee_Email ===
+                                              email
+                                          );
 
-                                    // If not, push the current object to the accumulator
-                                    if (!exists) {
-                                      acc.push(current);
-                                    }
+                                          // If not, push the current object to the accumulator
+                                          if (!exists) {
+                                            acc.push(current);
+                                          }
 
-                                    return acc;
-                                  }, []);
+                                          return acc;
+                                        }, []);
 
                                 const reqdata = {
                                   Method_Name: "Send",
@@ -1807,6 +1816,7 @@ function EventParticipants() {
                                         ?.Result_Description
                                     );
                                     setAnnounceModal(false);
+                                    setSingleMessage([]);
                                   }
                                 } catch (err) {
                                   console.log(err);
@@ -1991,7 +2001,13 @@ function EventParticipants() {
                                         type="submit"
                                         className="button bg-primary w-350 h-50 rounded-24 py-15 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
                                       >
-                                        {!sendingAnnouncement ? (
+                                        {singleMessage.length > 0 ? (
+                                          !sendingAnnouncement ? (
+                                            `Send announcement to ${singleMessage[0].Attendee_Name}`
+                                          ) : (
+                                            <span className="btn-spinner"></span>
+                                          )
+                                        ) : !sendingAnnouncement ? (
                                           `Send announcement to ${selectedFlatRows.length} Participants`
                                         ) : (
                                           <span className="btn-spinner"></span>
@@ -2059,20 +2075,6 @@ function EventParticipants() {
                                   transferTicketData?.Event_Booking_Participant_Id,
                               }}
                               validateOnBlur={false}
-                              // validationSchema={Yup.object({
-                              //   TransfereeName: Yup.string().required(
-                              //     "Transferee Name is required"
-                              //   ),
-                              //   TransfereeEmail: Yup.string()
-                              //     .email("Invalid email format")
-                              //     .required("Transferee Email is required"),
-                              //   TransferToName: Yup.string().required(
-                              //     "Transfer To Name is required"
-                              //   ),
-                              //   TransferToEmail: Yup.string()
-                              //     .email("Invalid email format")
-                              //     .required("Transfer To Email is required"),
-                              // })}
                               validationSchema={Yup.object({
                                 TransfereeName: Yup.string().required(
                                   "Transferee Name is required"

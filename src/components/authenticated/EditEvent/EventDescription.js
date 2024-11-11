@@ -144,6 +144,7 @@ function EventDescription() {
         <Loader fetching={fetchingDescription} />
       ) : (
         <Formik
+          enableReinitialize
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={(values) => {

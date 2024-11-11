@@ -168,17 +168,17 @@ const CustomAccordion = ({
       Time_Limit_Unit: Yup.object().required("Time Limit Unit is required"),
       Number_Of_Tickets: Yup.number()
         .min(0, "Number of Tickets should not be less than 0")
-        .required("Required"),
+        .required("Number of Tickets is required"),
       Eligibility_Criteria_MinYear: Yup.number()
         .min(0, "Minimum eligibility year should not be less than 0")
-        .required("Required"),
+        .required("Minimum eligibility year is required"),
       Eligibility_Criteria_MaxYear: Yup.number()
         .min(0, "Maximum eligibility year should not be less than 0")
         .moreThan(
           Yup.ref("Eligibility_Criteria_MinYear"),
-          "Max year should be greater than min year"
+          "Maximum eligibility year should be greater than minimum eligibility year"
         )
-        .required("Required"),
+        .required("Maximum eligibility year is required"),
       Event_Start_Date: Yup.date()
         .required("Required")
         .test(
@@ -724,6 +724,9 @@ const CustomAccordion = ({
       <AccordionSummary
         style={{
           backgroundColor: "#FFF5F3", // Set the background color
+          borderRight: "1px solid #FFF5F3",
+          borderLeft: "1px solid #FFF5F3",
+          borderBottom: "1px solid #FFF5F3",
         }}
         sx={{
           pointerEvents: "none",
@@ -894,7 +897,13 @@ const CustomAccordion = ({
             : ""}
         </div>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          borderRight: "1px solid #dddddd",
+          borderLeft: "1px solid #dddddd",
+          borderBottom: "1px solid #dddddd",
+        }}
+      >
         <Formik
           enableReinitialize
           initialValues={formValues}
@@ -1151,6 +1160,7 @@ const CustomAccordion = ({
                           format="DD/MM/YYYY"
                           inputFormat="DD/MM/YYYY"
                           value={values.Event_Start_Date}
+                          disablePast
                           onChange={(newValue) =>
                             setFieldValue("Event_Start_Date", newValue)
                           }
@@ -1256,6 +1266,7 @@ const CustomAccordion = ({
                           format="DD/MM/YYYY"
                           inputFormat="DD/MM/YYYY"
                           value={values.Event_End_Date}
+                          disablePast
                           onChange={(newValue) =>
                             setFieldValue("Event_End_Date", newValue)
                           }

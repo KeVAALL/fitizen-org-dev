@@ -187,6 +187,7 @@ function Personal({ updateTab, nextIndex, generateXML, UpdateProfile }) {
                             onChange={(e) => {
                               const { value } = e.target;
                               const regex = /^[0-9\b]+$/; // Only numbers allowed
+
                               if (!value || regex.test(value)) {
                                 setFieldValue("Mobile_Number", value);
                               }

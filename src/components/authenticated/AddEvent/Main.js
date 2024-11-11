@@ -54,6 +54,7 @@ const StepIconComponent = (props) => {
 
 export default function AddEventMain() {
   const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleStep = (step) => {
@@ -100,6 +101,32 @@ export default function AddEventMain() {
           <section className="layout-pb-md">
             <div className="container">
               <div className="row y-gap-30">
+                <div className="col-xl-2 col-md-2">
+                  <Stack
+                    className="action-button w-100"
+                    direction="row"
+                    alignItems="center"
+                    spacing={2}
+                    onClick={(e) => {
+                      const confirmLeave = window.confirm(
+                        "Are you sure you want to leave? Your changes won't be saved."
+                      );
+                      if (!confirmLeave) {
+                        e.preventDefault(); // Prevent navigation if user cancels
+                        return;
+                      } else {
+                        navigate("/dashboard/all-events", { replace: true }); // Use react-router navigate to prevent full reload
+                        dispatch(removeCurrentEventId());
+                      }
+                    }}
+                  >
+                    <i
+                      className="fas fa-arrow-left"
+                      style={{ marginRight: "12px" }}
+                    ></i>
+                    Go Back
+                  </Stack>
+                </div>
                 <div className="col-xl-12 col-md-12">
                   <div
                     className="py-20 px-20 border-light rounded-8"

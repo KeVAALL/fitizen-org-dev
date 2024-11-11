@@ -50,7 +50,7 @@ function BillingMain() {
         "organizer/GetBank"
       );
 
-      if (data?.Result?.Table1?.length === 0 || data?.Status !== 200) {
+      if (data?.Status !== 200) {
         toast.error(
           data?.Result?.Table1?.[0]?.Result_Description ||
             "Something went wrong"

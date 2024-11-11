@@ -47,7 +47,6 @@ function AddEventDetails({ handleStep, index }) {
   const [takeawayDropdown, setTakeawayDropdown] = useState([]);
   const [facilityDropdown, setFacilityDropdown] = useState([]);
   const [timezoneDropdown, setTimezoneDropdown] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
   const [initialValues, setInitialValues] = useState(initialFormValues);
   const [submitForm, setSubmitForm] = useState(false);
 
@@ -68,8 +67,8 @@ function AddEventDetails({ handleStep, index }) {
   ];
   // Validation schema
   const validationSchema = Yup.object({
-    Event_Name: Yup.string().required("Event Name is required"),
-    EventType_Id: Yup.object().required("Event Type is required"),
+    Event_Name: Yup.string().required("Event name is required"),
+    EventType_Id: Yup.object().required("Event type is required"),
     RaceDay_Takeaways: Yup.array().min(1, "At least one takeaway is required"),
     RaceDay_Facilities: Yup.array().min(1, "At least one facility is required"),
     Pincode: Yup.object().required("Pincode is required"),
@@ -390,6 +389,7 @@ function AddEventDetails({ handleStep, index }) {
         <Loader fetching={fetchingDetails} />
       ) : (
         <Formik
+          enableReinitialize
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={(values) => {
@@ -400,7 +400,7 @@ function AddEventDetails({ handleStep, index }) {
             <Form>
               <div className="row y-gap-30 py-20">
                 <div className="col-lg-12 col-md-12">
-                  <div className="single-field y-gap-10">
+                  <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
                       Event Name <sup className="asc">*</sup>
                     </label>
@@ -408,7 +408,7 @@ function AddEventDetails({ handleStep, index }) {
                       <Field
                         type="text"
                         className="form-control"
-                        placeholder="Add event name"
+                        placeholder="Enter event name"
                         name="Event_Name"
                         onChange={(e) => {
                           e.preventDefault();
@@ -617,7 +617,7 @@ function AddEventDetails({ handleStep, index }) {
                 </div>
 
                 <div className="col-lg-6 col-md-6">
-                  <div className="single-field y-gap-10">
+                  <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
                       Event State <sup className="asc">*</sup>
                     </label>
@@ -654,7 +654,7 @@ function AddEventDetails({ handleStep, index }) {
                 </div>
 
                 <div className="col-lg-6 col-md-6">
-                  <div className="single-field y-gap-10">
+                  <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
                       Event City <sup className="asc">*</sup>
                     </label>
@@ -691,7 +691,7 @@ function AddEventDetails({ handleStep, index }) {
                 </div>
 
                 <div className="col-lg-12 col-md-12">
-                  <div className="single-field y-gap-10">
+                  <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
                       Event Venue <sup className="asc">*</sup>
                     </label>
@@ -819,7 +819,7 @@ function AddEventDetails({ handleStep, index }) {
                       <button
                         disabled={submitForm}
                         type="submit"
-                        className="button bg-primary w-150 h-50 rounded-24 px-15 text-white border-light load-button"
+                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
                       >
                         {!submitForm ? (
                           `Save & Next`

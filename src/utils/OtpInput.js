@@ -151,7 +151,7 @@ const OtpInput = ({
       <div className="col-12 mt-20 text-center font-inter">
         <div className="y-gap-10 text-center mb-15">
           <h3 className="text-18 fw-700 text-center mb-20">OTP Verification</h3>
-          <label className="text-13 text-light-1 fw-500 y-gap-10">
+          <label className="text-13 text-light-1 fw-500 y-gap-10 mr-20">
             {otpSentMessage}
           </label>
         </div>
@@ -218,7 +218,7 @@ const OtpInput = ({
             {/* )} */}
             {/* {remainingTime > 0 && ( */}
             <div className="text-14 fw-500 text-center mt-30">
-              Resend OTP in {remainingTime} seconds{" "}
+              {!isOtpExpired && `Resend OTP in ${remainingTime} seconds`}
               {isOtpExpired && (
                 <span
                   className="text-14 text-primary fw-500 text-center cursor-pointer"

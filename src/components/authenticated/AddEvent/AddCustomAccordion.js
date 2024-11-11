@@ -55,7 +55,6 @@ const AddCustomAccordion = ({
   const [loading, setLoading] = useState(false);
   const [uploadingRoute, setUploadingRoute] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [eventCategoryName, setEventCategoryName] = useState("");
   const [submitForm, setSubmitForm] = useState(false);
   const genderDropdown = [
     {
@@ -168,17 +167,17 @@ const AddCustomAccordion = ({
       Time_Limit_Unit: Yup.object().required("Time Limit Unit is required"),
       Number_Of_Tickets: Yup.number()
         .min(0, "Number of Tickets should not be less than 0")
-        .required("Required"),
+        .required("Number of Tickets is required"),
       Eligibility_Criteria_MinYear: Yup.number()
         .min(0, "Minimum eligibility year should not be less than 0")
-        .required("Required"),
+        .required("Minimum eligibility year is required"),
       Eligibility_Criteria_MaxYear: Yup.number()
         .min(0, "Maximum eligibility year should not be less than 0")
         .moreThan(
           Yup.ref("Eligibility_Criteria_MinYear"),
-          "Max year should be greater than min year"
+          "Maximum eligibility year should be greater than minimum eligibility year"
         )
-        .required("Required"),
+        .required("Maximum eligibility year is required"),
       Event_Start_Date: Yup.date()
         .required("Required")
         .test(
@@ -723,6 +722,9 @@ const AddCustomAccordion = ({
       <AccordionSummary
         style={{
           backgroundColor: "#FFF5F3", // Set the background color
+          borderRight: "1px solid #FFF5F3",
+          borderLeft: "1px solid #FFF5F3",
+          borderBottom: "1px solid #FFF5F3",
         }}
         sx={{
           pointerEvents: "none",
@@ -892,7 +894,13 @@ const AddCustomAccordion = ({
             : ""}
         </div>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          borderRight: "1px solid #dddddd",
+          borderLeft: "1px solid #dddddd",
+          borderBottom: "1px solid #dddddd",
+        }}
+      >
         <Formik
           enableReinitialize
           initialValues={formValues}
@@ -905,28 +913,30 @@ const AddCustomAccordion = ({
             <Form>
               <div className="row y-gap-30 py-20">
                 <div className="col-12 d-flex justify-center">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setIsEditing(!isEditing);
-                      if (isEditing) {
-                        handleEditClick(e, values?.EventCategoryEntry_Id);
-                      }
-                    }}
-                    className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
-                  >
-                    {isEditing ? (
-                      <>
-                        <i className="fas fa-times text-16"></i>
-                        Cancel
-                      </>
-                    ) : (
-                      <>
-                        <i className="far fa-edit text-16"></i>
-                        {category.isNew ? "Add" : "Edit"} Ticket
-                      </>
-                    )}
-                  </button>
+                  {!category.isNew && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsEditing(!isEditing);
+                        if (isEditing) {
+                          handleEditClick(e, values?.EventCategoryEntry_Id);
+                        }
+                      }}
+                      className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
+                    >
+                      {isEditing ? (
+                        <>
+                          <i className="fas fa-times text-16"></i>
+                          Cancel
+                        </>
+                      ) : (
+                        <>
+                          <i className="far fa-edit text-16"></i>
+                          {category.isNew ? "Add" : "Edit"} Ticket
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <div class="col-lg-6 col-md-6">
                   <div class="single-field y-gap-20">
@@ -936,7 +946,7 @@ const AddCustomAccordion = ({
                     <div class="form-control">
                       <Field
                         // ref={accordionRef}
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="text"
                         className="form-control"
                         placeholder="Add your category name"
@@ -975,7 +985,7 @@ const AddCustomAccordion = ({
                       Race Distance <sup className="asc">*</sup>
                     </label>
                     <Select
-                      isDisabled={!isEditing}
+                      isDisabled={category.isNew ? false : !isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={raceDistanceCategory}
@@ -1003,10 +1013,7 @@ const AddCustomAccordion = ({
                     </label>
                     <div class="form-control">
                       <Field
-                        disabled={
-                          values.EventCategory_Id?.value !== "C007003" ||
-                          !isEditing
-                        }
+                        disabled={values.EventCategory_Id?.value !== "C007003"}
                         type="text"
                         className="form-control"
                         placeholder="Enter Distance"
@@ -1027,10 +1034,7 @@ const AddCustomAccordion = ({
                       Race Distance Unit
                     </label>
                     <Select
-                      isDisabled={
-                        values.EventCategory_Id?.value !== "C007003" ||
-                        !isEditing
-                      }
+                      isDisabled={values.EventCategory_Id?.value !== "C007003"}
                       isSearchable={false}
                       placeholder="Select Unit"
                       styles={
@@ -1058,7 +1062,7 @@ const AddCustomAccordion = ({
                       Race Distance
                     </label>
                     <Select
-                      isDisabled={!isEditing}
+                      isDisabled={category.isNew ? false : !isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={timedEventDropdown}
@@ -1078,7 +1082,7 @@ const AddCustomAccordion = ({
                     <label className="text-13 fw-500">Cut off time</label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="text"
                         className="form-control"
                         placeholder="Enter Time"
@@ -1116,7 +1120,7 @@ const AddCustomAccordion = ({
                       Cut off time
                     </label>
                     <Select
-                      isDisabled={!isEditing}
+                      isDisabled={category.isNew ? false : !isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={timedLimitDropdown}
@@ -1143,12 +1147,13 @@ const AddCustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           name="Event_Start_Date"
                           format="DD/MM/YYYY"
                           inputFormat="DD/MM/YYYY"
                           value={values.Event_Start_Date}
+                          disablePast
                           onChange={(newValue) =>
                             setFieldValue("Event_Start_Date", newValue)
                           }
@@ -1196,7 +1201,7 @@ const AddCustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <TimePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Event_Start_Time}
@@ -1248,12 +1253,13 @@ const AddCustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           name="Event_End_Date"
                           format="DD/MM/YYYY"
                           inputFormat="DD/MM/YYYY"
                           value={values.Event_End_Date}
+                          disablePast
                           onChange={(newValue) =>
                             setFieldValue("Event_End_Date", newValue)
                           }
@@ -1301,7 +1307,7 @@ const AddCustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <TimePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Event_End_Time}
@@ -1353,7 +1359,7 @@ const AddCustomAccordion = ({
                     </label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="number"
                         className="form-control"
                         placeholder="Max Number you want to sell"
@@ -1390,7 +1396,7 @@ const AddCustomAccordion = ({
                     </label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="number"
                         className="form-control"
                         placeholder="5656"
@@ -1413,7 +1419,7 @@ const AddCustomAccordion = ({
                     </label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="number"
                         className="form-control"
                         placeholder="Min Age"
@@ -1435,7 +1441,7 @@ const AddCustomAccordion = ({
                     </label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="number"
                         className="form-control"
                         placeholder="Max Age"
@@ -1473,7 +1479,9 @@ const AddCustomAccordion = ({
                               <div className="form-radio d-flex items-center">
                                 <div className="radio">
                                   <Field
-                                    disabled={!isEditing}
+                                    disabled={
+                                      category.isNew ? false : !isEditing
+                                    }
                                     type="radio"
                                     name="Is_PriceMoneyAwarded"
                                     value="Yes"
@@ -1512,7 +1520,9 @@ const AddCustomAccordion = ({
                               <div className="form-radio d-flex items-center">
                                 <div className="radio">
                                   <Field
-                                    disabled={!isEditing}
+                                    disabled={
+                                      category.isNew ? false : !isEditing
+                                    }
                                     type="radio"
                                     name="Is_PriceMoneyAwarded"
                                     value="No"
@@ -1562,7 +1572,11 @@ const AddCustomAccordion = ({
                                                 <sup className="asc">*</sup>
                                               </label>
                                               <Select
-                                                isDisabled={!isEditing}
+                                                isDisabled={
+                                                  category.isNew
+                                                    ? false
+                                                    : !isEditing
+                                                }
                                                 isSearchable={false}
                                                 styles={selectCustomStyle}
                                                 options={genderDropdown}
@@ -1589,7 +1603,11 @@ const AddCustomAccordion = ({
                                               </label>
                                               <div class="form-control">
                                                 <Field
-                                                  disabled={!isEditing}
+                                                  disabled={
+                                                    category.isNew
+                                                      ? false
+                                                      : !isEditing
+                                                  }
                                                   type="text"
                                                   name={`Event_Prize.${index}.Min_Age`}
                                                   placeholder="Min Age"
@@ -1611,7 +1629,11 @@ const AddCustomAccordion = ({
                                               </label>
                                               <div class="form-control">
                                                 <Field
-                                                  disabled={!isEditing}
+                                                  disabled={
+                                                    category.isNew
+                                                      ? false
+                                                      : !isEditing
+                                                  }
                                                   type="text"
                                                   name={`Event_Prize.${index}.Max_Age`}
                                                   placeholder="Max Age"
@@ -1633,7 +1655,11 @@ const AddCustomAccordion = ({
                                               </label>
                                               <div class="form-control">
                                                 <Field
-                                                  disabled={!isEditing}
+                                                  disabled={
+                                                    category.isNew
+                                                      ? false
+                                                      : !isEditing
+                                                  }
                                                   type="text"
                                                   name={`Event_Prize.${index}.First_Prize`}
                                                   placeholder="Winner"
@@ -1654,7 +1680,11 @@ const AddCustomAccordion = ({
                                               </label>
                                               <div class="form-control">
                                                 <Field
-                                                  disabled={!isEditing}
+                                                  disabled={
+                                                    category.isNew
+                                                      ? false
+                                                      : !isEditing
+                                                  }
                                                   type="text"
                                                   name={`Event_Prize.${index}.Second_Prize`}
                                                   placeholder="1st Runner Up"
@@ -1675,7 +1705,11 @@ const AddCustomAccordion = ({
                                               </label>
                                               <div class="form-control">
                                                 <Field
-                                                  disabled={!isEditing}
+                                                  disabled={
+                                                    category.isNew
+                                                      ? false
+                                                      : !isEditing
+                                                  }
                                                   type="text"
                                                   name={`Event_Prize.${index}.Third_Prize`}
                                                   placeholder="3rd Runner Up"
@@ -1700,20 +1734,44 @@ const AddCustomAccordion = ({
                                         <button
                                           onClick={(e) => {
                                             e.preventDefault();
-                                            if (!isEditing) {
-                                              return;
-                                            }
-                                            if (
-                                              prize.EventPrizeEntry_Id === "New"
-                                            ) {
-                                              remove(index);
+                                            if (category.isNew) {
+                                              if (
+                                                prize.EventPrizeEntry_Id ===
+                                                "New"
+                                              ) {
+                                                remove(index);
+                                              } else {
+                                                handlePrizeDelete(
+                                                  prize,
+                                                  index,
+                                                  remove
+                                                );
+                                              }
                                             } else {
-                                              handlePrizeDelete(
-                                                prize,
-                                                index,
-                                                remove
-                                              );
+                                              if (!isEditing) {
+                                                return;
+                                              } else {
+                                                if (
+                                                  prize.EventPrizeEntry_Id ===
+                                                  "New"
+                                                ) {
+                                                  remove(index);
+                                                } else {
+                                                  handlePrizeDelete(
+                                                    prize,
+                                                    index,
+                                                    remove
+                                                  );
+                                                }
+                                              }
                                             }
+                                            // if (
+                                            //   category.isNew
+                                            //     ? false
+                                            //     : !isEditing
+                                            // ) {
+                                            //   return;
+                                            // }
                                           }}
                                           className="button w-45 h-45 border-primary-bold text-20 fw-600 rounded-full"
                                         >
@@ -1739,18 +1797,34 @@ const AddCustomAccordion = ({
                                 <button
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    if (!isEditing) {
-                                      return;
+                                    // if (category.isNew ? false : !isEditing) {
+                                    //   return;
+                                    // }
+                                    if (category.isNew) {
+                                      push({
+                                        Gender: null,
+                                        Max_Age: "",
+                                        Min_Age: "",
+                                        First_Prize: "",
+                                        Second_Prize: "",
+                                        Third_Prize: "",
+                                        EventPrizeEntry_Id: "New",
+                                      });
+                                    } else {
+                                      if (!isEditing) {
+                                        return;
+                                      } else {
+                                        push({
+                                          Gender: null,
+                                          Max_Age: "",
+                                          Min_Age: "",
+                                          First_Prize: "",
+                                          Second_Prize: "",
+                                          Third_Prize: "",
+                                          EventPrizeEntry_Id: "New",
+                                        });
+                                      }
                                     }
-                                    push({
-                                      Gender: null,
-                                      Max_Age: "",
-                                      Min_Age: "",
-                                      First_Prize: "",
-                                      Second_Prize: "",
-                                      Third_Prize: "",
-                                      EventPrizeEntry_Id: "New",
-                                    });
                                   }}
                                   className="button w-full rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
                                 >
@@ -1784,6 +1858,9 @@ const AddCustomAccordion = ({
                       <div
                         onClick={(e) => {
                           e.preventDefault();
+                          if (category.isNew) {
+                            setFieldValue("Is_Paid_Event", "Paid");
+                          }
                           if (!isEditing) return;
                           setFieldValue("Is_Paid_Event", "Paid");
                           // setFieldTouched("Is_Paid_Event", true);
@@ -1799,6 +1876,9 @@ const AddCustomAccordion = ({
                       <div
                         onClick={(e) => {
                           e.preventDefault();
+                          if (category.isNew) {
+                            setFieldValue("Is_Paid_Event", "Free");
+                          }
                           if (!isEditing) return;
                           setFieldValue("Is_Paid_Event", "Free");
                           // setFieldTouched("Is_Paid_Event", true);
@@ -1833,7 +1913,8 @@ const AddCustomAccordion = ({
                           <div className="col-3">
                             <Select
                               placeholder="INR"
-                              isDisabled={!isEditing}
+                              // isDisabled={category.isNew ? false : !isEditing}
+                              isDisabled={true}
                               isSearchable={false}
                               styles={selectCustomStyle}
                               options={[]}
@@ -1847,7 +1928,7 @@ const AddCustomAccordion = ({
                             <div class="single-field">
                               <div class="form-control mb-10">
                                 <Field
-                                  disabled={!isEditing}
+                                  disabled={category.isNew ? false : !isEditing}
                                   type="number"
                                   className="form-control"
                                   placeholder="Add Price"
@@ -1878,7 +1959,7 @@ const AddCustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           name="Ticket_Sale_Start_Date"
                           format="DD/MM/YYYY"
@@ -1934,7 +2015,7 @@ const AddCustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <TimePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Ticket_Sale_Start_Time}
@@ -1989,7 +2070,7 @@ const AddCustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           name="Ticket_Sale_End_Date"
                           format="DD/MM/YYYY"
@@ -2046,7 +2127,7 @@ const AddCustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <TimePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Ticket_Sale_End_Time}
@@ -2136,7 +2217,7 @@ const AddCustomAccordion = ({
                           accept="image/*"
                           disabled={uploadingRoute}
                           onChange={async (event) => {
-                            if (!isEditing) return;
+                            if (!isEditing && !category.isNew) return;
                             const file = event.currentTarget.files[0];
 
                             // Check if the file size is above 2MB (2 * 1024 * 1024 bytes)
@@ -2202,7 +2283,7 @@ const AddCustomAccordion = ({
                   </div>
                 </div>
 
-                {isEditing && (
+                {category.isNew || isEditing ? (
                   <div className="col-12">
                     <div className="row">
                       <div className="col-auto relative">
@@ -2220,6 +2301,8 @@ const AddCustomAccordion = ({
                       </div>
                     </div>
                   </div>
+                ) : (
+                  <></>
                 )}
               </div>
             </Form>

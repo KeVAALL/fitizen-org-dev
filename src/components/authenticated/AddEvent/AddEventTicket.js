@@ -174,7 +174,7 @@ function AddEventTicket({ handleStep, prevIndex, nextIndex }) {
         </>
       )}
 
-      <div className="col-12 d-flex justify-end">
+      <div className="col-12 d-flex justify-end mt-20">
         <div className="row">
           <div className="col-auto relative">
             <button

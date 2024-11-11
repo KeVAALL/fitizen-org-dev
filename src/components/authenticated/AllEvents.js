@@ -10,6 +10,7 @@ import { MEDIA_URL } from "../../config/url";
 import { encryptData } from "../../utils/DataEncryption";
 import { customRoundedStyles } from "../../utils/ReactSelectStyles";
 import Loader from "../../utils/BackdropLoader";
+import noResultFound from "../../assets/img/general/not-found.png";
 
 // MUI imports (separated)
 import Box from "@mui/material/Box";
@@ -34,7 +35,10 @@ function AllEvents() {
   const [events, setEvents] = useState([]);
   const [cloneEventDetails, setCloneEventDetails] = useState(null);
   const [submitModalForm, setSubmitModalForm] = useState(false);
-  const [selectedTimeline, setSelectedTimeline] = useState(null);
+  const [selectedTimeline, setSelectedTimeline] = useState({
+    label: "Future Events",
+    value: "Future",
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -109,8 +113,8 @@ function AllEvents() {
       SearchBy: "",
       TypeEvent: "",
       EventId: "",
-      FromDate: "",
-      ToDate: "",
+      FromDate: dayjs().format("YYYY-MM-DD"),
+      ToDate: dayjs().add(2, "year").format("YYYY-MM-DD"),
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
@@ -136,13 +140,13 @@ function AllEvents() {
     if (eventTimeline === "Past") {
       From_Date = dayjs().subtract(2, "year").format("YYYY-MM-DD");
       To_Date = today;
-      // setFromDate(dayjs().subtract(2, "year").format("YYYY-MM-DD"));
-      // setToDate(today);
+      setFromDate(dayjs().subtract(2, "year").format("YYYY-MM-DD"));
+      setToDate(today);
     } else if (eventTimeline === "Future") {
       From_Date = today;
       To_Date = dayjs().add(2, "year").format("YYYY-MM-DD");
-      // setFromDate(today);
-      // setToDate(dayjs().add(2, "year").format("YYYY-MM-DD"));
+      setFromDate(today);
+      setToDate(dayjs().add(2, "year").format("YYYY-MM-DD"));
     }
 
     const reqdata = {
@@ -169,7 +173,7 @@ function AllEvents() {
       setFetchingDashboard(false);
     }
   };
-  const handleSearch = async (eventValue) => {
+  const handleSearch = async (eventValue, selectedTimeline) => {
     const today = dayjs().format("YYYY-MM-DD");
     const reqdata = {
       Method_Name: "HomePage",
@@ -182,19 +186,21 @@ function AllEvents() {
           : selectedTimeline?.value === "Future"
           ? today
           : "",
+      // FromDate: fromDate,
       ToDate:
         selectedTimeline?.value === "Past"
           ? today
           : selectedTimeline?.value === "Future"
           ? dayjs().add(2, "year").format("YYYY-MM-DD")
           : "",
+      // ToDate: toDate,
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
     };
 
     try {
-      setFetchingDashboard(true);
+      // setFetchingDashboard(true);
       const result = await RestfulApiService(reqdata, "organizer/dashboard");
       if (result) {
         console.log(result?.data?.Result?.Table1);
@@ -203,21 +209,23 @@ function AllEvents() {
     } catch (err) {
       console.log(err);
     } finally {
-      setFetchingDashboard(false);
+      // setFetchingDashboard(false);
     }
   };
   // Create a debounced version of handleSearch
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
-    debounce((value) => handleSearch(value), 500), // Adjust delay as needed
+    debounce(
+      (value, selectedTimeline) => handleSearch(value, selectedTimeline),
+      500
+    ), // Adjust delay as needed
     []
   );
-
   // Update searchTerm on input change and call debounced search
   const handleInputChange = (e) => {
     const { value } = e.target;
     setSearchTerm(value);
-    debouncedSearch(value);
+    debouncedSearch(value, selectedTimeline);
   };
   const toggleSwitch = async (index, isActive, EventId) => {
     const reqdata = {
@@ -230,7 +238,7 @@ function AllEvents() {
       Session_Organzier_Id: user?.Organizer_Id,
     };
     try {
-      setFetchingDashboard(true);
+      // setFetchingDashboard(true);
       const result = await RestfulApiService(reqdata, "organizer/dashboard");
 
       // Check if result is successful and update state
@@ -285,7 +293,7 @@ function AllEvents() {
         error?.Result?.Table1[0]?.Result_Description || "Event update failed";
       console.error(errorMessage);
     } finally {
-      setFetchingDashboard(false);
+      // setFetchingDashboard(false);
     }
   };
   const shareContent = async (eventId, displayName) => {
@@ -585,10 +593,11 @@ function AllEvents() {
                                 if (Object.keys(errors).length === 0) {
                                   submitForm();
                                 } else {
-                                  if (errors.Event_Name) {
-                                    toast.error(errors.Event_Name); // Show error for eventName
-                                  }
+                                  // if (errors.Event_Name) {
+                                  //   toast.error(errors.Event_Name); // Show error for eventName
+                                  // }
                                   if (errors.checkboxes) {
+                                    toast.dismiss();
                                     toast.error(
                                       "Please check at least one checkbox!"
                                     ); // Show error for checkboxes
@@ -614,7 +623,7 @@ function AllEvents() {
             <div className="row y-gap-40" style={{ position: "relative" }}>
               {fetchingDashboard ? (
                 <Loader fetching={fetchingDashboard} />
-              ) : (
+              ) : events.length > 0 ? (
                 events?.map((ev, index) => {
                   const encryptedParam = encryptData(ev?.Event_Id);
                   return (
@@ -720,11 +729,11 @@ function AllEvents() {
                                 }
                               )}
                               {/* <div className="bg-light-2 rounded-16 text-10 fw-500 text-dark-1 py-5 px-15 lh-1 uppercase mr-5">
-                              HALF MARATHON
-                            </div>
-                            <div className="bg-light-2 rounded-16 text-10 fw-500 text-dark-1 py-5 px-15 lh-1 uppercase">
-                              10KM RUN
-                            </div> */}
+                                HALF MARATHON
+                              </div>
+                              <div className="bg-light-2 rounded-16 text-10 fw-500 text-dark-1 py-5 px-15 lh-1 uppercase">
+                                10KM RUN
+                              </div> */}
                             </div>
                             <div className="mt-15 pb-5 d-flex gap-15 border-bottom-light">
                               <p className="text-11">
@@ -781,6 +790,14 @@ function AllEvents() {
                     </div>
                   );
                 })
+              ) : (
+                <div className="col-12 text-center">
+                  <img
+                    src={noResultFound}
+                    alt="not-found"
+                    style={{ height: "400px", width: "auto" }}
+                  />
+                </div>
               )}
             </div>
           </div>
