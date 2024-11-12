@@ -468,7 +468,7 @@ function Reviews() {
                     </div>
                   </div>
 
-                  <div className="col-xl-4 col-sm-12">
+                  <div className="col-xl-2 col-sm-12">
                     <Select
                       isSearchable={false}
                       styles={customRoundedStyles}
@@ -625,25 +625,20 @@ function Reviews() {
 
 export default Reviews;
 
-{
-  /* <th>Profile</th>
+/* <th>Profile</th>
                         <th>Name</th>
                         <th>Rating</th>
                         <th>Description</th>
                         <th>Comment</th>
                         <th>Action</th> */
-}
-{
-  /* <td className="text-yellow-2">
+/* <td className="text-yellow-2">
                           <i className="fas fa-star"></i>{" "}
                           <i className="fas fa-star"></i>{" "}
                           <i className="fas fa-star"></i>{" "}
                           <i className="fas fa-star"></i>{" "}
                           <i className="fas fa-star"></i>
                         </td> */
-}
-{
-  /* <td className="" style={{ color: "#aeaeae" }}>
+
+/* <td className="" style={{ color: "#aeaeae" }}>
                           <i className="fas fa-trash-alt text-18"></i>
                         </td> */
-}

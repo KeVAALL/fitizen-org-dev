@@ -33,6 +33,7 @@ import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { timePlaceholder } from "../../../utils/UtilityFunctions";
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -1199,7 +1200,10 @@ const AddCustomAccordion = ({
                       Category Start Time <sup className="asc">*</sup>
                     </label>
                     <div className="form-control">
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        localeText={timePlaceholder}
+                      >
                         <TimePicker
                           disabled={category.isNew ? false : !isEditing}
                           className="form-control"
@@ -1305,7 +1309,10 @@ const AddCustomAccordion = ({
                       Category End Time <sup className="asc">*</sup>
                     </label>
                     <div className="form-control">
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        localeText={timePlaceholder}
+                      >
                         <TimePicker
                           disabled={category.isNew ? false : !isEditing}
                           className="form-control"
@@ -2013,7 +2020,10 @@ const AddCustomAccordion = ({
                       Ticket Sale Start Time <sup className="asc">*</sup>
                     </label>
                     <div className="form-control">
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        localeText={timePlaceholder}
+                      >
                         <TimePicker
                           disabled={category.isNew ? false : !isEditing}
                           className="form-control"
@@ -2125,7 +2135,10 @@ const AddCustomAccordion = ({
                       Ticket Sale End Time <sup className="asc">*</sup>
                     </label>
                     <div className="form-control">
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        localeText={timePlaceholder}
+                      >
                         <TimePicker
                           disabled={category.isNew ? false : !isEditing}
                           className="form-control"

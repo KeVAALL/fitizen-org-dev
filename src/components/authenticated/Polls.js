@@ -320,12 +320,13 @@ function Polls() {
                                       e.preventDefault();
                                       const { value } = e.target;
 
-                                      const regex = /^[a-zA-Z][a-zA-Z\s?]*$/;
+                                      const regex =
+                                        /^[a-zA-Z0-9][a-zA-Z0-9\s?]*$/;
 
                                       if (
                                         !value ||
                                         (regex.test(value.toString()) &&
-                                          value.length <= 50)
+                                          value.length <= 150)
                                       ) {
                                         setFieldValue("Question", value);
                                       } else {
@@ -447,7 +448,7 @@ function Polls() {
                           onClick={() => {
                             setPollModal(true);
                           }}
-                          className="button border-primary rounded-22 px-30 py-10 text-primary text-12 -primary-1"
+                          className="button border-primary rounded-22 px-30 py-10 text-primary text-12 -primary-1 d-flex items-center"
                         >
                           <span className="text-16 mr-5">+</span> Create Polls
                         </button>

@@ -69,11 +69,8 @@ function BankDetails({ handleShowBankDetails }) {
         "organizer/GetBank"
       );
 
-      if (data?.Result?.Table1?.length === 0 || data?.Status !== 200) {
-        toast.error(
-          data?.Result?.Table1?.[0]?.Result_Description ||
-            "Something went wrong"
-        );
+      if (data?.Status !== 200) {
+        toast.error(data?.Result?.Table1?.[0]?.Result_Description);
         return;
       }
       setShowBankDetails(data?.Result?.Table1);
@@ -564,69 +561,93 @@ function BankDetails({ handleShowBankDetails }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {bankDetails?.length > 0
-                          ? bankDetails?.map((curBank, index) => {
-                              return (
-                                <tr key={index}>
-                                  <td className="">
-                                    {curBank?.Bank_Name
-                                      ? curBank?.Bank_Name
-                                      : "No Bank"}
-                                  </td>
-                                  <td className="">
-                                    {curBank?.Account_Holder_Name
-                                      ? curBank?.Account_Holder_Name
-                                      : "NA"}
-                                  </td>
-                                  <td className="">
-                                    {curBank?.Account_Number
-                                      ? curBank?.Account_Number
-                                      : "NA"}
-                                  </td>
-                                  <td className="">
-                                    {curBank?.IFSC_Code
-                                      ? curBank?.IFSC_Code
-                                      : "NA"}
-                                  </td>
-                                  <td className="">
-                                    {curBank?.Account_Type
-                                      ? curBank?.Account_Type
-                                      : "NA"}
-                                  </td>
-                                  <td className="lh-14">
-                                    {curBank?.Branch_Name
-                                      ? curBank?.Branch_Name
-                                      : "NA"}
-                                  </td>
+                        {bankDetails?.length > 0 ? (
+                          bankDetails?.map((curBank, index) => {
+                            return (
+                              <tr key={index}>
+                                <td className="">
+                                  {curBank?.Bank_Name
+                                    ? curBank?.Bank_Name
+                                    : "No Bank"}
+                                </td>
+                                <td className="">
+                                  {curBank?.Account_Holder_Name
+                                    ? curBank?.Account_Holder_Name
+                                    : "NA"}
+                                </td>
+                                <td className="">
+                                  {curBank?.Account_Number
+                                    ? curBank?.Account_Number
+                                    : "NA"}
+                                </td>
+                                <td className="">
+                                  {curBank?.IFSC_Code
+                                    ? curBank?.IFSC_Code
+                                    : "NA"}
+                                </td>
+                                <td className="">
+                                  {curBank?.Account_Type
+                                    ? curBank?.Account_Type
+                                    : "NA"}
+                                </td>
+                                <td className="lh-14">
+                                  {curBank?.Branch_Name
+                                    ? curBank?.Branch_Name
+                                    : "NA"}
+                                </td>
 
-                                  <td className="" style={{ color: "#aeaeae" }}>
-                                    <a
-                                      href="#"
-                                      className="px-10"
-                                      onClick={() =>
-                                        handleDelete(curBank?.Bank_Id)
-                                      }
-                                    >
-                                      <i className="far fa-trash-alt text-18"></i>
-                                    </a>
-                                    <a
-                                      href="#"
-                                      className="px-10"
-                                      onClick={() => {
-                                        setEditData(curBank);
+                                <td className="" style={{ color: "#aeaeae" }}>
+                                  <a
+                                    href="#"
+                                    className="px-10"
+                                    onClick={() =>
+                                      handleDelete(curBank?.Bank_Id)
+                                    }
+                                  >
+                                    <i className="far fa-trash-alt text-18"></i>
+                                  </a>
+                                  <a
+                                    href="#"
+                                    className="px-10"
+                                    onClick={() => {
+                                      setEditData(curBank);
 
-                                        return setShowBankModal(
-                                          (previous) => !previous
-                                        );
-                                      }}
-                                    >
-                                      <i className="far fa-edit text-18"></i>
-                                    </a>
-                                  </td>
-                                </tr>
-                              );
-                            })
-                          : "No Bank Found"}
+                                      return setShowBankModal(
+                                        (previous) => !previous
+                                      );
+                                    }}
+                                  >
+                                    <i className="far fa-edit text-18"></i>
+                                  </a>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan={7}
+                              style={{
+                                fontFamily:
+                                  '"Roboto", "Helvetica", "Arial", sans-serif',
+                                fontWeight: 400,
+                                fontSize: "0.875rem",
+                                lineHeight: 1.43,
+                                letterSpacing: "0.01071em",
+                                display: "table-cell",
+                                verticalAlign: "inherit",
+                                borderBottom:
+                                  "1px solid rgba(224, 224, 224, 1)",
+                                textAlign: "center",
+                                padding: "16px",
+                                color: "rgba(0, 0, 0, 0.87)",
+                              }}
+                            >
+                              {" "}
+                              No Bank Found
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>

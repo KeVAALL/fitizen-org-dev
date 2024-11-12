@@ -27,7 +27,7 @@ function Profile() {
 
     // Define the fields to include in the XML and their corresponding values from the data object
     const fields = [
-      { field: "Contact_Name", value: data.Contact_Name },
+      { field: "Organizer_Name", value: data.Organizer_Name },
       { field: "Has_GST_No", value: data.Has_GST_No === "no" ? "-1" : "1" },
       { field: "Mobile_Number", value: data.Mobile_Number },
       { field: "Email_Id", value: data.Email_Id },

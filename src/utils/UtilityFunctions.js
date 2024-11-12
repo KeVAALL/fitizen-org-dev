@@ -94,3 +94,9 @@ export const downloadExcel = (data, sheetName, fileName) => {
     console.warn("No data available for download.");
   }
 };
+
+export const timePlaceholder = {
+  fieldHoursPlaceholder: () => "--",
+  fieldMinutesPlaceholder: () => "--",
+  fieldMeridiemPlaceholder: () => "",
+};

@@ -3132,7 +3132,7 @@ function EventParticipants() {
                         </Stack>
                       </div>
 
-                      <div className="col-xl-4 col-md-4">
+                      {/* <div className="col-xl-4 col-md-4">
                         <Stack
                           direction="column"
                           alignItems="center"
@@ -3267,7 +3267,7 @@ function EventParticipants() {
                             </div>
                           </div>
                         </Stack>
-                      </div>
+                      </div> */}
                     </>
                   )}
                 </>

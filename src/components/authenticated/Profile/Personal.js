@@ -25,7 +25,7 @@ function Personal({ updateTab, nextIndex, generateXML, UpdateProfile }) {
   const dispatch = useDispatch();
 
   const validationSchema = Yup.object({
-    Contact_Name: Yup.string().required("Organizer Name is required"),
+    Organizer_Name: Yup.string().required("Organizer Name is required"),
     Mobile_Number: Yup.string()
       .matches(/^[6-9]\d{9}$/, "Phone number is not valid")
       //   .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
@@ -124,7 +124,7 @@ function Personal({ updateTab, nextIndex, generateXML, UpdateProfile }) {
                         <div className="form-control">
                           <Field
                             type="text"
-                            name="Contact_Name"
+                            name="Organizer_Name"
                             className="form-control"
                             placeholder="Full name"
                             onChange={(e) => {
@@ -138,7 +138,7 @@ function Personal({ updateTab, nextIndex, generateXML, UpdateProfile }) {
                                 (regex.test(value.toString()) &&
                                   value.length <= 100)
                               ) {
-                                setFieldValue("Contact_Name", value);
+                                setFieldValue("Organizer_Name", value);
                               } else {
                                 return;
                               }
@@ -146,7 +146,7 @@ function Personal({ updateTab, nextIndex, generateXML, UpdateProfile }) {
                           />
                         </div>
                         <ErrorMessage
-                          name="Contact_Name"
+                          name="Organizer_Name"
                           component="div"
                           className="text-error-2 text-13"
                         />

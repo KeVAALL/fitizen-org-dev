@@ -489,7 +489,7 @@ function Reports() {
                                   {
                                     // data: [500, 600, 350, 200, 350],
                                     data: getData?.Table3?.map(
-                                      (curData) => curData?.Sales
+                                      (curData) => curData?.Quantity
                                     ),
 
                                     label: "Tickets Sold",

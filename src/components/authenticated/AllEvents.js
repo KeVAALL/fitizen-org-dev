@@ -769,7 +769,9 @@ function AllEvents() {
                                   <span className="text-primary mr-5 text-12">
                                     <i className="fas fa-rupee-sign"></i>
                                   </span>{" "}
-                                  {ev?.TicketSaleAmount}
+                                  {ev?.TicketSaleAmount
+                                    ? ev?.TicketSaleAmount
+                                    : 0}
                                 </div>
                               </div>
                               <div className="col-4">

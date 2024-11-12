@@ -133,7 +133,10 @@ function EventMain() {
                             Sales Value
                           </div>
                           <div className="text-20 lh-16 fw-700 mt-5">
-                            ₹ {selectedEvent?.TicketSaleAmount}
+                            ₹{" "}
+                            {selectedEvent?.TicketSaleAmount
+                              ? selectedEvent?.TicketSaleAmount
+                              : 0}
                           </div>
                         </div>
                       </div>

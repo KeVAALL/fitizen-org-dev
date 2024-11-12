@@ -149,7 +149,8 @@ function BillingMain() {
                         );
                       })
                     ) : (
-                      <Loader fetching={getData?.length < 1} />
+                      // <Loader fetching={getData?.length < 1} />
+                      <></>
                     )}
                   </div>
 

@@ -27,6 +27,7 @@ import { RestfulApiService } from "../../config/service";
 import { decryptData } from "../../utils/DataEncryption";
 import EventTitle from "./EventTitle";
 import Loader from "../../utils/BackdropLoader";
+import { timePlaceholder } from "../../utils/UtilityFunctions";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -173,11 +174,19 @@ function BIBExpo() {
                         ),
                         times: Yup.array().of(
                           Yup.object().shape({
-                            dayOne: Yup.date().required("Required"),
-                            expoStartTime1: Yup.date().required("Required"),
-                            expoEndTime1: Yup.date().required("Required"),
-                            expoStartTime2: Yup.date().required("Required"),
-                            expoEndTime2: Yup.date().required("Required"),
+                            dayOne: Yup.date().required("Please select a date"),
+                            expoStartTime1: Yup.date().required(
+                              "Please enter the Expo Start Time 1"
+                            ),
+                            expoEndTime1: Yup.date().required(
+                              "Please enter the Expo End Time 1"
+                            ),
+                            expoStartTime2: Yup.date().required(
+                              "Please enter the Expo Start Time 2"
+                            ),
+                            expoEndTime2: Yup.date().required(
+                              "Please enter the Expo End Time 2"
+                            ),
                           })
                         ),
                         Is_BIB_Expo_Available: Yup.boolean().required(
@@ -438,10 +447,11 @@ function BIBExpo() {
                                             <div className="form-control">
                                               <LocalizationProvider
                                                 dateAdapter={AdapterDayjs}
+                                                localeText={timePlaceholder}
                                               >
                                                 <TimePicker
                                                   className="form-control"
-                                                  placeholder="--/--"
+                                                  placeholder="--:--"
                                                   value={time.expoStartTime1}
                                                   onChange={(newValue) =>
                                                     setFieldValue(
@@ -452,7 +462,7 @@ function BIBExpo() {
                                                   renderInput={(params) => (
                                                     <TextField
                                                       {...params}
-                                                      placeholder="--/--"
+                                                      placeholder="--:--"
                                                       sx={{
                                                         fontFamily:
                                                           "Montserrat, sans-serif !important",
@@ -502,6 +512,7 @@ function BIBExpo() {
                                             <div className="form-control">
                                               <LocalizationProvider
                                                 dateAdapter={AdapterDayjs}
+                                                localeText={timePlaceholder}
                                               >
                                                 <TimePicker
                                                   className="form-control"
@@ -566,6 +577,7 @@ function BIBExpo() {
                                             <div className="form-control">
                                               <LocalizationProvider
                                                 dateAdapter={AdapterDayjs}
+                                                localeText={timePlaceholder}
                                               >
                                                 <TimePicker
                                                   className="form-control"
@@ -630,6 +642,7 @@ function BIBExpo() {
                                             <div className="form-control">
                                               <LocalizationProvider
                                                 dateAdapter={AdapterDayjs}
+                                                localeText={timePlaceholder}
                                               >
                                                 <TimePicker
                                                   className="form-control"
