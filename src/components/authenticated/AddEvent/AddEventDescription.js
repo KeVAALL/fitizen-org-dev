@@ -105,6 +105,10 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
     }
   }
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scrolling
+    });
     if (newEventId) {
       LoadDescription();
     }
@@ -132,7 +136,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                 <div className="col-12">
                   <div className="single-field w-full y-gap-10">
                     <label className="text-13 fw-500">
-                      Enter Description <sup className="asc">*</sup>
+                      Description <sup className="asc">*</sup>
                     </label>
                     <Field name="Event_Description">
                       {({ field, form }) => (

@@ -151,11 +151,13 @@ const CustomAccordion = ({
   const validationSchema = Yup.object(
     {
       BIB_Number: Yup.number()
-        .required("BIB Number is required")
-        .typeError("BIB Number must be a valid number"),
-      EventCategory_Name: Yup.string().required(
-        "Event Category Name is required"
-      ),
+        .typeError("BIB Number must be a valid number")
+        .nullable(),
+      // .required("BIB Number is required")
+      EventCategory_Name: Yup.string().nullable(),
+      //   .required(
+      //   "Event Category Name is required"
+      // ),
       EventCategory_Id: Yup.object().required("Event Category is required"),
       Race_Distance: Yup.string().when("EventCategory_Id", {
         is: (value) => value?.value === "C007003",
@@ -184,7 +186,7 @@ const CustomAccordion = ({
         )
         .required("Maximum eligibility year is required"),
       Event_Start_Date: Yup.date()
-        .required("Required")
+        // .required("Required")
         .test(
           "startDateBeforeEndDate",
           "Date must be before end date",
@@ -192,10 +194,11 @@ const CustomAccordion = ({
             const { Event_End_Date } = this.parent;
             return dayjs(value).isSameOrBefore(Event_End_Date);
           }
-        ),
+        )
+        .nullable(),
       Event_Start_Time: Yup.date().required("Required"),
       Event_End_Date: Yup.date()
-        .required("Required")
+        // .required("Required")
         .test(
           "endDateAfterStartDate",
           "Date must be after start date",
@@ -203,7 +206,8 @@ const CustomAccordion = ({
             const { Event_Start_Date } = this.parent;
             return dayjs(value).isSameOrAfter(Event_Start_Date);
           }
-        ),
+        )
+        .nullable(),
       Event_End_Time: Yup.date().required("Required"),
       Is_PriceMoneyAwarded: Yup.string().required("Please select Yes or No"),
       Event_Prize: Yup.array().when("Is_PriceMoneyAwarded", {
@@ -255,7 +259,8 @@ const CustomAccordion = ({
           }
         ),
       Ticket_Sale_End_Time: Yup.date().required("Required"),
-      Image_Name: Yup.string().required("Please upload Category Route"),
+      Image_Name: Yup.string().nullable(),
+      // .required("Please upload Category Route"),
       ImagePath: Yup.string(),
       //   Image_Path: Yup.mixed().test("fileType", "Invalid file format", (value) =>
       //     /\.(jpg|jpeg|png)$/i.test(value)
@@ -921,38 +926,38 @@ const CustomAccordion = ({
             <Form>
               <div className="row y-gap-30 py-20">
                 <div className="col-12 d-flex justify-center">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setIsEditing(!isEditing);
-                      if (isEditing) {
-                        handleEditClick(e, values?.EventCategoryEntry_Id);
-                      }
-                    }}
-                    className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
-                  >
-                    {isEditing ? (
-                      <>
-                        <i className="fas fa-times text-16"></i>
-                        Cancel
-                      </>
-                    ) : (
-                      <>
-                        <i className="far fa-edit text-16"></i>
-                        {category.isNew ? "Add" : "Edit"} Ticket
-                      </>
-                    )}
-                  </button>
+                  {!category.isNew && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsEditing(!isEditing);
+                        if (isEditing) {
+                          handleEditClick(e, values?.EventCategoryEntry_Id);
+                        }
+                      }}
+                      className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
+                    >
+                      {isEditing ? (
+                        <>
+                          <i className="fas fa-times text-16"></i>
+                          Cancel
+                        </>
+                      ) : (
+                        <>
+                          <i className="far fa-edit text-16"></i>
+                          {category.isNew ? "Add" : "Edit"} Ticket
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <div class="col-lg-6 col-md-6">
                   <div class="single-field y-gap-20">
-                    <label class="text-13 fw-500">
-                      Event Category Name <sup className="asc">*</sup>
-                    </label>
+                    <label class="text-13 fw-500">Event Category Name</label>
                     <div class="form-control">
                       <Field
                         ref={accordionRef}
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="text"
                         className="form-control"
                         placeholder="Add your category name"
@@ -991,7 +996,7 @@ const CustomAccordion = ({
                       Race Distance <sup className="asc">*</sup>
                     </label>
                     <Select
-                      isDisabled={!isEditing}
+                      isDisabled={category.isNew ? false : !isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={raceDistanceCategory}
@@ -1074,7 +1079,7 @@ const CustomAccordion = ({
                       Race Distance
                     </label>
                     <Select
-                      isDisabled={!isEditing}
+                      isDisabled={category.isNew ? false : !isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={timedEventDropdown}
@@ -1094,7 +1099,7 @@ const CustomAccordion = ({
                     <label className="text-13 fw-500">Cut off time</label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="text"
                         className="form-control"
                         placeholder="Enter Time"
@@ -1132,7 +1137,7 @@ const CustomAccordion = ({
                       Cut off time
                     </label>
                     <Select
-                      isDisabled={!isEditing}
+                      isDisabled={category.isNew ? false : !isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={timedLimitDropdown}
@@ -1153,13 +1158,11 @@ const CustomAccordion = ({
 
                 <div className="col-3">
                   <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">
-                      Category Start Date <sup className="asc">*</sup>
-                    </label>
+                    <label className="text-13 fw-500">Race Start Date</label>
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           name="Event_Start_Date"
                           format="DD/MM/YYYY"
@@ -1208,7 +1211,7 @@ const CustomAccordion = ({
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
-                      Category Start Time <sup className="asc">*</sup>
+                      Race Start Time <sup className="asc">*</sup>
                     </label>
                     <div className="form-control">
                       <LocalizationProvider
@@ -1216,7 +1219,7 @@ const CustomAccordion = ({
                         localeText={timePlaceholder}
                       >
                         <TimePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Event_Start_Time}
@@ -1262,13 +1265,11 @@ const CustomAccordion = ({
                 </div>
                 <div className="col-3">
                   <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">
-                      Category End Date <sup className="asc">*</sup>
-                    </label>
+                    <label className="text-13 fw-500">Race End Date</label>
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           name="Event_End_Date"
                           format="DD/MM/YYYY"
@@ -1317,7 +1318,7 @@ const CustomAccordion = ({
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
-                      Category End Time <sup className="asc">*</sup>
+                      Race End Time <sup className="asc">*</sup>
                     </label>
                     <div className="form-control">
                       <LocalizationProvider
@@ -1325,7 +1326,7 @@ const CustomAccordion = ({
                         localeText={timePlaceholder}
                       >
                         <TimePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Event_End_Time}
@@ -1377,7 +1378,7 @@ const CustomAccordion = ({
                     </label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="number"
                         className="form-control"
                         placeholder="Max Number you want to sell"
@@ -1409,12 +1410,10 @@ const CustomAccordion = ({
 
                 <div class="col-lg-6 col-md-6">
                   <div class="single-field y-gap-20">
-                    <label class="text-13 fw-500">
-                      BIB Number Sequence <sup className="asc">*</sup>
-                    </label>
+                    <label class="text-13 fw-500">BIB Number Sequence</label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="number"
                         className="form-control"
                         placeholder="5656"
@@ -1437,7 +1436,7 @@ const CustomAccordion = ({
                     </label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="number"
                         className="form-control"
                         placeholder="Min Age"
@@ -1459,7 +1458,7 @@ const CustomAccordion = ({
                     </label>
                     <div class="form-control">
                       <Field
-                        disabled={!isEditing}
+                        disabled={category.isNew ? false : !isEditing}
                         type="number"
                         className="form-control"
                         placeholder="Max Age"
@@ -1497,7 +1496,9 @@ const CustomAccordion = ({
                               <div className="form-radio d-flex items-center">
                                 <div className="radio">
                                   <Field
-                                    disabled={!isEditing}
+                                    disabled={
+                                      category.isNew ? false : !isEditing
+                                    }
                                     type="radio"
                                     name="Is_PriceMoneyAwarded"
                                     value="Yes"
@@ -1536,7 +1537,9 @@ const CustomAccordion = ({
                               <div className="form-radio d-flex items-center">
                                 <div className="radio">
                                   <Field
-                                    disabled={!isEditing}
+                                    disabled={
+                                      category.isNew ? false : !isEditing
+                                    }
                                     type="radio"
                                     name="Is_PriceMoneyAwarded"
                                     value="No"
@@ -1808,9 +1811,11 @@ const CustomAccordion = ({
                       <div
                         onClick={(e) => {
                           e.preventDefault();
+                          if (category.isNew) {
+                            setFieldValue("Is_Paid_Event", "Paid");
+                          }
                           if (!isEditing) return;
                           setFieldValue("Is_Paid_Event", "Paid");
-                          // setFieldTouched("Is_Paid_Event", true);
                         }}
                         className={`button w-150 rounded-24 py-12 px-15 border-primary-bold cursor-pointer fw-500 text-16 d-flex gap-10${
                           values.Is_Paid_Event === "Paid"
@@ -1823,9 +1828,11 @@ const CustomAccordion = ({
                       <div
                         onClick={(e) => {
                           e.preventDefault();
+                          if (category.isNew) {
+                            setFieldValue("Is_Paid_Event", "Free");
+                          }
                           if (!isEditing) return;
                           setFieldValue("Is_Paid_Event", "Free");
-                          // setFieldTouched("Is_Paid_Event", true);
                         }}
                         className={`button w-150 rounded-24 py-12 px-15 border-primary-bold cursor-pointer fw-500 text-16 d-flex gap-10${
                           values.Is_Paid_Event === "Free"
@@ -1857,7 +1864,7 @@ const CustomAccordion = ({
                           <div className="col-3">
                             <Select
                               placeholder="INR"
-                              isDisabled={!isEditing}
+                              isDisabled={true}
                               isSearchable={false}
                               styles={selectCustomStyle}
                               options={[]}
@@ -1871,7 +1878,7 @@ const CustomAccordion = ({
                             <div class="single-field">
                               <div class="form-control mb-10">
                                 <Field
-                                  disabled={!isEditing}
+                                  disabled={category.isNew ? false : !isEditing}
                                   type="number"
                                   className="form-control"
                                   placeholder="Add Price"
@@ -1902,7 +1909,7 @@ const CustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           name="Ticket_Sale_Start_Date"
                           format="DD/MM/YYYY"
@@ -1961,7 +1968,7 @@ const CustomAccordion = ({
                         localeText={timePlaceholder}
                       >
                         <TimePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Ticket_Sale_Start_Time}
@@ -2016,7 +2023,7 @@ const CustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           name="Ticket_Sale_End_Date"
                           format="DD/MM/YYYY"
@@ -2076,7 +2083,7 @@ const CustomAccordion = ({
                         localeText={timePlaceholder}
                       >
                         <TimePicker
-                          disabled={!isEditing}
+                          disabled={category.isNew ? false : !isEditing}
                           className="form-control"
                           placeholder="--/--"
                           value={values.Ticket_Sale_End_Time}
@@ -2166,7 +2173,7 @@ const CustomAccordion = ({
                           accept="image/*"
                           disabled={uploadingRoute}
                           onChange={async (event) => {
-                            if (!isEditing) return;
+                            if (!isEditing && !category.isNew) return;
                             const file = event.currentTarget.files[0];
 
                             // Check if the file size is above 2MB (2 * 1024 * 1024 bytes)
@@ -2232,22 +2239,26 @@ const CustomAccordion = ({
                   </div>
                 </div>
 
-                {isEditing && (
+                {category.isNew || isEditing ? (
                   <div className="col-12">
-                    <div className="col-auto relative">
-                      <button
-                        disabled={submitForm}
-                        type="submit"
-                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                      >
-                        {!submitForm ? (
-                          `Save`
-                        ) : (
-                          <span className="btn-spinner"></span>
-                        )}
-                      </button>
+                    <div className="row">
+                      <div className="col-auto relative">
+                        <button
+                          disabled={submitForm}
+                          type="submit"
+                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
+                        >
+                          {!submitForm ? (
+                            `Save Ticket`
+                          ) : (
+                            <span className="btn-spinner"></span>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
+                ) : (
+                  <></>
                 )}
               </div>
             </Form>

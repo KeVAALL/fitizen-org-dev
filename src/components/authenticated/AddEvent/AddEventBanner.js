@@ -216,6 +216,10 @@ function AddEventBanner({ handleStep, prevIndex }) {
     }
   }
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scrolling
+    });
     if (newEventId) {
       LoadBanners();
     }

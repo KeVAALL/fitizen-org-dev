@@ -19,25 +19,6 @@ import toast from "react-hot-toast";
 import Loader from "../../../utils/BackdropLoader";
 import { setCurrentEventId } from "../../../redux/slices/addEventSlice";
 
-const initialFormValues = {
-  Event_Name: "",
-  EventType_Id: null,
-  RaceDay_Takeaways: [],
-  RaceDay_Facilities: [],
-  Pincode: null,
-  Country: {
-    value: "India",
-    label: "India",
-  },
-  State: "",
-  City: "",
-  Event_Venue: "",
-  Timezone: null,
-  PGCharges_Flag: null,
-  PlatformFee_Flag: null,
-  Is_Gst: null,
-};
-
 function AddEventDetails({ handleStep, index }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userProfile);
@@ -47,6 +28,24 @@ function AddEventDetails({ handleStep, index }) {
   const [takeawayDropdown, setTakeawayDropdown] = useState([]);
   const [facilityDropdown, setFacilityDropdown] = useState([]);
   const [timezoneDropdown, setTimezoneDropdown] = useState([]);
+  const initialFormValues = {
+    Event_Name: "",
+    EventType_Id: null,
+    RaceDay_Takeaways: [],
+    RaceDay_Facilities: [],
+    Pincode: null,
+    Country: {
+      value: "India",
+      label: "India",
+    },
+    State: "",
+    City: "",
+    Event_Venue: "",
+    Timezone: null,
+    PGCharges_Flag: null,
+    PlatformFee_Flag: null,
+    Is_Gst: null,
+  };
   const [initialValues, setInitialValues] = useState(initialFormValues);
   const [submitForm, setSubmitForm] = useState(false);
 
@@ -240,11 +239,11 @@ function AddEventDetails({ handleStep, index }) {
           currentEventId: result?.data?.Result?.Table1[0]?.Result_Extra_Key,
         };
         dispatch(setCurrentEventId(apiResponse));
+        handleStep(index);
       }
     } catch (err) {
       toast.error(err?.Result?.Table1[0]?.Result_Description);
     } finally {
-      handleStep(index);
       setSubmitForm(false);
     }
   };
@@ -267,11 +266,24 @@ function AddEventDetails({ handleStep, index }) {
       const result = await RestfulApiService(reqdata, "organizer/GetEvent");
       if (result) {
         const result1 = result?.data?.Result?.Table1[0];
-        const apiResponse = {
-          categorySelected: result?.data?.Result?.Table3?.filter(
-            (type) => type.value === result1?.EventType_Id
-          )[0],
-        };
+        setInitialValues({
+          Event_Name: "",
+          EventType_Id: null,
+          RaceDay_Takeaways: [],
+          RaceDay_Facilities: [],
+          Pincode: null,
+          Country: {
+            value: "India",
+            label: "India",
+          },
+          State: "",
+          City: "",
+          Event_Venue: "",
+          Timezone: result?.data?.Result?.Table1[0],
+          PGCharges_Flag: null,
+          PlatformFee_Flag: null,
+          Is_Gst: null,
+        });
         // dispatch(setSelectedCategory(apiResponse));
         setTimezoneDropdown(result?.data?.Result?.Table1);
         setEventTypeDropdown(result?.data?.Result?.Table2);
@@ -284,10 +296,10 @@ function AddEventDetails({ handleStep, index }) {
       setFetchingDetails(false);
     }
   }
-  async function LoadDetails() {
+  async function LoadDetails(id) {
     const reqdata = {
       Method_Name: "Get_One",
-      Event_Id: newEventId,
+      Event_Id: id,
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
@@ -301,6 +313,9 @@ function AddEventDetails({ handleStep, index }) {
       const result = await RestfulApiService(reqdata, "organizer/GetEvent");
       if (result) {
         const result1 = result?.data?.Result?.Table1[0];
+        const timezoneValue = result?.data?.Result?.Table2?.filter(
+          (type) => type.value === result1?.TimeZone_Id
+        )[0];
         const apiResponse = {
           categorySelected: result?.data?.Result?.Table3?.filter(
             (type) => type.value === result1?.EventType_Id
@@ -326,9 +341,7 @@ function AddEventDetails({ handleStep, index }) {
           State: result1?.State,
           City: result1?.City,
           Event_Venue: result1?.Event_Venue,
-          Timezone: result?.data?.Result?.Table2?.filter(
-            (type) => type.value === result1?.TimeZone_Id
-          )[0],
+          Timezone: timezoneValue,
           PGCharges_Flag: chargesDropdown?.filter(
             (c) => Number(c.value) === result1?.PGCharges_Flag
           )[0],
@@ -347,12 +360,16 @@ function AddEventDetails({ handleStep, index }) {
     }
   }
   useEffect(() => {
-    // if (event_id) {
-    LoadDropdownOptions();
-    // }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scrolling
+    });
+    if (!newEventId) {
+      LoadDropdownOptions();
+    }
     if (newEventId) {
       console.log(newEventId);
-      LoadDetails();
+      LoadDetails(newEventId);
     }
   }, [newEventId]);
 
@@ -462,10 +479,13 @@ function AddEventDetails({ handleStep, index }) {
                       Time Zone <sup className="asc">*</sup>
                     </label>
                     <Select
+                      isDisabled={true}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={timezoneDropdown}
-                      value={values.Timezone}
+                      value={
+                        values.Timezone ? values.Timezone : timezoneDropdown[0]
+                      }
                       onChange={(value) => setFieldValue("Timezone", value)}
                     />
                     <ErrorMessage
@@ -479,7 +499,7 @@ function AddEventDetails({ handleStep, index }) {
                 <div className="col-lg-6">
                   <div className="y-gap-10">
                     <label className="text-13 fw-500">
-                      Race Day takeaways <sup className="asc">*</sup>
+                      Race Day Takeaways <sup className="asc">*</sup>
                     </label>
                     <CreatableSelect
                       isMulti
@@ -535,6 +555,43 @@ function AddEventDetails({ handleStep, index }) {
                     />
                     <ErrorMessage
                       name="RaceDay_Facilities"
+                      component="div"
+                      className="text-error-2 text-13"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-lg-12 col-md-12">
+                  <div className="single-field y-gap-20">
+                    <label className="text-13 fw-500">
+                      Event Venue <sup className="asc">*</sup>
+                    </label>
+                    <div className="form-control">
+                      <Field
+                        type="text"
+                        className="form-control"
+                        placeholder="Add full address"
+                        name="Event_Venue"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+
+                          const regex = /^[^\s].*$/;
+
+                          if (
+                            !value ||
+                            (regex.test(value.toString()) &&
+                              value.length <= 500)
+                          ) {
+                            setFieldValue("Event_Venue", value);
+                          } else {
+                            return;
+                          }
+                        }}
+                      />
+                    </div>
+                    <ErrorMessage
+                      name="Event_Venue"
                       component="div"
                       className="text-error-2 text-13"
                     />
@@ -684,43 +741,6 @@ function AddEventDetails({ handleStep, index }) {
                     </div>
                     <ErrorMessage
                       name="City"
-                      component="div"
-                      className="text-error-2 text-13"
-                    />
-                  </div>
-                </div>
-
-                <div className="col-lg-12 col-md-12">
-                  <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">
-                      Event Venue <sup className="asc">*</sup>
-                    </label>
-                    <div className="form-control">
-                      <Field
-                        type="text"
-                        className="form-control"
-                        placeholder="Add full address"
-                        name="Event_Venue"
-                        onChange={(e) => {
-                          e.preventDefault();
-                          const { value } = e.target;
-
-                          const regex = /^[^\s].*$/;
-
-                          if (
-                            !value ||
-                            (regex.test(value.toString()) &&
-                              value.length <= 500)
-                          ) {
-                            setFieldValue("Event_Venue", value);
-                          } else {
-                            return;
-                          }
-                        }}
-                      />
-                    </div>
-                    <ErrorMessage
-                      name="Event_Venue"
                       component="div"
                       className="text-error-2 text-13"
                     />

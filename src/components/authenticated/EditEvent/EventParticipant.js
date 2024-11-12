@@ -1,5 +1,5 @@
 // React imports
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Third-party imports
 import { useParams } from "react-router-dom";
@@ -161,9 +161,7 @@ const DraggableQuestion = ({ qkey, question, index, toggleChecked }) => {
         </div>
         <div className="col-3 drag-handle" {...listeners}>
           <div class="y-gap-5">
-            <label class="text-13 fw-500">
-              {question?.Question} <sup className="asc">*</sup>
-            </label>
+            <label class="text-13 fw-500">{question?.Question}</label>
             <div class="d-flex gap-20">
               <label class="text-error-2 text-13">Mandatory Field</label>
               <div className="form-switch d-flex">
@@ -338,6 +336,12 @@ function EventParticipant() {
       setSubmitQuestionForm(false);
     }
   };
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scrolling
+    });
+  }, []);
 
   return (
     <div
@@ -358,7 +362,7 @@ function EventParticipant() {
         </div> */}
         <div className="col-12">
           <Stack spacing={3}>
-            <Accordion
+            {/* <Accordion
               className="event-category-accordion"
               sx={{
                 borderRadius: 0, // Remove border radius
@@ -531,7 +535,7 @@ function EventParticipant() {
                   />
                 </div>
               </AccordionDetails>
-            </Accordion>
+            </Accordion> */}
 
             <Accordion
               className="event-category-accordion"
@@ -608,9 +612,7 @@ function EventParticipant() {
                 aria-controls="panel1-content"
                 id="panel1-header"
               >
-                <div className="text-14 fw-600">
-                  Other Information <sup className="asc">*</sup>
-                </div>
+                <div className="text-14 fw-600">Other Information</div>
               </AccordionSummary>
               <AccordionDetails
                 style={{

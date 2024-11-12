@@ -187,6 +187,10 @@ function EventBanner() {
     }
   }
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scrolling
+    });
     if (event_id) {
       LoadBanners();
     }

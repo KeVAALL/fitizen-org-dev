@@ -22,10 +22,8 @@ import {
   disabledCustomStyle,
   selectCustomStyle,
 } from "../../../utils/ReactSelectStyles";
-import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
-import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
 import * as Yup from "yup";
 import dayjs from "dayjs";
@@ -147,11 +145,13 @@ const AddCustomAccordion = ({
   const validationSchema = Yup.object(
     {
       BIB_Number: Yup.number()
-        .required("BIB Number is required")
-        .typeError("BIB Number must be a valid number"),
-      EventCategory_Name: Yup.string().required(
-        "Event Category Name is required"
-      ),
+        .typeError("BIB Number must be a valid number")
+        .nullable(),
+      // .required("BIB Number is required")
+      EventCategory_Name: Yup.string().nullable(),
+      //   .required(
+      //   "Event Category Name is required"
+      // ),
       EventCategory_Id: Yup.object().required("Event Category is required"),
       Race_Distance: Yup.string().when("EventCategory_Id", {
         is: (value) => value?.value === "C007003",
@@ -180,7 +180,7 @@ const AddCustomAccordion = ({
         )
         .required("Maximum eligibility year is required"),
       Event_Start_Date: Yup.date()
-        .required("Required")
+        // .required("Required")
         .test(
           "startDateBeforeEndDate",
           "Date must be before end date",
@@ -188,10 +188,11 @@ const AddCustomAccordion = ({
             const { Event_End_Date } = this.parent;
             return dayjs(value).isSameOrBefore(Event_End_Date);
           }
-        ),
+        )
+        .nullable(),
       Event_Start_Time: Yup.date().required("Required"),
       Event_End_Date: Yup.date()
-        .required("Required")
+        // .required("Required")
         .test(
           "endDateAfterStartDate",
           "Date must be after start date",
@@ -199,7 +200,8 @@ const AddCustomAccordion = ({
             const { Event_Start_Date } = this.parent;
             return dayjs(value).isSameOrAfter(Event_Start_Date);
           }
-        ),
+        )
+        .nullable(),
       Event_End_Time: Yup.date().required("Required"),
       Is_PriceMoneyAwarded: Yup.string().required("Please select Yes or No"),
       Event_Prize: Yup.array().when("Is_PriceMoneyAwarded", {
@@ -251,7 +253,8 @@ const AddCustomAccordion = ({
           }
         ),
       Ticket_Sale_End_Time: Yup.date().required("Required"),
-      Image_Name: Yup.string().required("Please upload Category Route"),
+      Image_Name: Yup.string().nullable(),
+      // .required("Please upload Category Route"),
       ImagePath: Yup.string(),
       //   Image_Path: Yup.mixed().test("fileType", "Invalid file format", (value) =>
       //     /\.(jpg|jpeg|png)$/i.test(value)
@@ -941,9 +944,7 @@ const AddCustomAccordion = ({
                 </div>
                 <div class="col-lg-6 col-md-6">
                   <div class="single-field y-gap-20">
-                    <label class="text-13 fw-500">
-                      Event Category Name <sup className="asc">*</sup>
-                    </label>
+                    <label class="text-13 fw-500">Event Category Name</label>
                     <div class="form-control">
                       <Field
                         // ref={accordionRef}
@@ -1088,23 +1089,6 @@ const AddCustomAccordion = ({
                         className="form-control"
                         placeholder="Enter Time"
                         name="Time_Limit"
-                        // onChange={(e) => {
-                        //   e.preventDefault();
-                        //   const { value } = e.target;
-
-                        //   // const regex = /^\d+$/;
-                        //   const regex = /^\S*$/;
-
-                        //   if (
-                        //     !value ||
-                        //     (regex.test(value.toString()) &&
-                        //       value.length <= 100)
-                        //   ) {
-                        //     setFieldValue("Time_Limit", value);
-                        //   } else {
-                        //     return;
-                        //   }
-                        // }}
                       />
                     </div>
                     <ErrorMessage
@@ -1142,9 +1126,7 @@ const AddCustomAccordion = ({
 
                 <div className="col-3">
                   <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">
-                      Category Start Date <sup className="asc">*</sup>
-                    </label>
+                    <label className="text-13 fw-500">Race Start Date</label>
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
@@ -1197,7 +1179,7 @@ const AddCustomAccordion = ({
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
-                      Category Start Time <sup className="asc">*</sup>
+                      Race Start Time <sup className="asc">*</sup>
                     </label>
                     <div className="form-control">
                       <LocalizationProvider
@@ -1251,9 +1233,7 @@ const AddCustomAccordion = ({
                 </div>
                 <div className="col-3">
                   <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">
-                      Category End Date <sup className="asc">*</sup>
-                    </label>
+                    <label className="text-13 fw-500">Race End Date</label>
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
@@ -1306,7 +1286,7 @@ const AddCustomAccordion = ({
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
-                      Category End Time <sup className="asc">*</sup>
+                      Race End Time <sup className="asc">*</sup>
                     </label>
                     <div className="form-control">
                       <LocalizationProvider
@@ -1398,9 +1378,7 @@ const AddCustomAccordion = ({
 
                 <div class="col-lg-6 col-md-6">
                   <div class="single-field y-gap-20">
-                    <label class="text-13 fw-500">
-                      BIB Number Sequence <sup className="asc">*</sup>
-                    </label>
+                    <label class="text-13 fw-500">BIB Number Sequence</label>
                     <div class="form-control">
                       <Field
                         disabled={category.isNew ? false : !isEditing}
@@ -2306,7 +2284,7 @@ const AddCustomAccordion = ({
                           className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
                         >
                           {!submitForm ? (
-                            `Save`
+                            `Save Ticket`
                           ) : (
                             <span className="btn-spinner"></span>
                           )}

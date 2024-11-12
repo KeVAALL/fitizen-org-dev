@@ -20,22 +20,6 @@ import toast from "react-hot-toast";
 // MUI imports
 import Loader from "../../../utils/BackdropLoader";
 
-const initialFormValues = {
-  Event_Name: "",
-  EventType_Id: null,
-  RaceDay_Takeaways: [],
-  RaceDay_Facilities: [],
-  Pincode: null,
-  Country: null,
-  State: "",
-  City: "",
-  Event_Venue: "",
-  Timezone: null,
-  PGCharges_Flag: null,
-  PlatformFee_Flag: null,
-  Is_Gst: null,
-};
-
 function EventDetails() {
   const { event_id } = useParams();
   const dispatch = useDispatch();
@@ -46,6 +30,21 @@ function EventDetails() {
   const [facilityDropdown, setFacilityDropdown] = useState([]);
   const [timezoneDropdown, setTimezoneDropdown] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const initialFormValues = {
+    Event_Name: "",
+    EventType_Id: null,
+    RaceDay_Takeaways: [],
+    RaceDay_Facilities: [],
+    Pincode: null,
+    Country: null,
+    State: "",
+    City: "",
+    Event_Venue: "",
+    Timezone: null,
+    PGCharges_Flag: null,
+    PlatformFee_Flag: null,
+    Is_Gst: null,
+  };
   const [initialValues, setInitialValues] = useState(initialFormValues);
   const [submitForm, setSubmitForm] = useState(false);
 
@@ -303,6 +302,10 @@ function EventDetails() {
     }
   }
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scrolling
+    });
     if (event_id) {
       LoadDetails();
     }
@@ -434,7 +437,7 @@ function EventDetails() {
                 <div className="col-lg-6">
                   <div className="y-gap-10">
                     <label className="text-13 fw-500">
-                      Race Day takeaways <sup className="asc">*</sup>
+                      Race Day Takeaways <sup className="asc">*</sup>
                     </label>
                     <CreatableSelect
                       isDisabled={!isEditing}
@@ -492,6 +495,44 @@ function EventDetails() {
                     />
                     <ErrorMessage
                       name="RaceDay_Facilities"
+                      component="div"
+                      className="text-error-2 text-13"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-lg-12 col-md-12">
+                  <div className="single-field y-gap-10">
+                    <label className="text-13 fw-500">
+                      Event Venue <sup className="asc">*</sup>
+                    </label>
+                    <div className="form-control">
+                      <Field
+                        disabled={!isEditing}
+                        type="text"
+                        className="form-control"
+                        placeholder="Add full address"
+                        name="Event_Venue"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+
+                          const regex = /^[^\s].*$/;
+
+                          if (
+                            !value ||
+                            (regex.test(value.toString()) &&
+                              value.length <= 500)
+                          ) {
+                            setFieldValue("Event_Venue", value);
+                          } else {
+                            return;
+                          }
+                        }}
+                      />
+                    </div>
+                    <ErrorMessage
+                      name="Event_Venue"
                       component="div"
                       className="text-error-2 text-13"
                     />
@@ -644,44 +685,6 @@ function EventDetails() {
                     </div>
                     <ErrorMessage
                       name="City"
-                      component="div"
-                      className="text-error-2 text-13"
-                    />
-                  </div>
-                </div>
-
-                <div className="col-lg-12 col-md-12">
-                  <div className="single-field y-gap-10">
-                    <label className="text-13 fw-500">
-                      Event Venue <sup className="asc">*</sup>
-                    </label>
-                    <div className="form-control">
-                      <Field
-                        disabled={!isEditing}
-                        type="text"
-                        className="form-control"
-                        placeholder="Add full address"
-                        name="Event_Venue"
-                        onChange={(e) => {
-                          e.preventDefault();
-                          const { value } = e.target;
-
-                          const regex = /^[^\s].*$/;
-
-                          if (
-                            !value ||
-                            (regex.test(value.toString()) &&
-                              value.length <= 500)
-                          ) {
-                            setFieldValue("Event_Venue", value);
-                          } else {
-                            return;
-                          }
-                        }}
-                      />
-                    </div>
-                    <ErrorMessage
-                      name="Event_Venue"
                       component="div"
                       className="text-error-2 text-13"
                     />

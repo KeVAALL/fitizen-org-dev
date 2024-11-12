@@ -92,6 +92,10 @@ function AddEventTicket({ handleStep, prevIndex, nextIndex }) {
     }
   };
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scrolling
+    });
     if (newEventId) {
       LoadCategory();
       FetchCategoryOptions();
@@ -187,7 +191,11 @@ function AddEventTicket({ handleStep, prevIndex, nextIndex }) {
               Back
             </button>
           </div>
-          <div className="col-auto relative">
+          <div
+            className={`col-auto relative${
+              allCategory.some((item) => item.isNew) ? " d-none" : ""
+            }`}
+          >
             <button
               type="button"
               onClick={(e) => {

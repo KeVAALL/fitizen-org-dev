@@ -91,6 +91,10 @@ function EventTicket() {
     }
   };
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scrolling
+    });
     if (event_id) {
       LoadCategory();
       FetchCategoryOptions();
