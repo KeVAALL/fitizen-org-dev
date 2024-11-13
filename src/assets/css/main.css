@@ -9999,7 +9999,7 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
 }
 
 .text-black {
-  color: var(--color-black);
+  color: var(--color-black) !important;
 }
 
 .text-border {

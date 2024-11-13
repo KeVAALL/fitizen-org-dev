@@ -10,8 +10,11 @@ const eventSlice = createSlice({
     setCurrentEvent: (state, action) => {
       state.currentEvent = action.payload.currentEvent;
     },
+    removeCurrentEvent: (state) => {
+      state.currentEvent = null;
+    },
   },
 });
 
-export const { setCurrentEvent } = eventSlice.actions;
+export const { setCurrentEvent, removeCurrentEvent } = eventSlice.actions;
 export default eventSlice.reducer;

@@ -37,8 +37,8 @@ function Profile() {
       { field: "BankAccount_No", value: data.BankAccount_No },
       {
         field: "BankAccountType_Id",
-        value: data.BankAccountType_Id.value
-          ? data.BankAccountType_Id.value
+        value: data.BankAccountType_Id?.value
+          ? data.BankAccountType_Id?.value
           : data.BankAccountType_Id,
       },
       { field: "BankIFSC_Code", value: data.BankIFSC_Code },
@@ -187,18 +187,19 @@ function Profile() {
               </div>
               <div className="tabs__content pt-20 js-tabs-content">
                 {activeTab === 1 && (
-                  <div
-                    className={`tabs__pane${
-                      activeTab === 1 ? " is-tab-el-active -tab-item-1" : ""
-                    } px-40 rounded-8 border-light pb-20`}
-                  >
-                    <Personal
-                      updateTab={updateTab}
-                      nextIndex={2}
-                      generateXML={generateXML}
-                      UpdateProfile={UpdateProfile}
-                    />
-                  </div>
+                  // <div
+                  //   className={`tabs__pane${
+                  //     activeTab === 1 ? " is-tab-el-active -tab-item-1" : ""
+                  //   } px-40 rounded-8 border-light pb-20`}
+                  // >
+                  <Personal
+                    updateTab={updateTab}
+                    activeTab={activeTab}
+                    nextIndex={2}
+                    generateXML={generateXML}
+                    UpdateProfile={UpdateProfile}
+                  />
+                  // </div>
                 )}
                 {activeTab === 2 && (
                   <div

@@ -211,6 +211,7 @@ function SignIn() {
                 <Email
                   setShowEmailForm={setShowEmailForm}
                   setShowLoginForm={setShowLoginForm}
+                  scrolled={scrolled}
                 />
               ) : (
                 <div

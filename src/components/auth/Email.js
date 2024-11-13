@@ -10,7 +10,7 @@ import { setProfile } from "../../redux/slices/userSlice";
 import DarkLogo from "../../assets/img/general/logo-dark.png";
 import { useNavigate } from "react-router-dom";
 
-function Email({ setShowEmailForm, setShowLoginForm }) {
+function Email({ setShowEmailForm, setShowLoginForm, scrolled }) {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [verifyingEmail, setVerifyingEmail] = useState(false);
   const [verifyingEmailOtp, setVerifyingEmailOtp] = useState(false);
@@ -167,99 +167,106 @@ function Email({ setShowEmailForm, setShowLoginForm }) {
 
   return (
     // <div className="d-flex flex-column gap-20">
-    <div class="px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16 relative">
-      {showOtpInput && (
-        <div
-          className="fas fa-arrow-left border-primary text-12 text-primary fw-600 rounded-full px-10 py-10 text-center cursor-pointer h-30 w-30 button otp-back-btn"
-          onClick={() => {
-            setShowOtpInput(false);
-          }}
-        ></div>
-      )}
-      <div class="row y-gap-20">
-        <div class="col-12 text-center">
-          <img src={DarkLogo} alt="logo-icon" style={{ width: "150px" }} />
-        </div>
-        {!showOtpInput ? (
-          <Formik
-            initialValues={{
-              full_name: otpOwner?.full_name ? otpOwner?.full_name : "",
-              email: otpOwner?.email ? otpOwner?.email : "",
+    <div
+      class={`px-50 py-40 sm:px-20 sm:py-20 bg-white bg-shadow rounded-16${
+        scrolled ? " fixed-card" : ""
+      }`}
+    >
+      <div className="relative">
+        {showOtpInput && (
+          <div
+            className="fas fa-arrow-left border-primary text-12 text-primary fw-600 rounded-full px-10 py-10 text-center cursor-pointer h-30 w-30 button otp-back-btn"
+            onClick={() => {
+              setShowOtpInput(false);
             }}
-            validationSchema={validationSchema}
-            onSubmit={(values) => {
-              console.log("Form values", values);
-              handleVerifyEmail(values);
-            }}
-          >
-            {({ errors, touched, isValid, dirty, setFieldValue }) => (
-              <Form>
-                <div className="col-12 mt-20">
-                  <div className="single-field">
-                    <label className="text-13 fw-600">
-                      Full Name <sup className="asc">*</sup>
-                    </label>
-                    <div className="form-control relative">
-                      <Field
-                        type="text"
-                        className="form-control"
-                        placeholder="Carel Jones"
-                        name="full_name"
-                        maxLength="50"
-                        onChange={(e) => {
-                          e.preventDefault();
-                          const { value } = e.target;
+          ></div>
+        )}
+        <div class="row y-gap-20">
+          <div class="col-12 text-center">
+            <img src={DarkLogo} alt="logo-icon" style={{ width: "150px" }} />
+          </div>
+          {!showOtpInput ? (
+            <Formik
+              initialValues={{
+                full_name: otpOwner?.full_name ? otpOwner?.full_name : "",
+                email: otpOwner?.email ? otpOwner?.email : "",
+              }}
+              validationSchema={validationSchema}
+              onSubmit={(values) => {
+                console.log("Form values", values);
+                handleVerifyEmail(values);
+              }}
+            >
+              {({ errors, touched, isValid, dirty, setFieldValue }) => (
+                <Form>
+                  <div className="col-12 mt-20">
+                    <div className="single-field">
+                      <label className="text-13 fw-600">
+                        Full Name <sup className="asc">*</sup>
+                      </label>
+                      <div className="form-control relative">
+                        <Field
+                          type="text"
+                          className="form-control"
+                          placeholder="Carel Jones"
+                          name="full_name"
+                          maxLength="50"
+                          onChange={(e) => {
+                            e.preventDefault();
+                            const { value } = e.target;
 
-                          // const regex = /^[a-zA-Z][a-zA-Z\s!-\/:-@[-`{-~]*$/;
-                          const regex = /^[a-zA-Z][a-zA-Z\s]*$/;
+                            // const regex = /^[a-zA-Z][a-zA-Z\s!-\/:-@[-`{-~]*$/;
+                            const regex = /^[a-zA-Z][a-zA-Z\s]*$/;
 
-                          if (!value || regex.test(value.toString())) {
-                            setFieldValue("full_name", value);
-                          } else {
-                            return;
-                          }
-                        }}
-                      />
-                    </div>
-                    {errors.full_name && touched.full_name ? (
-                      <div className="text-error-2 text-13">
-                        {errors.full_name}
+                            if (!value || regex.test(value.toString())) {
+                              setFieldValue("full_name", value);
+                            } else {
+                              return;
+                            }
+                          }}
+                        />
                       </div>
-                    ) : null}
-                  </div>
-                </div>
-                <div class="col-12 mt-20">
-                  <div class="single-field">
-                    <label class="text-13 fw-600">
-                      Email ID <sup className="asc">*</sup>
-                    </label>
-                    <div class="form-control">
-                      <Field
-                        type="email"
-                        className="form-control"
-                        placeholder="info@fitizenindia.com"
-                        name="email"
-                        maxLength="50"
-                      />
+                      {errors.full_name && touched.full_name ? (
+                        <div className="text-error-2 text-13">
+                          {errors.full_name}
+                        </div>
+                      ) : null}
                     </div>
-                    {errors.email && touched.email ? (
-                      <div className="text-error-2 text-13">{errors.email}</div>
-                    ) : null}
                   </div>
-                </div>
+                  <div class="col-12 mt-20">
+                    <div class="single-field">
+                      <label class="text-13 fw-600">
+                        Email ID <sup className="asc">*</sup>
+                      </label>
+                      <div class="form-control">
+                        <Field
+                          type="email"
+                          className="form-control"
+                          placeholder="info@fitizenindia.com"
+                          name="email"
+                          maxLength="50"
+                        />
+                      </div>
+                      {errors.email && touched.email ? (
+                        <div className="text-error-2 text-13">
+                          {errors.email}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
 
-                <div className="col-12 mt-40 relative">
-                  <button
-                    type="submit"
-                    disabled={verifyingEmail}
-                    className="button w-full h-50 px-20 -dark-1 bg-grey text-white rounded-100 load-button"
-                  >
-                    {!verifyingEmail && "Send Email Verification"}
-                    {verifyingEmail && <span className="btn-spinner"></span>}
-                  </button>
-                </div>
+                  <div className="col-12 mt-40 relative">
+                    <button
+                      type="submit"
+                      disabled={verifyingEmail}
+                      className="button w-full h-50 px-20 -dark-1 bg-grey text-white rounded-100 load-button"
+                    >
+                      {!verifyingEmail && "Send Email Verification"}
+                      {verifyingEmail && <span className="btn-spinner"></span>}
+                    </button>
+                  </div>
 
-                {/* <div class="row y-gap-20 pt-10">
+                  {/* <div class="row y-gap-20 pt-10">
                   <div class="col-12">
                     <div className="text-center text-12 lh-12 fw-400">
                       By creating an account you agree with our{" "}
@@ -283,19 +290,20 @@ function Email({ setShowEmailForm, setShowLoginForm }) {
                     </div>
                   </div>
                 </div> */}
-              </Form>
-            )}
-          </Formik>
-        ) : (
-          <OtpInput
-            verifyingDevice={verifyingEmail}
-            verifyingOtp={verifyingEmailOtp}
-            otpSentMessage={`Verification Code sent on ${otpOwner?.email}`}
-            onOtpSubmit={handleVerifyEmailOtp}
-            resendOtp={handleResendOTP}
-            detail={otpOwner}
-          />
-        )}
+                </Form>
+              )}
+            </Formik>
+          ) : (
+            <OtpInput
+              verifyingDevice={verifyingEmail}
+              verifyingOtp={verifyingEmailOtp}
+              otpSentMessage={`Verification Code sent on ${otpOwner?.email}`}
+              onOtpSubmit={handleVerifyEmailOtp}
+              resendOtp={handleResendOTP}
+              detail={otpOwner}
+            />
+          )}
+        </div>
       </div>
     </div>
     // </div>

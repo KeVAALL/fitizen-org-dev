@@ -28,13 +28,16 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
   const [submitForm, setSubmitForm] = useState(false);
 
   const validationSchema = Yup.object().shape({
-    Event_Description: Yup.string().required("Event description is required"),
-    Rules_Regulations: Yup.string().required(
-      "Rules and regulations are required"
-    ),
-    Refund_Cancellation: Yup.string().required(
-      "Refund & cancellation policy is required"
-    ),
+    Event_Description: Yup.string().nullable(),
+    // .required("Event description is required"),
+    Rules_Regulations: Yup.string().nullable(),
+    //   .required(
+    //   "Rules and regulations are required"
+    // ),
+    Refund_Cancellation: Yup.string().nullable(),
+    //   .required(
+    //   "Refund & cancellation policy is required"
+    // ),
   });
   const submitDescriptionForm = async (values) => {
     const reqdata = {
@@ -135,9 +138,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
               <div className="row y-gap-30 py-20">
                 <div className="col-12">
                   <div className="single-field w-full y-gap-10">
-                    <label className="text-13 fw-500">
-                      Description <sup className="asc">*</sup>
-                    </label>
+                    <label className="text-13 fw-500">Description</label>
                     <Field name="Event_Description">
                       {({ field, form }) => (
                         <ReactQuill
@@ -161,7 +162,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                 <div className="col-12">
                   <div className="single-field w-full y-gap-10">
                     <label className="text-13 fw-500">
-                      Refund & Cancellation Policy <sup className="asc">*</sup>
+                      Refund & Cancellation Policy
                     </label>
                     <Field name="Refund_Cancellation">
                       {({ field, form }) => (
@@ -186,7 +187,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                 <div className="col-12">
                   <div className="single-field w-full y-gap-10">
                     <label className="text-13 fw-500">
-                      Rules & Regulations <sup className="asc">*</sup>
+                      Rules & Regulations
                     </label>
                     <Field name="Rules_Regulations">
                       {({ field, form }) => (

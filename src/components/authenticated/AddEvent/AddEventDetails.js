@@ -18,6 +18,15 @@ import toast from "react-hot-toast";
 // MUI imports
 import Loader from "../../../utils/BackdropLoader";
 import { setCurrentEventId } from "../../../redux/slices/addEventSlice";
+import {
+  Box,
+  Checkbox,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { StyledTableCell } from "../../../utils/ReactTable";
 
 function AddEventDetails({ handleStep, index }) {
   const dispatch = useDispatch();
@@ -26,6 +35,7 @@ function AddEventDetails({ handleStep, index }) {
   const [fetchingDetails, setFetchingDetails] = useState(false);
   const [eventTypeDropdown, setEventTypeDropdown] = useState([]);
   const [takeawayDropdown, setTakeawayDropdown] = useState([]);
+  const [contactUserDropdown, setContactUserDropdown] = useState([]);
   const [facilityDropdown, setFacilityDropdown] = useState([]);
   const [timezoneDropdown, setTimezoneDropdown] = useState([]);
   const initialFormValues = {
@@ -34,6 +44,7 @@ function AddEventDetails({ handleStep, index }) {
     RaceDay_Takeaways: [],
     RaceDay_Facilities: [],
     Pincode: null,
+    Contact_User_Id: null,
     Country: {
       value: "India",
       label: "India",
@@ -41,10 +52,39 @@ function AddEventDetails({ handleStep, index }) {
     State: "",
     City: "",
     Event_Venue: "",
+    Is_External_Event: 0,
+    External_Event_Url: "",
     Timezone: null,
-    PGCharges_Flag: null,
-    PlatformFee_Flag: null,
-    Is_Gst: null,
+    Is_Gst: {
+      label: "None",
+      value: "0",
+    },
+    GSTCalc_Type: null,
+    GSTCalc_Amount: 0,
+    PGCharges_Flag: {
+      label: "None",
+      value: "0",
+    },
+    PlatformFee_Type: null,
+    PlatformFee_Value: 0,
+    PlatformFee_Flag: {
+      label: "None",
+      value: "0",
+    },
+    PGCharges_Type: null,
+    PGCharges_Value: 0,
+    ConvenienceFee1_Flag: {
+      label: "None",
+      value: "0",
+    },
+    ConvenienceFee1_Type: null,
+    ConvenienceFee1_Value: 0,
+    ConvenienceFee2_Flag: {
+      label: "None",
+      value: "0",
+    },
+    ConvenienceFee2_Type: null,
+    ConvenienceFee2_Value: 0,
   };
   const [initialValues, setInitialValues] = useState(initialFormValues);
   const [submitForm, setSubmitForm] = useState(false);
@@ -64,22 +104,61 @@ function AddEventDetails({ handleStep, index }) {
       value: "2",
     },
   ];
+  const calculationTypeDropdown = [
+    {
+      label: "Amount Based",
+      value: "Amount",
+    },
+    {
+      label: "Percent Based",
+      value: "Percent",
+    },
+  ];
   // Validation schema
   const validationSchema = Yup.object({
     Event_Name: Yup.string().required("Event name is required"),
     EventType_Id: Yup.object().required("Event type is required"),
-    RaceDay_Takeaways: Yup.array().min(1, "At least one takeaway is required"),
-    RaceDay_Facilities: Yup.array().min(1, "At least one facility is required"),
+    RaceDay_Takeaways: Yup.array(),
+    RaceDay_Facilities: Yup.array(),
     Pincode: Yup.object().required("Pincode is required"),
-    // Country: Yup.object().required("Country is required"),
+    Contact_User_Id: Yup.object().required("Contact Person is required"),
     Country: Yup.object().nullable(),
     State: Yup.string().required("State is required"),
     City: Yup.string().required("City is required"),
     Event_Venue: Yup.string().required("Event Venue is required"),
+    Is_External_Event: Yup.number(),
+    External_Event_Url: Yup.string().when("Is_External_Event", {
+      is: (value) => value === 1,
+      then: () =>
+        Yup.string()
+          .url("Enter a valid URL")
+          .required("External URL is required"),
+      otherwise: () => Yup.string().notRequired().nullable(),
+    }),
     Timezone: Yup.object().required("Timezone is required"),
-    PGCharges_Flag: Yup.object().required("PG Charges is required"),
-    PlatformFee_Flag: Yup.object().required("Platform Fee is required"),
     Is_Gst: Yup.object().required("GST is required"),
+    GSTCalc_Type: Yup.object().required("Please select calculation type"),
+    GSTCalc_Amount: Yup.number().required("GST Amount is required"),
+    PlatformFee_Flag: Yup.object().required("Platform Fee is required"),
+    PlatformFee_Type: Yup.object().required("Please select calculation type"),
+    PlatformFee_Value: Yup.number().required("Platform Fee Amount is required"),
+    PGCharges_Flag: Yup.object().required("PG Charges is required"),
+    PGCharges_Type: Yup.object().required("Please select calculation type"),
+    PGCharges_Value: Yup.number().required("PG Amount is required"),
+    ConvenienceFee1_Flag: Yup.object().required("Convenience Fee is required"),
+    ConvenienceFee1_Type: Yup.object().required(
+      "Please select calculation type"
+    ),
+    ConvenienceFee1_Value: Yup.number().required(
+      "Participant Convenience Fee is required"
+    ),
+    ConvenienceFee2_Flag: Yup.object().required("Convenience Fee is required"),
+    ConvenienceFee2_Type: Yup.object().required(
+      "Please select calculation type"
+    ),
+    ConvenienceFee2_Value: Yup.number().required(
+      "Organizer Convenience Fee is required"
+    ),
   });
   const fetchOptions = async (inputValue) => {
     if (inputValue.length !== 6) {
@@ -161,21 +240,80 @@ function AddEventDetails({ handleStep, index }) {
       values?.Timezone.value +
       "</FV><FT>Text</FT></R>";
     XMLData +=
+      "<R><FN>Contact_User_Id</FN><FV>" +
+      values?.Contact_User_Id.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
       "<R><FN>Event_Venue</FN><FV>" +
       values?.Event_Venue +
       "</FV><FT>Text</FT></R>";
-
+    XMLData +=
+      "<R><FN>Is_External_Event</FN><FV>" +
+      values?.Is_External_Event +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>External_Event_Url</FN><FV>" +
+      values?.External_Event_Url +
+      "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>Is_Gst</FN><FV>" +
       values?.Is_Gst.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>GSTCalc_Type</FN><FV>" +
+      values?.GSTCalc_Type.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>GSTCalc_Amount</FN><FV>" +
+      values?.GSTCalc_Amount +
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>PlatformFee_Flag</FN><FV>" +
       values?.PlatformFee_Flag.value +
       "</FV><FT>Text</FT></R>";
     XMLData +=
+      "<R><FN>PlatformFee_Type</FN><FV>" +
+      values?.PlatformFee_Type.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>PlatformFee_Value</FN><FV>" +
+      values?.PlatformFee_Value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
       "<R><FN>PGCharges_Flag</FN><FV>" +
       values?.PGCharges_Flag.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>PGCharges_Type</FN><FV>" +
+      values?.PGCharges_Type.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>PGCharges_Value</FN><FV>" +
+      values?.PGCharges_Value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>ConvenienceFee1_Flag</FN><FV>" +
+      values?.ConvenienceFee1_Flag.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>ConvenienceFee1_Type</FN><FV>" +
+      values?.ConvenienceFee1_Type.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>ConvenienceFee1_Value</FN><FV>" +
+      values?.ConvenienceFee1_Value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>ConvenienceFee2_Flag</FN><FV>" +
+      values?.ConvenienceFee2_Flag.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>ConvenienceFee2_Type</FN><FV>" +
+      values?.ConvenienceFee2_Type.value +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>ConvenienceFee2_Value</FN><FV>" +
+      values?.ConvenienceFee2_Value +
       "</FV><FT>Text</FT></R>";
 
     XMLData = "<D>" + XMLData + "</D>";
@@ -213,8 +351,14 @@ function AddEventDetails({ handleStep, index }) {
       Session_Organzier_Id: user?.Organizer_Id,
       Org_Id: user?.Org_Id,
       XMLData: convertToXMLData(values),
-      TakeAwayXMLData: convertToTakeawayXML(values),
-      FacilityXMLData: convertToFacilityXML(values),
+      TakeAwayXMLData:
+        values?.RaceDay_Takeaways?.length > 0
+          ? convertToTakeawayXML(values)
+          : "",
+      FacilityXMLData:
+        values?.RaceDay_Facilities?.length > 0
+          ? convertToFacilityXML(values)
+          : "",
       QuestionXMLData: "",
       Event_Description: "",
       Rules_Regulations: "",
@@ -272,6 +416,7 @@ function AddEventDetails({ handleStep, index }) {
           RaceDay_Takeaways: [],
           RaceDay_Facilities: [],
           Pincode: null,
+          Contact_User_Id: null,
           Country: {
             value: "India",
             label: "India",
@@ -279,16 +424,61 @@ function AddEventDetails({ handleStep, index }) {
           State: "",
           City: "",
           Event_Venue: "",
+          Is_External_Event: 0,
+          External_Event_Url: "",
           Timezone: result?.data?.Result?.Table1[0],
-          PGCharges_Flag: null,
-          PlatformFee_Flag: null,
-          Is_Gst: null,
+          Is_Gst: {
+            label: "None",
+            value: "0",
+          },
+          GSTCalc_Type: {
+            label: "Percent Based",
+            value: "Percent",
+          },
+          GSTCalc_Amount: 18,
+          PGCharges_Flag: {
+            label: "None",
+            value: "0",
+          },
+          PlatformFee_Type: {
+            label: "Amount Based",
+            value: "Amount",
+          },
+          PlatformFee_Value: 0,
+          PlatformFee_Flag: {
+            label: "None",
+            value: "0",
+          },
+          PGCharges_Type: {
+            label: "Amount Based",
+            value: "Amount",
+          },
+          PGCharges_Value: 0,
+          ConvenienceFee1_Flag: {
+            label: "None",
+            value: "0",
+          },
+          ConvenienceFee1_Type: {
+            label: "Amount Based",
+            value: "Amount",
+          },
+          ConvenienceFee1_Value: 0,
+          ConvenienceFee2_Flag: {
+            label: "None",
+            value: "0",
+          },
+          ConvenienceFee2_Type: {
+            label: "Amount Based",
+            value: "Amount",
+          },
+          ConvenienceFee2_Value: 0,
         });
         // dispatch(setSelectedCategory(apiResponse));
         setTimezoneDropdown(result?.data?.Result?.Table1);
         setEventTypeDropdown(result?.data?.Result?.Table2);
         setTakeawayDropdown(result?.data?.Result?.Table5);
         setFacilityDropdown(result?.data?.Result?.Table6);
+        setContactUserDropdown(result?.data?.Result?.Table7);
       }
     } catch (err) {
       console.log(err);
@@ -326,6 +516,7 @@ function AddEventDetails({ handleStep, index }) {
         setEventTypeDropdown(result?.data?.Result?.Table3);
         setTakeawayDropdown(result?.data?.Result?.Table6);
         setFacilityDropdown(result?.data?.Result?.Table7);
+        setContactUserDropdown(result?.data?.Result?.Table8);
         setInitialValues({
           Event_Name: result1?.Event_Name,
           EventType_Id: result?.data?.Result?.Table3?.filter(
@@ -337,20 +528,59 @@ function AddEventDetails({ handleStep, index }) {
             label: result1?.Pincode,
             value: result1?.Pincode_Id,
           },
+          Contact_User_Id: result?.data?.Result?.Table8?.filter(
+            (type) => type.value === result1?.Contact_User_Id
+          )[0],
           Country: { label: "India", value: "India" },
           State: result1?.State,
           City: result1?.City,
           Event_Venue: result1?.Event_Venue,
+          Is_External_Event: result1?.Is_External_Event,
+          External_Event_Url: result1?.External_Event_Url,
           Timezone: timezoneValue,
-          PGCharges_Flag: chargesDropdown?.filter(
-            (c) => Number(c.value) === result1?.PGCharges_Flag
+          Is_Gst: chargesDropdown?.filter(
+            (c) => Number(c.value) === result1?.Is_Gst
+          )[0],
+          GSTCalc_Type: calculationTypeDropdown?.filter(
+            (c) => c.value === result1?.GSTCalc_Type
           )[0],
           PlatformFee_Flag: chargesDropdown?.filter(
             (c) => Number(c.value) === result1?.PlatformFee_Flag
           )[0],
-          Is_Gst: chargesDropdown?.filter(
-            (c) => Number(c.value) === result1?.Is_Gst
+          PlatformFee_Type: calculationTypeDropdown?.filter(
+            (c) => c.value === result1?.PlatformFee_Type
           )[0],
+          PGCharges_Flag: chargesDropdown?.filter(
+            (c) => Number(c.value) === result1?.PGCharges_Flag
+          )[0],
+          PGCharges_Type: calculationTypeDropdown?.filter(
+            (c) => c.value === result1?.PGCharges_Type
+          )[0],
+          ConvenienceFee1_Flag: chargesDropdown?.filter(
+            (c) => Number(c.value) === result1?.ConvenienceFee1_Flag
+          )[0],
+          ConvenienceFee1_Type: calculationTypeDropdown?.filter(
+            (c) => c.value === result1?.ConvenienceFee1_Type
+          )[0],
+          ConvenienceFee2_Flag: chargesDropdown?.filter(
+            (c) => Number(c.value) === result1?.ConvenienceFee2_Flag
+          )[0],
+          ConvenienceFee2_Type: calculationTypeDropdown?.filter(
+            (c) => c.value === result1?.ConvenienceFee2_Type
+          )[0],
+          GSTCalc_Amount: result1?.GSTCalc_Amount ? result1?.GSTCalc_Amount : 0,
+          PlatformFee_Value: result1?.PlatformFee_Value
+            ? result1?.PlatformFee_Value
+            : 0,
+          PGCharges_Value: result1?.PGCharges_Value
+            ? result1?.PGCharges_Value
+            : 0,
+          ConvenienceFee1_Value: result1?.ConvenienceFee1_Value
+            ? result1?.ConvenienceFee1_Value
+            : 0,
+          ConvenienceFee2_Value: result1?.ConvenienceFee2_Value
+            ? result1?.ConvenienceFee2_Value
+            : 0,
         });
       }
     } catch (err) {
@@ -498,9 +728,7 @@ function AddEventDetails({ handleStep, index }) {
 
                 <div className="col-lg-6">
                   <div className="y-gap-10">
-                    <label className="text-13 fw-500">
-                      Race Day Takeaways <sup className="asc">*</sup>
-                    </label>
+                    <label className="text-13 fw-500">Race Day Takeaways</label>
                     <CreatableSelect
                       isMulti
                       styles={{
@@ -533,7 +761,7 @@ function AddEventDetails({ handleStep, index }) {
                 <div className="col-lg-6">
                   <div className="y-gap-10">
                     <label className="text-13 fw-500">
-                      Race Day facilities <sup className="asc">*</sup>
+                      Race Day facilities
                     </label>
                     <CreatableSelect
                       isMulti
@@ -747,6 +975,92 @@ function AddEventDetails({ handleStep, index }) {
                   </div>
                 </div>
 
+                <div className="col-lg-6 col-md-6">
+                  <div className="y-gap-10">
+                    <label className="text-13 fw-500">
+                      Contact Person <sup className="asc">*</sup>
+                    </label>
+                    <Select
+                      // isDisabled={true}
+                      isSearchable={false}
+                      styles={selectCustomStyle}
+                      options={contactUserDropdown}
+                      value={values?.Contact_User_Id}
+                      onChange={(value) =>
+                        setFieldValue("Contact_User_Id", value)
+                      }
+                    />
+                    <ErrorMessage
+                      name="Contact_User_Id"
+                      component="div"
+                      className="text-error-2 text-13"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-lg-6 col-md-6"></div>
+
+                <div className="col-lg-6 col-md-6 d-flex items-center">
+                  <div className="d-flex items-center gap-15">
+                    <Checkbox
+                      checked={values.Is_External_Event}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        setFieldValue(
+                          "Is_External_Event",
+                          Number(e.target.checked)
+                        );
+                        if (!e.target.checked) {
+                          setFieldValue("External_Event_Url", "");
+                          setFieldTouched("External_Event_Url", false, false);
+                        }
+                      }}
+                    />
+                    <label className="text-14 fw-500">External Event</label>
+                  </div>
+                </div>
+
+                {values.Is_External_Event ? (
+                  <div className="col-lg-6 col-md-6">
+                    <div className="single-field y-gap-10">
+                      <label className="text-13 fw-500">
+                        External URL <sup className="asc">*</sup>
+                      </label>
+                      <div className="form-control">
+                        <Field
+                          type="text"
+                          className="form-control"
+                          placeholder="External URL"
+                          name="External_Event_Url"
+                          onChange={(e) => {
+                            e.preventDefault();
+                            const { value } = e.target;
+
+                            const regex = /^[^\s].*$/;
+
+                            if (
+                              !value ||
+                              (regex.test(value.toString()) &&
+                                value.length <= 300)
+                            ) {
+                              setFieldValue("External_Event_Url", value);
+                            } else {
+                              return;
+                            }
+                          }}
+                        />
+                      </div>
+                      <ErrorMessage
+                        name="External_Event_Url"
+                        component="div"
+                        className="text-error-2 text-13"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+
                 <div class="col-12">
                   <div
                     style={{
@@ -755,7 +1069,456 @@ function AddEventDetails({ handleStep, index }) {
                   ></div>
                 </div>
 
-                <div className="col-md-4">
+                <div className="col-md-12">
+                  <Box
+                    sx={{
+                      width: "100%",
+                      overflow: "visible",
+                      display: "block",
+                    }}
+                  >
+                    <Table>
+                      {/* Table Header */}
+                      <TableHead>
+                        <TableRow>
+                          <StyledTableCell>
+                            Pricing Element Name
+                          </StyledTableCell>
+                          <StyledTableCell>To be paid by</StyledTableCell>
+                          <StyledTableCell>Calculation Type</StyledTableCell>
+                          <StyledTableCell>Value</StyledTableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody className="table_body_main">
+                        <TableRow>
+                          <StyledTableCell className="text-14 text-black">
+                            GST
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <Box className="h-full">
+                              <div>
+                                <Select
+                                  isSearchable={false}
+                                  styles={selectCustomStyle}
+                                  options={chargesDropdown}
+                                  value={values?.Is_Gst}
+                                  onChange={(value) => {
+                                    setFieldValue("Is_Gst", value);
+                                    // if (value.value === "1") {
+                                    //   setFieldValue("GSTCalc_Type", {
+                                    //     label: "Percent Based",
+                                    //     value: "Percent",
+                                    //   });
+                                    //   setFieldValue("GSTCalc_Amount", 18);
+                                    // }
+                                  }}
+                                />
+
+                                <ErrorMessage
+                                  name="Is_Gst"
+                                  component="div"
+                                  className="text-error-2 text-13 mt-10"
+                                />
+                              </div>
+                            </Box>
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <div>
+                              <Select
+                                isDisabled={true}
+                                isSearchable={false}
+                                styles={selectCustomStyle}
+                                options={calculationTypeDropdown}
+                                value={values?.GSTCalc_Type}
+                                onChange={(value) =>
+                                  setFieldValue("GSTCalc_Type", value)
+                                }
+                              />
+                              <ErrorMessage
+                                name="GSTCalc_Type"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+
+                          <StyledTableCell>
+                            <div class="single-field">
+                              <div class="form-control">
+                                <Field
+                                  disabled={true}
+                                  type="number"
+                                  className="form-control"
+                                  placeholder="Add Value"
+                                  name="GSTCalc_Amount"
+                                  onWheel={(e) => e.target.blur()}
+                                  onChange={(e) => {
+                                    if (
+                                      e.target.value < 0 ||
+                                      e.target.value === "e" ||
+                                      e.target.value === "E"
+                                    ) {
+                                      return;
+                                    }
+                                    setFieldValue(
+                                      "GSTCalc_Amount",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+                              </div>
+                              <ErrorMessage
+                                name="GSTCalc_Amount"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+                        </TableRow>
+                        <TableRow>
+                          <StyledTableCell className="text-14 text-black">
+                            Platform Fees
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <Box className="h-full">
+                              <div>
+                                <Select
+                                  isSearchable={false}
+                                  styles={selectCustomStyle}
+                                  options={chargesDropdown}
+                                  value={values?.PlatformFee_Flag}
+                                  onChange={(value) => {
+                                    setFieldValue("PlatformFee_Flag", value);
+                                    if (value.value === "0") {
+                                      setFieldValue("PlatformFee_Value", 0);
+                                    }
+                                  }}
+                                />
+
+                                <ErrorMessage
+                                  name="PlatformFee_Flag"
+                                  component="div"
+                                  className="text-error-2 text-13 mt-10"
+                                />
+                              </div>
+                            </Box>
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <div>
+                              <Select
+                                isSearchable={false}
+                                styles={selectCustomStyle}
+                                options={calculationTypeDropdown}
+                                value={values?.PlatformFee_Type}
+                                onChange={(value) =>
+                                  setFieldValue("PlatformFee_Type", value)
+                                }
+                              />
+                              <ErrorMessage
+                                name="PlatformFee_Type"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+
+                          <StyledTableCell>
+                            <div class="single-field">
+                              <div class="form-control">
+                                <Field
+                                  type="number"
+                                  className="form-control"
+                                  placeholder="Add Value"
+                                  name="PlatformFee_Value"
+                                  onWheel={(e) => e.target.blur()}
+                                  onChange={(e) => {
+                                    if (
+                                      e.target.value < 0 ||
+                                      e.target.value === "e" ||
+                                      e.target.value === "E"
+                                    ) {
+                                      return;
+                                    }
+                                    setFieldValue(
+                                      "PlatformFee_Value",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+                              </div>
+                              <ErrorMessage
+                                name="PlatformFee_Value"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+                        </TableRow>
+                        <TableRow>
+                          <StyledTableCell className="text-14 text-black">
+                            Convenience Fees (Participant)
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <div>
+                              <Select
+                                isSearchable={false}
+                                styles={selectCustomStyle}
+                                options={chargesDropdown}
+                                value={values?.ConvenienceFee1_Flag}
+                                onChange={(value) => {
+                                  setFieldValue("ConvenienceFee1_Flag", value);
+                                  if (value.value === "0") {
+                                    setFieldValue("ConvenienceFee1_Value", 0);
+                                  }
+                                }}
+                              />
+
+                              <ErrorMessage
+                                name="ConvenienceFee1_Flag"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <div>
+                              <Select
+                                isSearchable={false}
+                                styles={selectCustomStyle}
+                                options={calculationTypeDropdown}
+                                value={values?.ConvenienceFee1_Type}
+                                onChange={(value) =>
+                                  setFieldValue("ConvenienceFee1_Type", value)
+                                }
+                              />
+                              <ErrorMessage
+                                name="ConvenienceFee1_Type"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+
+                          <StyledTableCell>
+                            <div class="single-field">
+                              <div class="form-control">
+                                <Field
+                                  type="number"
+                                  className="form-control"
+                                  placeholder="Add Value"
+                                  name="ConvenienceFee1_Value"
+                                  onWheel={(e) => e.target.blur()}
+                                  onChange={(e) => {
+                                    if (
+                                      e.target.value < 0 ||
+                                      e.target.value === "e" ||
+                                      e.target.value === "E"
+                                    ) {
+                                      return;
+                                    }
+                                    setFieldValue(
+                                      "ConvenienceFee1_Value",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+                              </div>
+                              <ErrorMessage
+                                name="ConvenienceFee1_Value"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+                        </TableRow>
+                        <TableRow>
+                          <StyledTableCell className="text-14 text-black">
+                            Convenience Fees (Organizer)
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <div>
+                              <Select
+                                isSearchable={false}
+                                styles={selectCustomStyle}
+                                options={chargesDropdown}
+                                value={values?.ConvenienceFee2_Flag}
+                                onChange={(value) => {
+                                  setFieldValue("ConvenienceFee2_Flag", value);
+                                  if (value.value === "0") {
+                                    setFieldValue("ConvenienceFee2_Value", 0);
+                                  }
+                                }}
+                              />
+
+                              <ErrorMessage
+                                name="ConvenienceFee2_Flag"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <div>
+                              <Select
+                                isSearchable={false}
+                                styles={selectCustomStyle}
+                                options={calculationTypeDropdown}
+                                value={values?.ConvenienceFee2_Type}
+                                onChange={(value) =>
+                                  setFieldValue("ConvenienceFee2_Type", value)
+                                }
+                              />
+                              <ErrorMessage
+                                name="ConvenienceFee2_Type"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+
+                          <StyledTableCell>
+                            <div class="single-field">
+                              <div class="form-control">
+                                <Field
+                                  type="number"
+                                  className="form-control"
+                                  placeholder="Add Value"
+                                  name="ConvenienceFee2_Value"
+                                  onWheel={(e) => e.target.blur()}
+                                  onChange={(e) => {
+                                    if (
+                                      e.target.value < 0 ||
+                                      e.target.value === "e" ||
+                                      e.target.value === "E"
+                                    ) {
+                                      return;
+                                    }
+                                    setFieldValue(
+                                      "ConvenienceFee2_Value",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+                              </div>
+                              <ErrorMessage
+                                name="ConvenienceFee2_Value"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+                        </TableRow>
+                        <TableRow>
+                          <StyledTableCell className="text-14 text-black">
+                            Payment Gateway Charges
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <div>
+                              <Select
+                                isSearchable={false}
+                                styles={selectCustomStyle}
+                                options={chargesDropdown}
+                                value={values?.PGCharges_Flag}
+                                onChange={(value) => {
+                                  setFieldValue("PGCharges_Flag", value);
+                                  if (value.value === "0") {
+                                    setFieldValue("PGCharges_Value", 0);
+                                  }
+                                }}
+                              />
+
+                              <ErrorMessage
+                                name="PGCharges_Flag"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <div>
+                              <Select
+                                isSearchable={false}
+                                styles={selectCustomStyle}
+                                options={calculationTypeDropdown}
+                                value={values?.PGCharges_Type}
+                                onChange={(value) =>
+                                  setFieldValue("PGCharges_Type", value)
+                                }
+                              />
+                              <ErrorMessage
+                                name="PGCharges_Type"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+
+                          <StyledTableCell>
+                            <div class="single-field">
+                              <div class="form-control">
+                                <Field
+                                  type="number"
+                                  className="form-control"
+                                  placeholder="Add Value"
+                                  name="PGCharges_Value"
+                                  onWheel={(e) => e.target.blur()}
+                                  onChange={(e) => {
+                                    if (
+                                      e.target.value < 0 ||
+                                      e.target.value === "e" ||
+                                      e.target.value === "E"
+                                    ) {
+                                      return;
+                                    }
+                                    setFieldValue(
+                                      "PGCharges_Value",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+                              </div>
+                              <ErrorMessage
+                                name="PGCharges_Value"
+                                component="div"
+                                className="text-error-2 text-13 mt-10"
+                              />
+                            </div>
+                          </StyledTableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </Box>
+                </div>
+
+                <div className="col-12 d-flex justify-end">
+                  <div className="row">
+                    <div className="col-auto relative">
+                      <button
+                        disabled={submitForm}
+                        type="submit"
+                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
+                      >
+                        {!submitForm ? (
+                          `Save & Next`
+                        ) : (
+                          <span className="btn-spinner"></span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      )}
+    </div>
+  );
+}
+
+export default AddEventDetails;
+
+/* <div className="col-md-4">
                   <div className="y-gap-10">
                     <label className="text-13 fw-600">GST Payable by?</label>
 
@@ -774,16 +1537,6 @@ function AddEventDetails({ handleStep, index }) {
                     />
                   </div>
                 </div>
-
-                {/* <div className="col-md-4">
-                  <div className="single-field y-gap-20">
-                    <label className="text-14 text-primary fw-600">
-                      View Details
-                    </label>
-                  </div>
-                </div> */}
-
-                {/* <div className="col-md-8"></div> */}
 
                 <div className="col-md-4">
                   <div className="y-gap-10">
@@ -831,32 +1584,4 @@ function AddEventDetails({ handleStep, index }) {
                       className="text-error-2 text-13"
                     />
                   </div>
-                </div>
-
-                <div className="col-12 d-flex justify-end">
-                  <div className="row">
-                    <div className="col-auto relative">
-                      <button
-                        disabled={submitForm}
-                        type="submit"
-                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
-                      >
-                        {!submitForm ? (
-                          `Save & Next`
-                        ) : (
-                          <span className="btn-spinner"></span>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Form>
-          )}
-        </Formik>
-      )}
-    </div>
-  );
-}
-
-export default AddEventDetails;
+                </div> */

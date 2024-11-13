@@ -28,6 +28,8 @@ import { HtmlLightTooltip } from "../../utils/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { clearProfile } from "../../redux/slices/userSlice";
 import { removeCurrentEventId } from "../../redux/slices/addEventSlice";
+import { removeCurrentEvent } from "../../redux/slices/eventSlice";
+import { removeOrgProfile } from "../../redux/slices/profileSlice";
 
 const Header = ({ open, handleDrawerToggle }) => {
   const user = useSelector((state) => state.user.userProfile);
@@ -166,6 +168,9 @@ const ReactSidebar = ({ open, menu, navigate }) => {
     if (shouldDelete.isConfirmed) {
       try {
         dispatch(clearProfile());
+        dispatch(removeCurrentEventId());
+        dispatch(removeCurrentEvent());
+        dispatch(removeOrgProfile());
         navigate("/");
       } catch (err) {
         console.error("API Error:", err);
@@ -190,8 +195,8 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 alignItems: "center",
                 gap: "10px",
               }}
-              onClick={() => {
-                navigate("/sign-in");
+              onClick={(e) => {
+                handleNavigationClick(e, "/sign-in");
               }}
               className="border-bottom-light"
             >
@@ -212,8 +217,8 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                 display: "flex",
                 justifyContent: "center",
               }}
-              onClick={() => {
-                navigate("/sign-in");
+              onClick={(e) => {
+                handleNavigationClick(e, "/sign-in");
               }}
               className="border-bottom-light"
             >
@@ -243,9 +248,9 @@ const ReactSidebar = ({ open, menu, navigate }) => {
                           ? " active-link"
                           : ""
                       }`}
-                      onClick={(e) =>
-                        handleNavigationClick(e, "/dashboard/all-events")
-                      }
+                      onClick={(e) => {
+                        handleNavigationClick(e, "/dashboard/all-events");
+                      }}
                     >
                       <i className="fas fa-trophy mr-15"></i>
                       All Events

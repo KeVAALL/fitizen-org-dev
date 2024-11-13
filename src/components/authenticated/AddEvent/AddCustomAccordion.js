@@ -28,6 +28,8 @@ import { RestfulApiService } from "../../../config/service";
 import * as Yup from "yup";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import Swal from "sweetalert2";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
@@ -107,10 +109,19 @@ const AddCustomAccordion = ({
     EventCategory_Name: "",
     EventCategory_Id: null,
     Race_Distance: "",
-    Race_Distance_Unit: "",
-    Timed_Event: null,
+    Race_Distance_Unit: {
+      label: "KM",
+      value: "KM",
+    },
+    Timed_Event: {
+      label: "Timed",
+      value: "Timed",
+    },
     Time_Limit: "",
-    Time_Limit_Unit: null,
+    Time_Limit_Unit: {
+      label: "Mins",
+      value: "Mins",
+    },
     Ticket_Sale_Start_Date: null,
     Ticket_Sale_Start_Time: null,
     Ticket_Sale_End_Date: null,
@@ -126,17 +137,7 @@ const AddCustomAccordion = ({
     Event_Start_Time: null,
     Event_End_Date: null,
     Event_End_Time: null,
-    Event_Prize: [
-      //   {
-      //     Gender: null,
-      //     Max_Age: "",
-      //     Min_Age: "",
-      //     First_Prize: "",
-      //     Second_Prize: "",
-      //     Third_Prize: "",
-      //     EventPrizeEntry_Id: "",
-      //   },
-    ],
+    Event_Prize: "",
     // Image_Path: "",
     Image_Name: "",
     isNew: category.isNew,
@@ -180,7 +181,7 @@ const AddCustomAccordion = ({
         )
         .required("Maximum eligibility year is required"),
       Event_Start_Date: Yup.date()
-        // .required("Required")
+        .required("Race start date is required")
         .test(
           "startDateBeforeEndDate",
           "Date must be before end date",
@@ -190,9 +191,9 @@ const AddCustomAccordion = ({
           }
         )
         .nullable(),
-      Event_Start_Time: Yup.date().required("Required"),
+      Event_Start_Time: Yup.date().required("Race start time is required"),
       Event_End_Date: Yup.date()
-        // .required("Required")
+        .required("Race end date is required")
         .test(
           "endDateAfterStartDate",
           "Date must be after start date",
@@ -202,25 +203,12 @@ const AddCustomAccordion = ({
           }
         )
         .nullable(),
-      Event_End_Time: Yup.date().required("Required"),
+      Event_End_Time: Yup.date().required("Race end time is required"),
       Is_PriceMoneyAwarded: Yup.string().required("Please select Yes or No"),
-      Event_Prize: Yup.array().when("Is_PriceMoneyAwarded", {
+      Event_Prize: Yup.string().when("Is_PriceMoneyAwarded", {
         is: (value) => value === "Yes",
-        then: () =>
-          Yup.array()
-            .of(
-              Yup.object().shape({
-                Gender: Yup.object().required("Required"),
-                Max_Age: Yup.number().required("Required"),
-                Min_Age: Yup.number().required("Required"),
-                First_Prize: Yup.string().required("Required"),
-                Second_Prize: Yup.string().required("Required"),
-                Third_Prize: Yup.string().required("Required"),
-                EventPrizeEntry_Id: Yup.string(),
-              })
-            )
-            .min(1, "At least one prize entry is required"),
-        otherwise: () => Yup.array().notRequired(),
+        then: () => Yup.string().required("Event Prize is required"),
+        otherwise: () => Yup.string().notRequired().nullable(),
       }),
       Is_Paid_Event: Yup.string().required("Please select Paid or Free"),
       Event_Price: Yup.number().when("Is_Paid_Event", {
@@ -232,7 +220,7 @@ const AddCustomAccordion = ({
         otherwise: () => Yup.number().nullable(),
       }),
       Ticket_Sale_Start_Date: Yup.date()
-        .required("Required")
+        .required("Ticket sale start date is required")
         .test(
           "saleStartBeforeEnd",
           "Date must be before sale end date",
@@ -241,9 +229,11 @@ const AddCustomAccordion = ({
             return dayjs(value).isSameOrBefore(Ticket_Sale_End_Date);
           }
         ),
-      Ticket_Sale_Start_Time: Yup.date().required("Required"),
+      Ticket_Sale_Start_Time: Yup.date().required(
+        "Ticket sale start time is required"
+      ),
       Ticket_Sale_End_Date: Yup.date()
-        .required("Required")
+        .required("Ticket sale end date is required")
         .test(
           "saleEndAfterStart",
           "Date must be after sale start date",
@@ -252,10 +242,12 @@ const AddCustomAccordion = ({
             return dayjs(value).isSameOrAfter(Ticket_Sale_Start_Date);
           }
         ),
-      Ticket_Sale_End_Time: Yup.date().required("Required"),
+      Ticket_Sale_End_Time: Yup.date().required(
+        "Ticket sale end time is required"
+      ),
       Image_Name: Yup.string().nullable(),
       // .required("Please upload Category Route"),
-      ImagePath: Yup.string(),
+      ImagePath: Yup.string().nullable(),
       //   Image_Path: Yup.mixed().test("fileType", "Invalid file format", (value) =>
       //     /\.(jpg|jpeg|png)$/i.test(value)
       //   ),
@@ -400,7 +392,6 @@ const AddCustomAccordion = ({
   const submitCategoryForm = async (values) => {
     console.log(values);
     console.log(convertToXML(values));
-    console.log(convertPrizesToXML(values.Event_Prize));
     const reqdata = {
       Method_Name: values.isNew ? "Create" : "Update",
       Session_User_Id: user?.User_Id,
@@ -416,10 +407,7 @@ const AddCustomAccordion = ({
       ImagePath: values?.ImagePath,
       ImageName: values?.Image_Name,
       XMLData: convertToXML(values),
-      PrizeXMLData:
-        values.Event_Prize.length > 0
-          ? convertPrizesToXML(values.Event_Prize)
-          : "",
+      PrizeXMLData: values.Event_Prize,
     };
 
     try {
@@ -528,14 +516,15 @@ const AddCustomAccordion = ({
             result1?.Event_End_Date,
             result1?.Event_End_Time
           ),
-          Event_Prize: JSON.parse(result1?.Event_Prize)?.map((prize) => {
-            return {
-              ...prize,
-              Gender: genderDropdown?.filter(
-                (g) => g.value === prize.Gender
-              )[0],
-            };
-          }),
+          Event_Prize: result1?.Event_Prize,
+          // Event_Prize: JSON.parse(result1?.Event_Prize)?.map((prize) => {
+          //   return {
+          //     ...prize,
+          //     Gender: genderDropdown?.filter(
+          //       (g) => g.value === prize.Gender
+          //     )[0],
+          //   };
+          // }),
           ImagePath: result1?.Image_Path,
           Image_Name: result1?.Image_Name,
         });
@@ -995,8 +984,8 @@ const AddCustomAccordion = ({
                       onChange={(value) => {
                         setFieldValue("EventCategory_Id", value);
                         if (value?.value !== "C007003") {
-                          setFieldValue("Race_Distance", "");
-                          setFieldValue("Race_Distance_Unit", null);
+                          // setFieldValue("Race_Distance", "");
+                          // setFieldValue("Race_Distance_Unit", null);
                         }
                       }}
                     />
@@ -1039,11 +1028,7 @@ const AddCustomAccordion = ({
                       isDisabled={values.EventCategory_Id?.value !== "C007003"}
                       isSearchable={false}
                       placeholder="Select Unit"
-                      styles={
-                        values.EventCategory_Id?.value !== "C007003"
-                          ? selectCustomStyle
-                          : disabledCustomStyle
-                      }
+                      styles={selectCustomStyle}
                       options={raceDistanceUnitDropdown}
                       value={values.Race_Distance_Unit}
                       onChange={(value) =>
@@ -1386,6 +1371,17 @@ const AddCustomAccordion = ({
                         className="form-control"
                         placeholder="5656"
                         name="BIB_Number"
+                        onWheel={(e) => e.target.blur()}
+                        onChange={(e) => {
+                          if (
+                            e.target.value < 0 ||
+                            e.target.value === "e" ||
+                            e.target.value === "E"
+                          ) {
+                            return;
+                          }
+                          setFieldValue("BIB_Number", e.target.value);
+                        }}
                       />
                     </div>
                     <ErrorMessage
@@ -1409,6 +1405,20 @@ const AddCustomAccordion = ({
                         className="form-control"
                         placeholder="Min Age"
                         name="Eligibility_Criteria_MinYear"
+                        onWheel={(e) => e.target.blur()}
+                        onChange={(e) => {
+                          if (
+                            e.target.value < 0 ||
+                            e.target.value === "e" ||
+                            e.target.value === "E"
+                          ) {
+                            return;
+                          }
+                          setFieldValue(
+                            "Eligibility_Criteria_MinYear",
+                            e.target.value
+                          );
+                        }}
                       />
                     </div>
                     <ErrorMessage
@@ -1431,6 +1441,20 @@ const AddCustomAccordion = ({
                         className="form-control"
                         placeholder="Max Age"
                         name="Eligibility_Criteria_MaxYear"
+                        onWheel={(e) => e.target.blur()}
+                        onChange={(e) => {
+                          if (
+                            e.target.value < 0 ||
+                            e.target.value === "e" ||
+                            e.target.value === "E"
+                          ) {
+                            return;
+                          }
+                          setFieldValue(
+                            "Eligibility_Criteria_MaxYear",
+                            e.target.value
+                          );
+                        }}
                       />
                     </div>
                     <ErrorMessage
@@ -1449,382 +1473,97 @@ const AddCustomAccordion = ({
                   ></div>
                 </div>
 
-                <FieldArray name="Event_Prize">
-                  {({ insert, remove, push, replace }) => {
-                    return (
-                      <>
-                        <div className="col-md-6">
-                          <div className="single-field y-gap-20">
-                            <label className="text-13 fw-500">
-                              Is there any Cash Prize/ Medal?
-                              <sup className="asc">*</sup>
-                            </label>
+                <div className="col-md-6">
+                  <div className="single-field y-gap-20">
+                    <label className="text-13 fw-500">
+                      Is there any Cash Prize/ Medal?
+                      <sup className="asc">*</sup>
+                    </label>
 
-                            <div className="d-flex gap-15">
-                              <div className="form-radio d-flex items-center">
-                                <div className="radio">
-                                  <Field
-                                    disabled={
-                                      category.isNew ? false : !isEditing
-                                    }
-                                    type="radio"
-                                    name="Is_PriceMoneyAwarded"
-                                    value="Yes"
-                                    onChange={(e) => {
-                                      setFieldValue(
-                                        "Is_PriceMoneyAwarded",
-                                        e.target.value
-                                      );
-                                      // setFieldTouched(
-                                      //   "Is_PriceMoneyAwarded",
-                                      //   true
-                                      // );
-                                      if (
-                                        e.target.value === "Yes"
-                                        //   &&
-                                        // values.Event_Prize.length < 1
-                                      ) {
-                                        push({
-                                          Gender: null,
-                                          Max_Age: "",
-                                          Min_Age: "",
-                                          First_Prize: "",
-                                          Second_Prize: "",
-                                          Third_Prize: "",
-                                          EventPrizeEntry_Id: "New",
-                                        });
-                                      }
-                                    }}
-                                  />
-                                  <div className="radio__mark">
-                                    <div className="radio__icon"></div>
-                                  </div>
-                                </div>
-                                <div className="text-14 lh-1 ml-10">Yes</div>
-                              </div>
-                              <div className="form-radio d-flex items-center">
-                                <div className="radio">
-                                  <Field
-                                    disabled={
-                                      category.isNew ? false : !isEditing
-                                    }
-                                    type="radio"
-                                    name="Is_PriceMoneyAwarded"
-                                    value="No"
-                                    onChange={(e) => {
-                                      setFieldValue(
-                                        "Is_PriceMoneyAwarded",
-                                        e.target.value
-                                      );
-                                      // setFieldTouched(
-                                      //   "Is_PriceMoneyAwarded",
-                                      //   true
-                                      // );
-                                      if (e.target.value === "No") {
-                                        setFieldValue("Event_Prize", []);
-                                        // replace([]); // Replace the Event_Prize array with an empty array
-                                      }
-                                    }}
-                                  />
-                                  <div className="radio__mark">
-                                    <div className="radio__icon"></div>
-                                  </div>
-                                </div>
-                                <div className="text-14 lh-1 ml-10">No</div>
-                              </div>
-                            </div>
-
-                            <ErrorMessage
-                              name="Is_PriceMoneyAwarded"
-                              component="div"
-                              className="text-error-2 text-13"
-                            />
+                    <div className="d-flex gap-15">
+                      <div className="form-radio d-flex items-center">
+                        <div className="radio">
+                          <Field
+                            disabled={category.isNew ? false : !isEditing}
+                            type="radio"
+                            name="Is_PriceMoneyAwarded"
+                            value="Yes"
+                            onChange={(e) => {
+                              setFieldValue(
+                                "Is_PriceMoneyAwarded",
+                                e.target.value
+                              );
+                            }}
+                          />
+                          <div className="radio__mark">
+                            <div className="radio__icon"></div>
                           </div>
                         </div>
-                        {values.Is_PriceMoneyAwarded === "Yes" ? (
-                          <>
-                            <div className="col-md-12">
-                              <div className="row y-gap-20">
-                                {values.Event_Prize.length > 0 ? (
-                                  values.Event_Prize.map((prize, index) => (
-                                    <div className="row" key={index}>
-                                      <div className="col-md-11">
-                                        <div className="row">
-                                          <div className="col-lg-2">
-                                            <div className="y-gap-10">
-                                              <label className="text-13 fw-500">
-                                                Gender{" "}
-                                                <sup className="asc">*</sup>
-                                              </label>
-                                              <Select
-                                                isDisabled={
-                                                  category.isNew
-                                                    ? false
-                                                    : !isEditing
-                                                }
-                                                isSearchable={false}
-                                                styles={selectCustomStyle}
-                                                options={genderDropdown}
-                                                value={prize.Gender}
-                                                onChange={async (e) => {
-                                                  console.log(e);
-                                                  setFieldValue(
-                                                    `Event_Prize.${index}.Gender`,
-                                                    e
-                                                  );
-                                                }}
-                                              />
-                                              <ErrorMessage
-                                                name={`Event_Prize.${index}.Gender`}
-                                                component="div"
-                                                className="text-error-2 text-13"
-                                              />
-                                            </div>
-                                          </div>
-                                          <div class="col-lg-2">
-                                            <div class="single-field y-gap-20">
-                                              <label class="text-13 fw-500">
-                                                Age Criteria
-                                              </label>
-                                              <div class="form-control">
-                                                <Field
-                                                  disabled={
-                                                    category.isNew
-                                                      ? false
-                                                      : !isEditing
-                                                  }
-                                                  type="text"
-                                                  name={`Event_Prize.${index}.Min_Age`}
-                                                  placeholder="Min Age"
-                                                  className="form-control"
-                                                />
-                                              </div>
-                                              <ErrorMessage
-                                                name={`Event_Prize.${index}.Min_Age`}
-                                                component="div"
-                                                className="text-error-2 text-13"
-                                              />
-                                            </div>
-                                          </div>
+                        <div className="text-14 lh-1 ml-10">Yes</div>
+                      </div>
+                      <div className="form-radio d-flex items-center">
+                        <div className="radio">
+                          <Field
+                            disabled={category.isNew ? false : !isEditing}
+                            type="radio"
+                            name="Is_PriceMoneyAwarded"
+                            value="No"
+                            onChange={(e) => {
+                              setFieldValue(
+                                "Is_PriceMoneyAwarded",
+                                e.target.value
+                              );
+                              setFieldValue("Event_Prize", "");
+                              // if (e.target.value === "No") {
+                              //   setFieldValue("Event_Prize", []);
+                              //   // replace([]); // Replace the Event_Prize array with an empty array
+                              // }
+                            }}
+                          />
+                          <div className="radio__mark">
+                            <div className="radio__icon"></div>
+                          </div>
+                        </div>
+                        <div className="text-14 lh-1 ml-10">No</div>
+                      </div>
+                    </div>
 
-                                          <div class="col-lg-2">
-                                            <div class="single-field y-gap-20">
-                                              <label class="text-13 text-white fw-500">
-                                                Age Criteria
-                                              </label>
-                                              <div class="form-control">
-                                                <Field
-                                                  disabled={
-                                                    category.isNew
-                                                      ? false
-                                                      : !isEditing
-                                                  }
-                                                  type="text"
-                                                  name={`Event_Prize.${index}.Max_Age`}
-                                                  placeholder="Max Age"
-                                                  className="form-control"
-                                                />
-                                              </div>
-                                              <ErrorMessage
-                                                name={`Event_Prize.${index}.Max_Age`}
-                                                component="div"
-                                                className="text-error-2 text-13"
-                                              />
-                                            </div>
-                                          </div>
-
-                                          <div class="col-lg-2">
-                                            <div class="single-field y-gap-20">
-                                              <label class="text-13 fw-500">
-                                                Winner
-                                              </label>
-                                              <div class="form-control">
-                                                <Field
-                                                  disabled={
-                                                    category.isNew
-                                                      ? false
-                                                      : !isEditing
-                                                  }
-                                                  type="text"
-                                                  name={`Event_Prize.${index}.First_Prize`}
-                                                  placeholder="Winner"
-                                                  className="form-control"
-                                                />
-                                              </div>
-                                              <ErrorMessage
-                                                name={`Event_Prize.${index}.First_Prize`}
-                                                component="div"
-                                                className="text-error-2 text-13"
-                                              />
-                                            </div>
-                                          </div>
-                                          <div class="col-lg-2">
-                                            <div class="single-field y-gap-20">
-                                              <label class="text-13 fw-500">
-                                                1st Runner Up
-                                              </label>
-                                              <div class="form-control">
-                                                <Field
-                                                  disabled={
-                                                    category.isNew
-                                                      ? false
-                                                      : !isEditing
-                                                  }
-                                                  type="text"
-                                                  name={`Event_Prize.${index}.Second_Prize`}
-                                                  placeholder="1st Runner Up"
-                                                  className="form-control"
-                                                />
-                                              </div>
-                                              <ErrorMessage
-                                                name={`Event_Prize.${index}.Second_Prize`}
-                                                component="div"
-                                                className="text-error-2 text-13"
-                                              />
-                                            </div>
-                                          </div>
-                                          <div class="col-lg-2">
-                                            <div class="single-field y-gap-20">
-                                              <label class="text-13 fw-500">
-                                                3rd Runner Up
-                                              </label>
-                                              <div class="form-control">
-                                                <Field
-                                                  disabled={
-                                                    category.isNew
-                                                      ? false
-                                                      : !isEditing
-                                                  }
-                                                  type="text"
-                                                  name={`Event_Prize.${index}.Third_Prize`}
-                                                  placeholder="3rd Runner Up"
-                                                  className="form-control"
-                                                />
-                                              </div>
-                                              <ErrorMessage
-                                                name={`Event_Prize.${index}.Third_Prize`}
-                                                component="div"
-                                                className="text-error-2 text-13"
-                                              />
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      {/* {index !== 0 && ( */}
-                                      <div className="col-1 relative">
-                                        <label className="text-13 text-white fw-500">
-                                          __
-                                        </label>
-                                        <button
-                                          onClick={(e) => {
-                                            e.preventDefault();
-                                            if (category.isNew) {
-                                              if (
-                                                prize.EventPrizeEntry_Id ===
-                                                "New"
-                                              ) {
-                                                remove(index);
-                                              } else {
-                                                handlePrizeDelete(
-                                                  prize,
-                                                  index,
-                                                  remove
-                                                );
-                                              }
-                                            } else {
-                                              if (!isEditing) {
-                                                return;
-                                              } else {
-                                                if (
-                                                  prize.EventPrizeEntry_Id ===
-                                                  "New"
-                                                ) {
-                                                  remove(index);
-                                                } else {
-                                                  handlePrizeDelete(
-                                                    prize,
-                                                    index,
-                                                    remove
-                                                  );
-                                                }
-                                              }
-                                            }
-                                            // if (
-                                            //   category.isNew
-                                            //     ? false
-                                            //     : !isEditing
-                                            // ) {
-                                            //   return;
-                                            // }
-                                          }}
-                                          className="button w-45 h-45 border-primary-bold text-20 fw-600 rounded-full"
-                                        >
-                                          -
-                                        </button>
-                                      </div>
-                                      {/* )} */}
-                                    </div>
-                                  ))
-                                ) : (
-                                  <>
-                                    <ErrorMessage
-                                      name="Event_Prize"
-                                      component="div"
-                                      className="text-error-2 text-13"
-                                    />
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                            <div className="col-md-2">
-                              <div className="d-flex justify-end">
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    // if (category.isNew ? false : !isEditing) {
-                                    //   return;
-                                    // }
-                                    if (category.isNew) {
-                                      push({
-                                        Gender: null,
-                                        Max_Age: "",
-                                        Min_Age: "",
-                                        First_Prize: "",
-                                        Second_Prize: "",
-                                        Third_Prize: "",
-                                        EventPrizeEntry_Id: "New",
-                                      });
-                                    } else {
-                                      if (!isEditing) {
-                                        return;
-                                      } else {
-                                        push({
-                                          Gender: null,
-                                          Max_Age: "",
-                                          Min_Age: "",
-                                          First_Prize: "",
-                                          Second_Prize: "",
-                                          Third_Prize: "",
-                                          EventPrizeEntry_Id: "New",
-                                        });
-                                      }
-                                    }
-                                  }}
-                                  className="button w-full rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
-                                >
-                                  Add
-                                </button>
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <></>
+                    <ErrorMessage
+                      name="Is_PriceMoneyAwarded"
+                      component="div"
+                      className="text-error-2 text-13"
+                    />
+                  </div>
+                </div>
+                {values.Is_PriceMoneyAwarded === "Yes" ? (
+                  <div className="col-12">
+                    <div className="single-field w-full y-gap-10">
+                      <label className="text-13 fw-500">
+                        Enter Prize <sup className="asc">*</sup>
+                      </label>
+                      <Field name="Event_Prize">
+                        {({ field, form }) => (
+                          <ReactQuill
+                            readOnly={category.isNew ? false : !isEditing}
+                            theme="snow"
+                            value={field.value}
+                            onChange={(content) =>
+                              setFieldValue("Event_Prize", content)
+                            }
+                            placeholder="Add Prizes"
+                          />
                         )}
-                      </>
-                    );
-                  }}
-                </FieldArray>
+                      </Field>
+                      <ErrorMessage
+                        name="Event_Prize"
+                        component="div"
+                        className="text-error-2 text-13"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <></>
+                )}
 
                 <div class="col-12">
                   <div
@@ -1949,7 +1688,6 @@ const AddCustomAccordion = ({
                           name="Ticket_Sale_Start_Date"
                           format="DD/MM/YYYY"
                           inputFormat="DD/MM/YYYY"
-                          disableFuture
                           value={values.Ticket_Sale_Start_Date}
                           onChange={(newValue) =>
                             setFieldValue("Ticket_Sale_Start_Date", newValue)
@@ -2063,7 +1801,6 @@ const AddCustomAccordion = ({
                           name="Ticket_Sale_End_Date"
                           format="DD/MM/YYYY"
                           inputFormat="DD/MM/YYYY"
-                          disableFuture
                           value={values.Ticket_Sale_End_Date}
                           onChange={(newValue) =>
                             setFieldValue("Ticket_Sale_End_Date", newValue)
@@ -2275,7 +2012,7 @@ const AddCustomAccordion = ({
                 </div>
 
                 {category.isNew || isEditing ? (
-                  <div className="col-12">
+                  <div className="col-12 d-flex justify-end">
                     <div className="row">
                       <div className="col-auto relative">
                         <button

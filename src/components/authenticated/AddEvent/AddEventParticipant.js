@@ -577,7 +577,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
           </Stack>
         </div>
 
-        <div className="col-12">
+        {/* <div className="col-12">
           <div className="y-gap-10">
             <label className="text-14 fw-500">
               Would you like to make this a public event or a private event?
@@ -593,7 +593,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="col-12 d-flex justify-end">
           <div className="row">

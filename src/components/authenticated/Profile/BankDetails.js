@@ -35,9 +35,13 @@ function BankDetails({ updateTab, nextIndex, prevIndex, UpdateProfile }) {
   useEffect(() => {
     setFormValues({
       ...orgProfile,
-      BankAccountType_Id: accountType?.filter(
-        (acc) => acc.value === orgProfile.BankAccountType_Id
-      )[0],
+      BankAccountType_Id: orgProfile.BankAccountType_Id?.value
+        ? accountType?.filter(
+            (acc) => acc.value === orgProfile.BankAccountType_Id.value
+          )[0]
+        : accountType?.filter(
+            (acc) => acc.value === orgProfile.BankAccountType_Id
+          )[0],
     });
   }, [orgProfile]);
 
@@ -139,9 +143,12 @@ function BankDetails({ updateTab, nextIndex, prevIndex, UpdateProfile }) {
                       className="form-control"
                       onChange={(e) => {
                         const { value } = e.target;
-                        const regex = /^[0-9\b]+$/; // Only numbers allowed
-                        if (!value || regex.test(value)) {
-                          setFieldValue("BankAccount_No", value);
+                        const regex = /^[a-zA-Z0-9]+$/;
+                        if (
+                          !value ||
+                          (regex.test(value) && value.length <= 15)
+                        ) {
+                          setFieldValue("BankAccount_No", value.toUpperCase());
                         }
                       }}
                     />

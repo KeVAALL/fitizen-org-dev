@@ -30,13 +30,9 @@ function EventDescription() {
   const [submitForm, setSubmitForm] = useState(false);
 
   const validationSchema = Yup.object().shape({
-    Event_Description: Yup.string().required("Event description is required"),
-    Rules_Regulations: Yup.string().required(
-      "Rules and regulations are required"
-    ),
-    Refund_Cancellation: Yup.string().required(
-      "Refund & cancellation policy is required"
-    ),
+    Event_Description: Yup.string(),
+    Rules_Regulations: Yup.string(),
+    Refund_Cancellation: Yup.string(),
   });
   const submitDescriptionForm = async (values) => {
     const reqdata = {
@@ -160,9 +156,7 @@ function EventDescription() {
               <div className="row y-gap-20 py-20">
                 <div className="col-12">
                   <div className="single-field w-full y-gap-10">
-                    <label className="text-13 fw-500">
-                      Enter Description <sup className="asc">*</sup>
-                    </label>
+                    <label className="text-13 fw-500">Enter Description</label>
                     <Field name="Event_Description">
                       {({ field, form }) => (
                         <ReactQuill
@@ -187,7 +181,7 @@ function EventDescription() {
                 <div className="col-12">
                   <div className="single-field w-full y-gap-10">
                     <label className="text-13 fw-500">
-                      Refund & Cancellation Policy <sup className="asc">*</sup>
+                      Refund & Cancellation Policy
                     </label>
                     <Field name="Refund_Cancellation">
                       {({ field, form }) => (
@@ -213,7 +207,7 @@ function EventDescription() {
                 <div className="col-12">
                   <div className="single-field w-full y-gap-10">
                     <label className="text-13 fw-500">
-                      Rules & Regulations <sup className="asc">*</sup>
+                      Rules & Regulations
                     </label>
                     <Field name="Rules_Regulations">
                       {({ field, form }) => (

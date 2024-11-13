@@ -144,7 +144,10 @@ function EventTicket() {
                   EventCategory_Id: null,
                   Race_Distance: "",
                   Race_Distance_Unit: "",
-                  Timed_Event: null,
+                  Timed_Event: {
+                    label: "Timed",
+                    value: "Timed",
+                  },
                   Time_Limit: "",
                   Time_Limit_Unit: null,
                   Ticket_Sale_Start_Date: null,

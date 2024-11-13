@@ -13,6 +13,9 @@ import { clearProfile } from "../../redux/slices/userSlice";
 
 // Project-specific imports
 import { verifyToken } from "../UtilityFunctions";
+import { removeCurrentEventId } from "../../redux/slices/addEventSlice";
+import { removeCurrentEvent } from "../../redux/slices/eventSlice";
+import { removeOrgProfile } from "../../redux/slices/profileSlice";
 
 // ==============================|| AUTH GUARD ||============================== //
 
@@ -40,6 +43,9 @@ const AuthGuard = ({ children }) => {
     const verifyAndRedirect = () => {
       if (!verifyToken(token)) {
         dispatch(clearProfile());
+        dispatch(removeCurrentEventId());
+        dispatch(removeCurrentEvent());
+        dispatch(removeOrgProfile());
         navigate("/sign-in", { replace: true });
         window.location.reload();
       } else {
