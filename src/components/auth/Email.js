@@ -200,7 +200,7 @@ function Email({ setShowEmailForm, setShowLoginForm, scrolled }) {
               {({ errors, touched, isValid, dirty, setFieldValue }) => (
                 <Form>
                   <div className="col-12 mt-20">
-                    <div className="single-field">
+                    <div className="single-field y-gap-20">
                       <label className="text-13 fw-600">
                         Full Name <sup className="asc">*</sup>
                       </label>
@@ -234,7 +234,7 @@ function Email({ setShowEmailForm, setShowLoginForm, scrolled }) {
                     </div>
                   </div>
                   <div class="col-12 mt-20">
-                    <div class="single-field">
+                    <div class="single-field y-gap-20">
                       <label class="text-13 fw-600">
                         Email ID <sup className="asc">*</sup>
                       </label>

@@ -38,103 +38,14 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import CheckboxCard from "../../../utils/CheckboxCard";
 
-// Draggable Question Component
-// const DraggableQuestion = ({ question, index, moveQuestion }) => {
-//   const ref = useRef(null);
-
-//   const [, drop] = useDrop({
-//     accept: ItemType,
-//     hover: (draggedItem) => {
-//       if (draggedItem.index !== index) {
-//         moveQuestion(draggedItem.index, index); // Swap the questions
-//         draggedItem.index = index; // Update the dragged item index
-//       }
-//     },
-//   });
-
-//   const [{ isDragging }, drag] = useDrag({
-//     type: ItemType,
-//     item: { index },
-//     collect: (monitor) => ({
-//       isDragging: monitor.isDragging(),
-//     }),
-//   });
-
-//   drag(drop(ref)); // Make the component draggable and droppable
-
-//   return (
-//     <div
-//       ref={ref}
-//       className="col-lg-12 col-md-12"
-//       style={{
-//         opacity: isDragging ? 0.5 : 1,
-//         cursor: "move",
-//       }}
-//     >
-//       <div
-//         className="py-15 px-15 border-light rounded-8"
-//         style={{
-//           boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
-//         }}
-//       >
-//         <div className="row">
-//           <div className="col-1 d-flex">
-//             <Checkbox
-//               checked={question.checked}
-//               onChange={(e) => {
-//                 console.log(e.target.checked);
-//               }}
-//             />
-//           </div>
-//           <div className="col-3">
-//             <div className="y-gap-5">
-//               <label className="text-13 fw-500">
-//                 {question?.Question}
-//                 <sup className="asc">*</sup>
-//               </label>
-//               <div className="d-flex gap-20">
-//                 <label className="text-error-2 text-13">Mandatory Field</label>
-//                 <div className="form-switch d-flex">
-//                   <div className="switch">
-//                     <input
-//                       type="checkbox"
-//                       onChange={(e) => {
-//                         console.log(e);
-//                       }}
-//                     />
-//                     <span className="switch__slider"></span>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//           <div className="col-4 d-flex items-center">
-//             <div className="single-field w-full">
-//               <div className="form-control">
-//                 <input
-//                   disabled
-//                   type="text"
-//                   className="form-control"
-//                   placeholder={question?.Question}
-//                   name="name"
-//                 />
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
 const DraggableQuestion = ({ qkey, question, index, toggleChecked }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: question.Question_Id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    // transition,
     marginBottom: "8px",
     borderRadius: "8px",
   };
@@ -190,6 +101,15 @@ const DraggableQuestion = ({ qkey, question, index, toggleChecked }) => {
               />
             </div>
           </div>
+        </div>
+        <div
+          className="col-4 d-flex items-center justify-end drag-handle"
+          {...listeners}
+        >
+          <i
+            class="fas fa-grip-vertical"
+            style={{ color: "#adacae", fontSize: "24px" }}
+          ></i>
         </div>
       </div>
     </div>
@@ -642,19 +562,34 @@ function EventParticipant() {
                   </SortableContext>
                 </DndContext>
 
-                <div className="col-auto relative">
-                  <button
-                    disabled={submitQuestionForm}
-                    // type="submit"
-                    onClick={handleSaveClick}
-                    className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                  >
-                    {!submitQuestionForm ? (
-                      `Save`
-                    ) : (
-                      <span className="btn-spinner"></span>
-                    )}
-                  </button>
+                <div className="col-12 d-flex justify-start">
+                  <div className="row">
+                    <div className="col-auto relative">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setOtherInfoAccordion(false);
+                        }}
+                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <div className="col-auto relative">
+                      <button
+                        disabled={submitQuestionForm}
+                        // type="submit"
+                        onClick={handleSaveClick}
+                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                      >
+                        {!submitQuestionForm ? (
+                          `Save`
+                        ) : (
+                          <span className="btn-spinner"></span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </AccordionDetails>
             </Accordion>

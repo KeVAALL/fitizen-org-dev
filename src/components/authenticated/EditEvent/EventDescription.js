@@ -116,30 +116,22 @@ function EventDescription() {
       className="py-30 px-30 border-light rounded-8"
       style={{ boxShadow: "2px 2px 7.5px 0px #0000000D" }}
     >
-      <div className="col-12 d-flex justify-center">
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setIsEditing(!isEditing);
-            if (isEditing) {
-              LoadDescription();
-            }
-          }}
-          className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
-        >
-          {isEditing ? (
-            <>
-              <i className="fas fa-times text-16"></i>
-              Cancel
-            </>
-          ) : (
-            <>
-              <i className="far fa-edit text-16"></i>
-              Edit Description
-            </>
-          )}
-        </button>
-      </div>
+      {!isEditing ? (
+        <div className="col-12 d-flex justify-center">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setIsEditing(true);
+            }}
+            className="button w-200 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-14 d-flex gap-10"
+          >
+            <i className="far fa-edit text-14"></i>
+            Edit Description
+          </button>
+        </div>
+      ) : (
+        <></>
+      )}
       {fetchingDescription ? (
         <Loader fetching={fetchingDescription} />
       ) : (
@@ -231,19 +223,33 @@ function EventDescription() {
                 </div>
 
                 {isEditing && (
-                  <div className="col-auto relative">
-                    <button
-                      disabled={submitForm}
-                      type="submit"
-                      className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                    >
-                      {!submitForm ? (
-                        `Save`
-                      ) : (
-                        <span className="btn-spinner"></span>
-                      )}
-                    </button>
-                  </div>
+                  <>
+                    <div className="col-auto relative">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsEditing(false);
+                          LoadDescription();
+                        }}
+                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <div className="col-auto relative">
+                      <button
+                        disabled={submitForm}
+                        type="submit"
+                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                      >
+                        {!submitForm ? (
+                          `Save`
+                        ) : (
+                          <span className="btn-spinner"></span>
+                        )}
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             </Form>
@@ -255,159 +261,3 @@ function EventDescription() {
 }
 
 export default EventDescription;
-
-/* <div className="col-12">
-          <div className="y-gap-10">
-            <label className="text-13 fw-500">
-              Race Day Facilities <sup className="asc">*</sup>
-            </label>
-            <div className="py-30 px-30 border-light rounded-8">
-              <div className="row y-gap-20">
-                <div className="col-xl-3">
-                  <div className="d-flex items-center gap-5">
-                    <Checkbox
-                    // checked={true}
-                    // onChange={(e) =>
-                    //   setFieldValue(
-                    //     `menuIds[${index}].edit_flag`,
-                    //     e.target.checked ? 1 : 0
-                    //   )
-                    // }
-                    />
-                    <label className="text-15 text-reading fw-500">
-                      Parking
-                    </label>
-                  </div>
-                </div>
-                <div className="col-xl-3">
-                  <div className="d-flex items-center gap-5">
-                    <Checkbox />
-                    <label className="text-15 text-reading fw-500">
-                      Shuttle Services
-                    </label>
-                  </div>
-                </div>
-                <div className="col-xl-3">
-                  <div className="d-flex items-center gap-5">
-                    <Checkbox />
-                    <label className="text-15 text-reading fw-500">
-                      Post Race Survey
-                    </label>
-                  </div>
-                </div>
-                <div className="col-xl-3">
-                  <div className="d-flex items-center gap-5">
-                    <Checkbox disabled />
-                    <label className="text-15 text-reading fw-500">
-                      Pacing Bus
-                    </label>
-                  </div>
-                </div>
-                <div className="col-xl-12">
-                  <div className="d-flex justify-end items-center">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                      }}
-                      className="button rounded-24 py-10 px-15 text-primary border-primary -primary-1 fw-500 text-13 d-flex gap-10"
-                    >
-                      <i className="fas fa-plus text-12"></i>
-                      Add Others
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */
-/* <Autocomplete
-              multiple
-              disableClearable
-              disableCloseOnSelect
-              disableListWrap
-              options={[]}
-              getOptionLabel={(option) => option.label}
-              value={[]} // Bind selected options to the filter state
-              onChange={() => {}}
-              renderOption={(props, option, { selected }) => (
-                <li
-                  {...props}
-                  key={option.value}
-                  style={{
-                    backgroundColor: selected ? "white" : "transparent",
-                  }}
-                >
-                  <Checkbox
-                    icon={<CheckBoxOutlineBlank fontSize="small" />}
-                    checkedIcon={<Checkbox fontSize="small" />}
-                    style={{ marginRight: 8 }}
-                    checked={selected}
-                    // Set checkbox color to primary color when selected
-                    // color={selected ? "orange" : "default"}
-                    sx={{
-                      color: selected ? "#f05736" : undefined, // Checkbox color when selected
-                      "&.Mui-checked": {
-                        color: "#f05736", // Checkbox color when selected
-                      },
-                    }}
-                  />
-                  {option.label}
-                </li>
-              )}
-              renderTags={(tagValue) => {
-                const numSelected = [].length;
-                return (
-                  <Chip
-                    label={
-                      numSelected > 0 ? `${numSelected} Selected` : "Filter"
-                    }
-                    size="small"
-                  />
-                );
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  disabled
-                  placeholder="Add Race Day Takeaways"
-                  className="multi-select-field"
-                  variant="outlined"
-                  InputLabelProps={{
-                    shrink: true,
-                    sx: {
-                      fontSize: "12px",
-                      left: "-5px",
-                      top: "-5px",
-                    },
-                  }}
-                  sx={{
-                    "& .MuiInputLabel-root": {
-                      fontSize: "14px", // Adjust font size
-                      color: "gray", // Adjust color
-                    },
-                  }}
-                  inputProps={{
-                    ...params.inputProps,
-                    readOnly: true, // Disable typing
-                  }}
-                  InputProps={{
-                    ...params.InputProps,
-                    sx: {
-                      height: "38px", // Custom height for the TextField
-                      padding: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    },
-                  }}
-                />
-              )}
-              ListboxProps={{
-                sx: {
-                  fontSize: "12px",
-                  "& .MuiAutocomplete-option": {
-                    paddingLeft: "0px",
-                  },
-                },
-              }}
-            /> */

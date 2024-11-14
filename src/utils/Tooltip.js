@@ -6,7 +6,7 @@ export const HtmlLightTooltip = styled(({ className, ...props }) => (
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: "#f05736",
     color: "#fff",
-    maxWidth: 220,
+    maxWidth: "100%",
     height: 30,
     fontSize: theme.typography.pxToRem(12),
     fontFamily: '"Inter", sans-serif',

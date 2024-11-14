@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Third-party component imports
 import { useSelector } from "react-redux";
@@ -23,11 +23,28 @@ const validationSchema = Yup.object().shape({
 function Social({ updateTab, prevIndex, UpdateProfile }) {
   const orgProfile = useSelector((state) => state.orgProfile.profile);
   const [addingSocial, setAddingSocial] = useState(false);
+  const [formValues, setFormValues] = useState(null);
+
+  useEffect(() => {
+    setFormValues({
+      ...orgProfile,
+      Org_Facebook:
+        orgProfile.Org_Facebook !== "null" ? orgProfile.Org_Facebook : "",
+      Org_Instagram:
+        orgProfile.Org_Instagram !== "null" ? orgProfile.Org_Instagram : "",
+      Org_LinkedIn:
+        orgProfile.Org_LinkedIn !== "null" ? orgProfile.Org_LinkedIn : "",
+      Org_Youtube:
+        orgProfile.Org_Youtube !== "null" ? orgProfile.Org_Youtube : "",
+      Org_Website:
+        orgProfile.Org_Website !== "null" ? orgProfile.Org_Website : "",
+    });
+  }, [orgProfile]);
 
   return (
     <>
       <Formik
-        initialValues={orgProfile}
+        initialValues={formValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
           console.log("Form data", values);

@@ -91,8 +91,8 @@ const CustomAccordion = ({
       value: "Sec",
     },
     {
-      label: "Mins",
-      value: "Mins",
+      label: "Min",
+      value: "Min",
     },
     {
       label: "Hours",
@@ -294,7 +294,9 @@ const CustomAccordion = ({
     addRow("Race_Distance", data.Race_Distance);
     addRow(
       "Race_Distance_Unit",
-      data.Race_Distance_Unit?.value || data.Race_Distance_Unit
+      data.EventCategory_Id.value === "C007003"
+        ? data.Race_Distance_Unit?.value || data.Race_Distance_Unit
+        : ""
     );
     addRow("Eligibility_Criteria_MinYear", data.Eligibility_Criteria_MinYear);
     addRow("Eligibility_Criteria_MaxYear", data.Eligibility_Criteria_MaxYear);
@@ -319,7 +321,7 @@ const CustomAccordion = ({
     );
     addRow("Is_Paid_Event", data.Is_Paid_Event === "Paid" ? 1 : 0);
     addRow("Number_Of_Tickets", data.Number_Of_Tickets);
-    addRow("BIB_Number", data.BIB_Number);
+    addRow("BIB_Number", data.BIB_Number ? data.BIB_Number : 0);
     addRow("Event_Price", data.Event_Price);
     addRow(
       "Ticket_Sale_Start_Date",
@@ -346,9 +348,10 @@ const CustomAccordion = ({
           ? `${data.Race_Distance}`
           : data.EventCategory_Id.label
       }${
+        data.EventCategory_Id.value === "C007003" &&
         data.Race_Distance_Unit?.value
           ? ` ${data.Race_Distance_Unit?.value}`
-          : data.Race_Distance_Unit
+          : data.EventCategory_Id.value === "C007003" && data.Race_Distance_Unit
           ? ` ${data.Race_Distance_Unit}`
           : ""
       } ${pillData}`
@@ -486,9 +489,11 @@ const CustomAccordion = ({
             (cat) => cat.value === result1?.EventCategory_Id
           )[0],
           //   Race_Distance: result1?.Race_Distance,
-          Race_Distance_Unit: raceDistanceUnitDropdown?.filter(
-            (unit) => unit.value === result1?.Race_Distance_Unit
-          )[0],
+          Race_Distance_Unit: result1?.Race_Distance_Unit
+            ? raceDistanceUnitDropdown?.filter(
+                (unit) => unit.value === result1?.Race_Distance_Unit
+              )[0]
+            : raceDistanceUnitDropdown[0],
           Timed_Event: timedEventDropdown?.filter(
             (t) => t.value === result1?.Timed_Event
           )[0],
@@ -552,69 +557,6 @@ const CustomAccordion = ({
     } finally {
       setLoading(false);
     }
-  };
-  const handlePrizeDelete = (prize, index, remove) => {
-    Swal.fire({
-      title: "Are you sure?",
-      // text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-      preConfirm: async () => {
-        // Show loading on the "Yes, delete it!" button
-        Swal.showLoading();
-
-        const reqdata = {
-          Method_Name: "PrizeDelete",
-          Session_User_Id: user?.User_Id,
-          Session_User_Name: user?.User_Display_Name,
-          Session_Organzier_Id: user?.Organizer_Id,
-          Org_Id: user?.Org_Id,
-          Event_Id: decryptData(event_id),
-          EventCategoryEntry_Id: prize.EventPrizeEntry_Id,
-          EventCategory_Id: "",
-          EventCategory_Name: "",
-          ImagePath: "",
-          ImageName: "",
-          XMLData: "",
-          PrizeXMLData: "",
-        };
-
-        try {
-          // Make the API call
-          const result = await RestfulApiService(
-            reqdata,
-            "organizer/addupdatecategory"
-          );
-
-          if (result) {
-            // Assuming the API response includes a 'success' field
-            // Return true if the API call is successful
-            remove(index);
-            return true;
-          } else {
-            // If the API response indicates failure, show a validation message
-            Swal.showValidationMessage("Failed to delete the prize.");
-            return false;
-          }
-        } catch (error) {
-          // If an error occurs, show an error message
-          Swal.showValidationMessage("Request failed: " + error);
-          return false;
-        }
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Show the success message after the deletion is confirmed
-        Swal.fire({
-          title: "Deleted!",
-          text: "Prize has been deleted.",
-          icon: "success",
-        });
-      }
-    });
   };
   const handleCancelClick = (event) => {
     event.stopPropagation(); // Prevent accordion from toggling
@@ -697,7 +639,6 @@ const CustomAccordion = ({
     if (category.isNew) {
       console.log(category);
       setAccordionOpen(true);
-      // scrollToAccordion();
     }
   }, [category]);
 
@@ -734,7 +675,6 @@ const CustomAccordion = ({
           <div style={{ display: "flex", gap: "8px" }}>
             {category?.isNew ? (
               <>
-                {" "}
                 {isAccordionOpen ? (
                   <IconButton
                     size="small"
@@ -914,32 +854,26 @@ const CustomAccordion = ({
           {({ values, setFieldValue, setFieldTouched, handleChange }) => (
             <Form>
               <div className="row y-gap-30 py-20">
-                <div className="col-12 d-flex justify-center">
-                  {!category.isNew && (
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsEditing(!isEditing);
-                        if (isEditing) {
-                          handleEditClick(e, values?.EventCategoryEntry_Id);
-                        }
-                      }}
-                      className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
-                    >
-                      {isEditing ? (
-                        <>
-                          <i className="fas fa-times text-16"></i>
-                          Cancel
-                        </>
-                      ) : (
-                        <>
-                          <i className="far fa-edit text-16"></i>
-                          {category.isNew ? "Add" : "Edit"} Ticket
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
+                {!category.isNew &&
+                  (!isEditing ? (
+                    <div className="col-12 d-flex justify-center">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsEditing(true);
+                          // if (isEditing) {
+                          //   handleEditClick(e, values?.EventCategoryEntry_Id);
+                          // }
+                        }}
+                        className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
+                      >
+                        <i className="far fa-edit text-16"></i>
+                        {category.isNew ? "Add" : "Edit"} Ticket
+                      </button>
+                    </div>
+                  ) : (
+                    <></>
+                  ))}
                 <div class="col-lg-6 col-md-6">
                   <div class="single-field y-gap-20">
                     <label class="text-13 fw-500">Event Category Name</label>
@@ -994,7 +928,7 @@ const CustomAccordion = ({
                         setFieldValue("EventCategory_Id", value);
                         if (value?.value !== "C007003") {
                           setFieldValue("Race_Distance", "");
-                          setFieldValue("Race_Distance_Unit", null);
+                          // setFieldValue("Race_Distance_Unit", null);
                         }
                       }}
                     />
@@ -1043,11 +977,7 @@ const CustomAccordion = ({
                       }
                       isSearchable={false}
                       placeholder="Select Unit"
-                      styles={
-                        values.EventCategory_Id?.value !== "C007003"
-                          ? selectCustomStyle
-                          : disabledCustomStyle
-                      }
+                      styles={selectCustomStyle}
                       options={raceDistanceUnitDropdown}
                       value={values.Race_Distance_Unit}
                       onChange={(value) =>
@@ -1716,6 +1646,20 @@ const CustomAccordion = ({
                                   className="form-control"
                                   placeholder="Add Price"
                                   name="Event_Price"
+                                  onWheel={(e) => e.target.blur()}
+                                  onChange={(e) => {
+                                    if (
+                                      e.target.value < 0 ||
+                                      e.target.value === "e" ||
+                                      e.target.value === "E"
+                                    ) {
+                                      return;
+                                    }
+                                    setFieldValue(
+                                      "Event_Price",
+                                      e.target.value
+                                    );
+                                  }}
                                 />
                               </div>
                               <ErrorMessage
@@ -1748,6 +1692,7 @@ const CustomAccordion = ({
                           format="DD/MM/YYYY"
                           inputFormat="DD/MM/YYYY"
                           value={values.Ticket_Sale_Start_Date}
+                          disablePast
                           onChange={(newValue) =>
                             setFieldValue("Ticket_Sale_Start_Date", newValue)
                           }
@@ -1861,6 +1806,7 @@ const CustomAccordion = ({
                           format="DD/MM/YYYY"
                           inputFormat="DD/MM/YYYY"
                           value={values.Ticket_Sale_End_Date}
+                          disablePast
                           onChange={(newValue) =>
                             setFieldValue("Ticket_Sale_End_Date", newValue)
                           }
@@ -2071,8 +2017,25 @@ const CustomAccordion = ({
                 </div>
 
                 {category.isNew || isEditing ? (
-                  <div className="col-12">
+                  <div className="col-12 d-flex justify-end">
                     <div className="row">
+                      <div className="col-auto relative">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsEditing(false);
+                            if (category.isNew) {
+                              setAccordionOpen(false);
+                            }
+                            if (!category.isNew && isEditing) {
+                              handleEditClick(e, values?.EventCategoryEntry_Id);
+                            }
+                          }}
+                          className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                       <div className="col-auto relative">
                         <button
                           disabled={submitForm}

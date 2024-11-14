@@ -91,6 +91,7 @@ function EventBanner() {
       setUploadingImage(true);
 
       try {
+        toast.dismiss();
         await toast.promise(
           RestfulApiService(reqdata, "master/uploadfile"),
           {
@@ -100,6 +101,11 @@ function EventBanner() {
                 console.log(result);
                 setFieldValue("Image_Path", result?.data?.Description);
                 setFieldValue("Image_Name", result?.data?.Result);
+                const formValues = {
+                  Image_Path: result?.data?.Description,
+                  Image_Name: result?.data?.Result,
+                };
+                submitBannerForm(formValues);
               }
               return "Image uploaded successfully!";
             },
@@ -350,7 +356,7 @@ function EventBanner() {
                             Click box to upload
                           </p>
                           <p className="text-14 text-reading fw-500">
-                            JPEG or PNGS smaller than 10mb
+                            JPEG or PNGS smaller than 2mb
                           </p>
                           <input
                             type="file"
@@ -403,7 +409,7 @@ function EventBanner() {
 
                   <div className="col-md-8"></div>
 
-                  <div className="col-auto relative">
+                  {/* <div className="col-auto relative">
                     <button
                       disabled={submitForm}
                       type="submit"
@@ -415,7 +421,7 @@ function EventBanner() {
                         <span className="btn-spinner"></span>
                       )}
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </Form>
             )}
@@ -439,7 +445,7 @@ export default EventBanner;
                 Click box to upload
               </p>
               <p className="text-14 text-reading fw-500">
-                JPEG or PNGS smaller than 10mb
+                JPEG or PNGS smaller than 2mb
               </p>
               <input type="file" />
             </div>

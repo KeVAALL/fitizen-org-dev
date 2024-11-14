@@ -55,6 +55,11 @@ function Main() {
                       top: "30px",
                       height: "1px",
                     },
+                    "& .MuiTabs-flexContainer": {
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                    },
                   }}
                 >
                   <Tab
@@ -63,7 +68,7 @@ function Main() {
                     sx={{
                       backgroundColor:
                         value === "one" ? "#FFF3C787" : "transparent", // Background color for active tab
-                      width: 250, // Increase width
+                      width: 200, // Increase width
                       paddingY: 1, // Reduce vertical padding
                       textTransform: "capitalize", // Capitalize only the first letter
                     }}
@@ -83,7 +88,7 @@ function Main() {
                     sx={{
                       backgroundColor:
                         value === "two" ? "#FFF3C787" : "transparent",
-                      width: 250, // Increase width
+                      width: 200, // Increase width
                       paddingY: 1, // Reduce vertical padding
                       textTransform: "capitalize", // Capitalize only the first letter
                     }}
@@ -103,7 +108,7 @@ function Main() {
                     sx={{
                       backgroundColor:
                         value === "three" ? "#FFF3C787" : "transparent",
-                      width: 250, // Increase width
+                      width: 200, // Increase width
                       paddingY: 1, // Reduce vertical padding
                       textTransform: "capitalize", // Capitalize only the first letter
                     }}
@@ -123,7 +128,7 @@ function Main() {
                     sx={{
                       backgroundColor:
                         value === "four" ? "#FFF3C787" : "transparent",
-                      width: 250, // Increase width
+                      width: 200, // Increase width
                       paddingY: 1, // Reduce vertical padding
                       textTransform: "capitalize", // Capitalize only the first letter
                     }}
@@ -143,7 +148,7 @@ function Main() {
                     sx={{
                       backgroundColor:
                         value === "five" ? "#FFF3C787" : "transparent",
-                      width: 250, // Increase width
+                      width: 200, // Increase width
                       paddingY: 1, // Reduce vertical padding
                       textTransform: "capitalize", // Capitalize only the first letter
                     }}

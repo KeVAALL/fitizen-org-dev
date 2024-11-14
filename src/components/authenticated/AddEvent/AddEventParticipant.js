@@ -46,7 +46,7 @@ const DraggableQuestion = ({ qkey, question, index, toggleChecked }) => {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    // transition,
     marginBottom: "8px",
     borderRadius: "8px",
   };
@@ -103,7 +103,15 @@ const DraggableQuestion = ({ qkey, question, index, toggleChecked }) => {
             </div>
           </div>
         </div>
-        <div className="col-4 drag-handle" {...listeners}></div>
+        <div
+          className="col-4 d-flex items-center justify-end drag-handle"
+          {...listeners}
+        >
+          <i
+            class="fas fa-grip-vertical"
+            style={{ color: "#adacae", fontSize: "24px" }}
+          ></i>
+        </div>
       </div>
     </div>
   );
@@ -275,7 +283,178 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
         </div> */}
         <div className="col-12">
           <Stack spacing={3}>
-            {/* <Accordion
+            <Accordion
+              className="event-category-accordion"
+              sx={{
+                borderRadius: 0, // Remove border radius
+                "&:before": {
+                  display: "none", // Remove default MUI border line
+                },
+                boxShadow: "none", // Remove default box shadow
+              }}
+              expanded={isOtherInfoAccordion}
+              onChange={() => setOtherInfoAccordion(!isOtherInfoAccordion)}
+            >
+              <AccordionSummary
+                style={{
+                  backgroundColor: "#FFF3C7", // Set the background color
+                }}
+                sx={{
+                  pointerEvents: "none",
+                }}
+                expandIcon={
+                  isOtherInfoAccordion ? (
+                    <IconButton
+                      size="small"
+                      style={{
+                        backgroundColor: "#949494",
+                        padding: "4px",
+                        borderRadius: 0,
+                        pointerEvents: "auto",
+                        "&:hover": {
+                          backgroundColor: "#f05736",
+                        },
+                      }}
+                      onClick={handleCancelClick}
+                    >
+                      <ClearOutlinedIcon
+                        fontSize="inherit"
+                        style={{
+                          color: "#fff",
+                        }}
+                      />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      size="small"
+                      sx={{
+                        backgroundColor: "#949494",
+                        padding: "4px",
+                        borderRadius: 0,
+                        pointerEvents: "auto",
+                        "&:hover": {
+                          backgroundColor: "#f05736",
+                        },
+                      }}
+                      onClick={(e) => {
+                        handleEditClick(e);
+                      }}
+                    >
+                      {loadingQuestionForm ? (
+                        <CircularProgress
+                          style={{ color: "#fff", height: "1em", width: "1em" }}
+                        />
+                      ) : (
+                        <AddOutlinedIcon
+                          fontSize="inherit"
+                          style={{
+                            color: "#fff",
+                          }}
+                        />
+                      )}
+                    </IconButton>
+                  )
+                }
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                <div className="text-14 fw-600">Other Information</div>
+              </AccordionSummary>
+              <AccordionDetails
+                style={{
+                  boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                }}
+              >
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={infoQuestions.map((q) => q.Question_Id)}
+                  >
+                    <div className="row y-gap-15 px-20 py-20">
+                      {infoQuestions?.map((question, index) => {
+                        return (
+                          <DraggableQuestion
+                            qkey={question.Question_Id}
+                            question={question}
+                            index={index}
+                            toggleChecked={toggleChecked}
+                          />
+                        );
+                      })}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+
+                <div className="col-12 d-flex justify-end">
+                  <div className="row">
+                    <div className="col-auto relative">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setOtherInfoAccordion(false);
+                        }}
+                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <div className="col-auto relative">
+                      <button
+                        disabled={submitQuestionForm}
+                        onClick={handleSaveClick}
+                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
+                      >
+                        {!submitQuestionForm ? (
+                          `Save`
+                        ) : (
+                          <span className="btn-spinner"></span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </AccordionDetails>
+            </Accordion>
+          </Stack>
+        </div>
+
+        <div className="col-12 d-flex justify-end">
+          <div className="row">
+            <div className="col-auto relative">
+              <button
+                type="button"
+                onClick={() => {
+                  handleStep(prevIndex);
+                }}
+                className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
+              >
+                Back
+              </button>
+            </div>
+            <div className="col-auto relative">
+              <button
+                onClick={() => {
+                  handleStep(nextIndex);
+                }}
+                type="submit"
+                className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default AddEventParticipant;
+
+/* <Accordion
               className="event-category-accordion"
               sx={{
                 borderRadius: 0, // Remove border radius
@@ -448,182 +627,4 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
                   />
                 </div>
               </AccordionDetails>
-            </Accordion> */}
-
-            <Accordion
-              className="event-category-accordion"
-              sx={{
-                borderRadius: 0, // Remove border radius
-                "&:before": {
-                  display: "none", // Remove default MUI border line
-                },
-                boxShadow: "none", // Remove default box shadow
-              }}
-              expanded={isOtherInfoAccordion}
-              onChange={() => setOtherInfoAccordion(!isOtherInfoAccordion)}
-            >
-              <AccordionSummary
-                style={{
-                  backgroundColor: "#FFF3C7", // Set the background color
-                }}
-                sx={{
-                  pointerEvents: "none",
-                }}
-                expandIcon={
-                  isOtherInfoAccordion ? (
-                    <IconButton
-                      size="small"
-                      style={{
-                        backgroundColor: "#949494",
-                        padding: "4px",
-                        borderRadius: 0,
-                        pointerEvents: "auto",
-                        "&:hover": {
-                          backgroundColor: "#f05736",
-                        },
-                      }}
-                      onClick={handleCancelClick}
-                    >
-                      <ClearOutlinedIcon
-                        fontSize="inherit"
-                        style={{
-                          color: "#fff",
-                        }}
-                      />
-                    </IconButton>
-                  ) : (
-                    <IconButton
-                      size="small"
-                      sx={{
-                        backgroundColor: "#949494",
-                        padding: "4px",
-                        borderRadius: 0,
-                        pointerEvents: "auto",
-                        "&:hover": {
-                          backgroundColor: "#f05736",
-                        },
-                      }}
-                      onClick={(e) => {
-                        handleEditClick(e);
-                      }}
-                    >
-                      {loadingQuestionForm ? (
-                        <CircularProgress
-                          style={{ color: "#fff", height: "1em", width: "1em" }}
-                        />
-                      ) : (
-                        <AddOutlinedIcon
-                          fontSize="inherit"
-                          style={{
-                            color: "#fff",
-                          }}
-                        />
-                      )}
-                    </IconButton>
-                  )
-                }
-                aria-controls="panel1-content"
-                id="panel1-header"
-              >
-                <div className="text-14 fw-600">Other Information</div>
-              </AccordionSummary>
-              <AccordionDetails
-                style={{
-                  boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                }}
-              >
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={infoQuestions.map((q) => q.Question_Id)}
-                  >
-                    <div className="row y-gap-15 px-20 py-20">
-                      {infoQuestions?.map((question, index) => {
-                        return (
-                          <DraggableQuestion
-                            qkey={question.Question_Id}
-                            question={question}
-                            index={index}
-                            toggleChecked={toggleChecked}
-                          />
-                        );
-                      })}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-
-                <div className="col-12 d-flex justify-end">
-                  <div className="row">
-                    <div className="col-auto relative">
-                      <button
-                        disabled={submitQuestionForm}
-                        onClick={handleSaveClick}
-                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
-                      >
-                        {!submitQuestionForm ? (
-                          `Save`
-                        ) : (
-                          <span className="btn-spinner"></span>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </AccordionDetails>
-            </Accordion>
-          </Stack>
-        </div>
-
-        {/* <div className="col-12">
-          <div className="y-gap-10">
-            <label className="text-14 fw-500">
-              Would you like to make this a public event or a private event?
-            </label>
-            <div className="d-flex items-center gap-15">
-              <div className="d-flex items-center gap-5">
-                <Checkbox />
-                <label className="text-15 text-reading fw-500">Public</label>
-              </div>
-              <div className="d-flex items-center gap-5">
-                <Checkbox />
-                <label className="text-15 text-reading fw-500">Private</label>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
-        <div className="col-12 d-flex justify-end">
-          <div className="row">
-            <div className="col-auto relative">
-              <button
-                type="button"
-                onClick={() => {
-                  handleStep(prevIndex);
-                }}
-                className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
-              >
-                Back
-              </button>
-            </div>
-            <div className="col-auto relative">
-              <button
-                onClick={() => {
-                  handleStep(nextIndex);
-                }}
-                type="submit"
-                className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default AddEventParticipant;
+            </Accordion> */

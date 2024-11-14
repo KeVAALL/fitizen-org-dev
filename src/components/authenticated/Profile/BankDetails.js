@@ -24,17 +24,35 @@ function BankDetails({ updateTab, nextIndex, prevIndex, UpdateProfile }) {
     },
   ];
   const validationSchema = Yup.object({
-    BankAccount_Name: Yup.string().required("Required"),
-    Bank_Name: Yup.string().required("Required"),
-    BankAccount_No: Yup.string().required("Required"),
-    BankAccountType_Id: Yup.object().required("Required"),
-    BankIFSC_Code: Yup.string().required("Required"),
-    BankBranch_Name: Yup.string().required("Required"),
+    BankAccount_Name: Yup.string().required(
+      "Bank account holder's name is required."
+    ),
+
+    Bank_Name: Yup.string().required("Bank name is required."),
+
+    BankAccount_No: Yup.string().required("Bank account number is required."),
+
+    BankAccountType_Id: Yup.object().required("Bank account type is required."),
+
+    BankIFSC_Code: Yup.string().required("Bank IFSC code is required."),
+
+    BankBranch_Name: Yup.string().required("Bank branch name is required."),
   });
 
   useEffect(() => {
     setFormValues({
       ...orgProfile,
+      BankAccount_Name: orgProfile.BankAccount_Name
+        ? orgProfile.BankAccount_Name
+        : "",
+      Bank_Name: orgProfile.Bank_Name !== "null" ? orgProfile.Bank_Name : "",
+      BankAccount_No: orgProfile.BankAccount_No
+        ? orgProfile.BankAccount_No
+        : "",
+      BankIFSC_Code:
+        orgProfile.BankIFSC_Code !== "null" ? orgProfile.BankIFSC_Code : "",
+      BankBranch_Name:
+        orgProfile.BankBranch_Name !== "null" ? orgProfile.BankBranch_Name : "",
       BankAccountType_Id: orgProfile.BankAccountType_Id?.value
         ? accountType?.filter(
             (acc) => acc.value === orgProfile.BankAccountType_Id.value

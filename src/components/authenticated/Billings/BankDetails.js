@@ -236,8 +236,8 @@ function BankDetails({ handleShowBankDetails }) {
                 Branch_Name: editData?.Bank_Name ?? "",
               }}
               validationSchema={validationSchema}
-              validateOnBlur={false}
-              validateOnChange={false}
+              // validateOnBlur={false}
+              // validateOnChange={false}
               onSubmit={async (values) => {
                 console.log(values);
                 // Your submit logic here
@@ -435,11 +435,11 @@ function BankDetails({ handleShowBankDetails }) {
                         }}
                       >
                         <div id="_first_child">
-                          <div className="single-field w-full md:w-1/2 pr-2">
+                          <div className="w-full md:w-1/2 pr-2">
                             <label className="text-13 text-reading fw-500">
                               Account Type
                             </label>
-                            <div className="form-control">
+                            <div className="">
                               <Select
                                 isSearchable={false}
                                 styles={selectCustomStyle}

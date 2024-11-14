@@ -2805,9 +2805,9 @@ function EventParticipants() {
                                 })}
                               </Stack>
 
-                              <button className="button w-full rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
+                              {/* <button className="button w-full rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
                                 View Participants
-                              </button>
+                              </button> */}
                             </>
                           )}
                         </Stack>
@@ -2883,9 +2883,9 @@ function EventParticipants() {
                                 </div>
                               </Stack>
 
-                              <button className="button w-full rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
+                              {/* <button className="button w-full rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
                                 View Participants
-                              </button>
+                              </button> */}
                             </>
                           )}
                         </Stack>
@@ -2953,9 +2953,9 @@ function EventParticipants() {
                                   );
                                 })}
                               </Stack>
-                              <button className="button w-full rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
+                              {/* <button className="button w-full rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
                                 View Participants
-                              </button>{" "}
+                              </button>{" "} */}
                             </>
                           )}
                         </Stack>
@@ -3034,13 +3034,13 @@ function EventParticipants() {
                                   </div>
                                 </Stack>
 
-                                <div className="w-full d-flex justify-end mt-40">
+                                {/* <div className="w-full d-flex justify-end mt-40">
                                   {categoryData?.length > 0 && (
                                     <button className="button w-200 rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
                                       View Participants
                                     </button>
                                   )}
-                                </div>
+                                </div> */}
                               </Stack>
                             </div>
                           </div>
@@ -3119,13 +3119,13 @@ function EventParticipants() {
                                   </div>
                                 </Stack>
 
-                                <div className="w-full d-flex justify-end mt-40">
+                                {/* <div className="w-full d-flex justify-end mt-40">
                                   {stateData?.length > 0 && (
                                     <button className="button w-200 rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
                                       View Participants
                                     </button>
                                   )}
-                                </div>
+                                </div> */}
                               </Stack>
                             </div>
                           </div>

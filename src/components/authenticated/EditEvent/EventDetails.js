@@ -4,22 +4,24 @@ import React, { useEffect, useState } from "react";
 // Third-party imports
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
-// Project imports
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import CreatableSelect from "react-select/creatable";
-import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
+import toast from "react-hot-toast";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
+
+// Project imports
+import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import { setSelectedCategory } from "../../../redux/slices/categorySlice";
+import { StyledTableCell } from "../../../utils/ReactTable";
 import { decryptData } from "../../../utils/DataEncryption";
+import { HtmlLightTooltip } from "../../../utils/Tooltip";
 import { RestfulApiService } from "../../../config/service";
-import toast from "react-hot-toast";
 
 // MUI imports
 import Loader from "../../../utils/BackdropLoader";
-import { StyledTableCell } from "../../../utils/ReactTable";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import {
   Box,
   Checkbox,
@@ -516,30 +518,22 @@ function EventDetails() {
       className="py-30 px-30 border-light rounded-8"
       style={{ boxShadow: "2px 2px 7.5px 0px #0000000D" }}
     >
-      <div className="col-12 d-flex justify-center">
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setIsEditing(!isEditing);
-            if (isEditing) {
-              LoadDetails();
-            }
-          }}
-          className="button w-250 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-16 d-flex gap-10"
-        >
-          {isEditing ? (
-            <>
-              <i className="fas fa-times text-16"></i>
-              Cancel
-            </>
-          ) : (
-            <>
-              <i className="far fa-edit text-16"></i>
-              Edit Details
-            </>
-          )}
-        </button>
-      </div>
+      {!isEditing ? (
+        <div className="col-12 d-flex justify-center">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setIsEditing(true);
+            }}
+            className="button w-200 rounded-24 py-10 px-15 text-reading border-light -primary-1 fw-400 text-14 d-flex gap-10"
+          >
+            <i className="far fa-edit text-14"></i>
+            Edit Details
+          </button>
+        </div>
+      ) : (
+        <></>
+      )}
       {fetchingDetails ? (
         <Loader fetching={fetchingDetails} />
       ) : (
@@ -574,8 +568,7 @@ function EventDetails() {
 
                           if (
                             !value ||
-                            (regex.test(value.toString()) &&
-                              value.length <= 200)
+                            (regex.test(value.toString()) && value.length <= 50)
                           ) {
                             setFieldValue("Event_Name", value);
                           } else {
@@ -636,7 +629,22 @@ function EventDetails() {
 
                 <div className="col-lg-6">
                   <div className="y-gap-10">
-                    <label className="text-13 fw-500">Race Day Takeaways</label>
+                    <label className="text-13 fw-500">
+                      Race Day Takeaways{" "}
+                      <HtmlLightTooltip
+                        arrow
+                        title="You can create new takeaways and select multiple options"
+                        placement="right"
+                      >
+                        <InfoOutlinedIcon
+                          style={{
+                            fontSize: "20px",
+                            marginLeft: "4px",
+                            marginBottom: "4px",
+                          }}
+                        />
+                      </HtmlLightTooltip>
+                    </label>
                     <CreatableSelect
                       isDisabled={!isEditing}
                       isMulti
@@ -985,7 +993,7 @@ function EventDetails() {
                   ></div>
                 </div>
 
-                <div className="col-md-12">
+                <div className="col-12">
                   <Box
                     sx={{
                       width: "100%",
@@ -1414,19 +1422,33 @@ function EventDetails() {
                 </div>
 
                 {isEditing && (
-                  <div className="col-auto relative">
-                    <button
-                      disabled={submitForm}
-                      type="submit"
-                      className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                    >
-                      {!submitForm ? (
-                        `Save`
-                      ) : (
-                        <span className="btn-spinner"></span>
-                      )}
-                    </button>
-                  </div>
+                  <>
+                    <div className="col-auto relative">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsEditing(false);
+                          LoadDetails();
+                        }}
+                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <div className="col-auto relative">
+                      <button
+                        disabled={submitForm}
+                        type="submit"
+                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                      >
+                        {!submitForm ? (
+                          `Save`
+                        ) : (
+                          <span className="btn-spinner"></span>
+                        )}
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             </Form>

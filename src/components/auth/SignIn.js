@@ -278,7 +278,7 @@ function SignIn() {
                                       </div>
                                       {formik.touched.phone &&
                                       formik.errors.phone ? (
-                                        <div className="text-red-1 text-13">
+                                        <div className="text-error-2 text-13">
                                           {formik.errors.phone}
                                         </div>
                                       ) : null}

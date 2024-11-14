@@ -87,14 +87,14 @@ function Personal({
   const dispatch = useDispatch();
 
   const orgUserValidation = Yup.object({
-    User_Display_Name: Yup.string().required("User Name is required"),
+    User_Display_Name: Yup.string().required("User name is required"),
     mobile_number: Yup.string()
-      .matches(/^[6-9]\d{9}$/, "Phone number is not valid")
-      .required("Contact Number is required"),
+      .matches(/^[6-9]\d{9}$/, "Mobile number is not valid")
+      .required("Mobile number is required"),
     email_id: Yup.string()
       .email("Invalid email address")
-      .required("Email is required"),
-    Organizer_Role_Id: Yup.object().required("Please select Organizer Role"),
+      .required("User email is required"),
+    Organizer_Role_Id: Yup.object().required("Please select Organizer role"),
   });
   const validationSchema = Yup.object({
     Organizer_Name: Yup.string().required("Organizer Name is required"),
@@ -570,6 +570,7 @@ function Personal({
                           </label>
                           <div className="form-control">
                             <Field
+                              autoComplete="off"
                               type="text"
                               name="GST_No"
                               className="form-control"

@@ -212,7 +212,6 @@ function AllEvents() {
       // setFetchingDashboard(false);
     }
   };
-  // Create a debounced version of handleSearch
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce(
@@ -302,7 +301,7 @@ function AllEvents() {
     // const url = `${url1}event-details/${removeSpace(
     //   displayName
     // )}/${encryptedParam}`;
-    const url = `http://localhost:3000/event/dashboard/${encryptedParam}`;
+    const url = `http://fitizenorg.we3.in/event/dashboard/${encryptedParam}`;
     const message = `${displayName}\n${url}`;
     if (navigator.share) {
       try {

@@ -376,7 +376,6 @@ function BIBExpo() {
                                                   name="Date_Of_Birth"
                                                   format="DD/MM/YYYY"
                                                   inputFormat="DD/MM/YYYY"
-                                                  disableFuture
                                                   value={time.dayOne}
                                                   onChange={(newValue) =>
                                                     setFieldValue(
@@ -419,7 +418,6 @@ function BIBExpo() {
                                                     //   onClick: () => setOpen(true),
                                                     // },
                                                     field: {
-                                                      // disabled: true,
                                                       readOnly: true,
                                                     },
                                                     // To change styles
@@ -470,6 +468,7 @@ function BIBExpo() {
                                                           {
                                                             color: "orange",
                                                           },
+                                                        paddingRight: "5px",
                                                       }}
                                                       fullWidth
                                                       className="form-control"
@@ -479,11 +478,7 @@ function BIBExpo() {
                                                     inputAdornment: {
                                                       position: "end",
                                                     },
-                                                    // textField: {
-                                                    //   onClick: () => setOpen(true),
-                                                    // },
                                                     field: {
-                                                      // disabled: true,
                                                       readOnly: true,
                                                     },
                                                     // To change styles
@@ -544,11 +539,7 @@ function BIBExpo() {
                                                     inputAdornment: {
                                                       position: "end",
                                                     },
-                                                    // textField: {
-                                                    //   onClick: () => setOpen(true),
-                                                    // },
                                                     field: {
-                                                      // disabled: true,
                                                       readOnly: true,
                                                     },
                                                     // To change styles
@@ -609,11 +600,7 @@ function BIBExpo() {
                                                     inputAdornment: {
                                                       position: "end",
                                                     },
-                                                    // textField: {
-                                                    //   onClick: () => setOpen(true),
-                                                    // },
                                                     field: {
-                                                      // disabled: true,
                                                       readOnly: true,
                                                     },
                                                     // To change styles
@@ -674,11 +661,7 @@ function BIBExpo() {
                                                     inputAdornment: {
                                                       position: "end",
                                                     },
-                                                    // textField: {
-                                                    //   onClick: () => setOpen(true),
-                                                    // },
                                                     field: {
-                                                      // disabled: true,
                                                       readOnly: true,
                                                     },
                                                     // To change styles
@@ -717,8 +700,6 @@ function BIBExpo() {
                                     ))}
 
                                     <div className="col-12 d-flex">
-                                      {/* <div className="single-field"> */}
-                                      {/* <label className="text-13 fw-500">&nbsp; </label> */}
                                       <button
                                         onClick={(e) => {
                                           e.preventDefault();
@@ -739,14 +720,6 @@ function BIBExpo() {
                                   </>
                                 )}
                               </FieldArray>
-                              {/* <div className="col-12 mt-10">
-                                <button
-                                  type="submit"
-                                  className="button bg-primary rounded-22 px-30 py-10 text-white text-12 -grey-1 w-100"
-                                >
-                                  Save
-                                </button>
-                              </div> */}
                               <div className="col-12 d-flex">
                                 <div className="row">
                                   <div className="col-auto relative">

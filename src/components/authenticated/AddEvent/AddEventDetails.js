@@ -2,22 +2,23 @@
 import React, { useEffect, useState } from "react";
 
 // Third-party imports
-import { useDispatch, useSelector } from "react-redux";
-
-// Project imports
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import CreatableSelect from "react-select/creatable";
-import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
+
+// Project imports
+import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import { setSelectedCategory } from "../../../redux/slices/categorySlice";
 import { RestfulApiService } from "../../../config/service";
-import toast from "react-hot-toast";
+import { HtmlLightTooltip } from "../../../utils/Tooltip";
+import { setCurrentEventId } from "../../../redux/slices/addEventSlice";
+import Loader from "../../../utils/BackdropLoader";
 
 // MUI imports
-import Loader from "../../../utils/BackdropLoader";
-import { setCurrentEventId } from "../../../redux/slices/addEventSlice";
 import {
   Box,
   Checkbox,
@@ -26,6 +27,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { StyledTableCell } from "../../../utils/ReactTable";
 
 function AddEventDetails({ handleStep, index }) {
@@ -665,8 +667,7 @@ function AddEventDetails({ handleStep, index }) {
 
                           if (
                             !value ||
-                            (regex.test(value.toString()) &&
-                              value.length <= 200)
+                            (regex.test(value.toString()) && value.length <= 50)
                           ) {
                             setFieldValue("Event_Name", value);
                           } else {
@@ -728,7 +729,22 @@ function AddEventDetails({ handleStep, index }) {
 
                 <div className="col-lg-6">
                   <div className="y-gap-10">
-                    <label className="text-13 fw-500">Race Day Takeaways</label>
+                    <label className="text-13 fw-500">
+                      Race Day Takeaways{" "}
+                      <HtmlLightTooltip
+                        arrow
+                        title="You can create new takeaways and select multiple options"
+                        placement="right"
+                      >
+                        <InfoOutlinedIcon
+                          style={{
+                            fontSize: "20px",
+                            marginLeft: "4px",
+                            marginBottom: "4px",
+                          }}
+                        />
+                      </HtmlLightTooltip>
+                    </label>
                     <CreatableSelect
                       isMulti
                       styles={{

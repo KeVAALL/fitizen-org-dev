@@ -320,7 +320,10 @@ function PaymentHistory({ setShowPaymentHistory }) {
             </div>
           </Stack>
 
-          <div className="text-16 lh-16 fw-600 mt-5">
+          <div
+            className="text-16 lh-16 fw-600 mt-5"
+            style={{ whiteSpace: "nowrap" }}
+          >
             Total Amount Paid:{" "}
             <span className="text-16 fw-600 mt-5 text-primary">
               {inrCurrency(totalPayment)}

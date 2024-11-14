@@ -1,7 +1,7 @@
 // React imports
 import React, { createRef, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // Third-party imports
 import * as Yup from "yup";
@@ -17,6 +17,7 @@ import { decryptData } from "../../../utils/DataEncryption";
 import Loader from "../../../utils/BackdropLoader";
 import { MEDIA_URL } from "../../../config/url";
 import Swal from "sweetalert2";
+import { removeCurrentEventId } from "../../../redux/slices/addEventSlice";
 
 function AddEventBanner({ handleStep, prevIndex }) {
   const user = useSelector((state) => state.user.userProfile);
@@ -32,6 +33,7 @@ function AddEventBanner({ handleStep, prevIndex }) {
     Image_Name: "",
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const cropperRef = createRef();
 
   const handleCreate = () => {
@@ -49,6 +51,7 @@ function AddEventBanner({ handleStep, prevIndex }) {
         Swal.showLoading();
 
         navigate("/dashboard/all-events");
+        dispatch(removeCurrentEventId());
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -129,6 +132,11 @@ function AddEventBanner({ handleStep, prevIndex }) {
                 console.log(result);
                 setFieldValue("Image_Path", result?.data?.Description);
                 setFieldValue("Image_Name", result?.data?.Result);
+                const formValues = {
+                  Image_Path: result?.data?.Description,
+                  Image_Name: result?.data?.Result,
+                };
+                submitBannerForm(formValues);
               }
               return "Image uploaded successfully!";
             },
@@ -375,7 +383,7 @@ function AddEventBanner({ handleStep, prevIndex }) {
                             Click box to upload
                           </p>
                           <p className="text-14 text-reading fw-500">
-                            JPEG or PNGS smaller than 10mb
+                            JPEG or PNGS smaller than 2mb
                           </p>
                           <input
                             type="file"
