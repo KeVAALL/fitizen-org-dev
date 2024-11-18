@@ -1993,6 +1993,7 @@ h6 {
   position: relative;
   padding-top: 150px;
   padding-bottom: 70px;
+  height: 90vh;
 }
 
 @media (max-width: 991px) {

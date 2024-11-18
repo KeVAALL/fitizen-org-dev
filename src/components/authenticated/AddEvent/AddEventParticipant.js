@@ -408,7 +408,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
                         className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
                       >
                         {!submitQuestionForm ? (
-                          `Save`
+                          `Save Order`
                         ) : (
                           <span className="btn-spinner"></span>
                         )}
@@ -421,32 +421,34 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
           </Stack>
         </div>
 
-        <div className="col-12 d-flex justify-end">
-          <div className="row">
-            <div className="col-auto relative">
-              <button
-                type="button"
-                onClick={() => {
-                  handleStep(prevIndex);
-                }}
-                className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
-              >
-                Back
-              </button>
-            </div>
-            <div className="col-auto relative">
-              <button
-                onClick={() => {
-                  handleStep(nextIndex);
-                }}
-                type="submit"
-                className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-              >
-                Save
-              </button>
+        {!isOtherInfoAccordion && (
+          <div className="col-12 d-flex justify-end">
+            <div className="row">
+              <div className="col-auto relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleStep(prevIndex);
+                  }}
+                  className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
+                >
+                  Back
+                </button>
+              </div>
+              <div className="col-auto relative">
+                <button
+                  onClick={() => {
+                    handleStep(nextIndex);
+                  }}
+                  type="submit"
+                  className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                >
+                  Save & Next
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -181,7 +181,7 @@ function Email({ setShowEmailForm, setShowLoginForm, scrolled }) {
             }}
           ></div>
         )}
-        <div class="row y-gap-20">
+        <div class="row y-gap-10">
           <div class="col-12 text-center">
             <img src={DarkLogo} alt="logo-icon" style={{ width: "150px" }} />
           </div>
@@ -199,8 +199,8 @@ function Email({ setShowEmailForm, setShowLoginForm, scrolled }) {
             >
               {({ errors, touched, isValid, dirty, setFieldValue }) => (
                 <Form>
-                  <div className="col-12 mt-20">
-                    <div className="single-field y-gap-20">
+                  <div className="col-12 mt-10">
+                    <div className="single-field y-gap-10">
                       <label className="text-13 fw-600">
                         Full Name <sup className="asc">*</sup>
                       </label>
@@ -233,8 +233,8 @@ function Email({ setShowEmailForm, setShowLoginForm, scrolled }) {
                       ) : null}
                     </div>
                   </div>
-                  <div class="col-12 mt-20">
-                    <div class="single-field y-gap-20">
+                  <div class="col-12 mt-10">
+                    <div class="single-field y-gap-10">
                       <label class="text-13 fw-600">
                         Email ID <sup className="asc">*</sup>
                       </label>

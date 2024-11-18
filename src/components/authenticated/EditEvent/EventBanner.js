@@ -91,7 +91,6 @@ function EventBanner() {
       setUploadingImage(true);
 
       try {
-        toast.dismiss();
         await toast.promise(
           RestfulApiService(reqdata, "master/uploadfile"),
           {
@@ -117,7 +116,7 @@ function EventBanner() {
           },
           {
             success: {
-              duration: 5000,
+              duration: 3000,
             },
           }
         );
@@ -154,6 +153,7 @@ function EventBanner() {
       }
 
       if (result) {
+        toast.dismiss();
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
       }
     } catch (err) {

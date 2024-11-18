@@ -18,6 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // Redux imports
 import { useDispatch, useSelector } from "react-redux";
+import { inrCurrency } from "../../utils/UtilityFunctions";
 
 function EventMain() {
   const { event_id } = useParams();
@@ -133,9 +134,8 @@ function EventMain() {
                             Sales Value
                           </div>
                           <div className="text-20 lh-16 fw-700 mt-5">
-                            ₹{" "}
                             {selectedEvent?.TicketSaleAmount
-                              ? selectedEvent?.TicketSaleAmount
+                              ? inrCurrency(selectedEvent?.TicketSaleAmount)
                               : 0}
                           </div>
                         </div>

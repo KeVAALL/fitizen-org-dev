@@ -48,6 +48,10 @@ function Personal({
       label: "Organizer Admin",
       value: "MU05001",
     },
+    {
+      label: "Organizer User",
+      value: "MU05002",
+    },
   ];
   const userDetailsValues = {
     User_Display_Name: "",
@@ -90,6 +94,13 @@ function Personal({
     User_Display_Name: Yup.string().required("User name is required"),
     mobile_number: Yup.string()
       .matches(/^[6-9]\d{9}$/, "Mobile number is not valid")
+      .test(
+        "uniquePhoneNumber",
+        "Mobile number must be different from the Organizer number",
+        (value) => {
+          return value !== user?.Mobile_Number;
+        }
+      )
       .required("Mobile number is required"),
     email_id: Yup.string()
       .email("Invalid email address")
@@ -371,6 +382,18 @@ function Personal({
                                 name="Email_Id"
                                 className="form-control"
                                 placeholder="info@yourgmail.com"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  const { value } = e.target;
+
+                                  const regex = /[^-\s]/;
+
+                                  if (!value || regex.test(value.toString())) {
+                                    setFieldValue("Email_Id", value);
+                                  } else {
+                                    return;
+                                  }
+                                }}
                               />
                             </div>
                             <ErrorMessage
@@ -447,6 +470,11 @@ function Personal({
                             onChange={async (event) => {
                               const file = event.currentTarget.files[0];
 
+                              if (file && !file.type.startsWith("image/")) {
+                                toast.error("Please upload an image.");
+                                event.target.value = ""; // Reset the input value
+                                return;
+                              }
                               // Check if the file size is above 2MB (2 * 1024 * 1024 bytes)
                               const maxSize = 2 * 1024 * 1024;
                               if (file && file.size > maxSize) {
@@ -736,7 +764,8 @@ function Personal({
                               e.preventDefault();
                               const { value } = e.target;
 
-                              const regex = /^[^\s].*$/;
+                              // const regex = /^[^\s].*$/;
+                              const regex = /^[A-Za-z][A-Za-z\s]*$/;
 
                               if (
                                 !value ||
@@ -818,6 +847,18 @@ function Personal({
                             name="email_id"
                             className="form-control"
                             placeholder="info@yourgmail.com"
+                            onChange={(e) => {
+                              e.preventDefault();
+                              const { value } = e.target;
+
+                              const regex = /^\S+$/;
+
+                              if (!value || regex.test(value.toString())) {
+                                setFieldValue("email_id", value);
+                              } else {
+                                return;
+                              }
+                            }}
                           />
                         </div>
                         <ErrorMessage

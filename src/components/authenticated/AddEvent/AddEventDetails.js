@@ -232,7 +232,7 @@ function AddEventDetails({ handleStep, index }) {
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>Pincode</FN><FV>" +
-      values?.Pincode.value +
+      values?.Pincode.label.split("-")[0] +
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>State</FN><FV>" + values?.State + "</FV><FT>Text</FT></R>";

@@ -26,6 +26,7 @@ function Social({ updateTab, prevIndex, UpdateProfile }) {
   const [formValues, setFormValues] = useState(null);
 
   useEffect(() => {
+    console.log(orgProfile.Org_Facebook !== "null");
     setFormValues({
       ...orgProfile,
       Org_Facebook:
@@ -44,6 +45,7 @@ function Social({ updateTab, prevIndex, UpdateProfile }) {
   return (
     <>
       <Formik
+        enableReinitialize
         initialValues={formValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {

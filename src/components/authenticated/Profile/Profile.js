@@ -88,6 +88,7 @@ function Profile() {
         return;
       }
       if (result) {
+        toast.dismiss();
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
         const apiResponse = {
           orgProfile: {

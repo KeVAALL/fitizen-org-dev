@@ -246,7 +246,7 @@ function EventDetails() {
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>Pincode</FN><FV>" +
-      values?.Pincode.label +
+      values?.Pincode.label.split("-")[0] +
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>State</FN><FV>" + values?.State + "</FV><FT>Text</FT></R>";
@@ -591,8 +591,8 @@ function EventDetails() {
                       Event Type <sup className="asc">*</sup>
                     </label>
                     <Select
-                      isDisabled={!isEditing}
                       isSearchable={false}
+                      isDisabled={!isEditing}
                       styles={selectCustomStyle}
                       options={eventTypeDropdown}
                       value={values.EventType_Id}
@@ -612,8 +612,8 @@ function EventDetails() {
                       Time Zone <sup className="asc">*</sup>
                     </label>
                     <Select
-                      isDisabled={!isEditing}
                       isSearchable={false}
+                      isDisabled={!isEditing}
                       styles={selectCustomStyle}
                       options={timezoneDropdown}
                       value={values.Timezone}
@@ -646,8 +646,8 @@ function EventDetails() {
                       </HtmlLightTooltip>
                     </label>
                     <CreatableSelect
-                      isDisabled={!isEditing}
                       isMulti
+                      isDisabled={!isEditing}
                       styles={{
                         ...selectCustomStyle,
                         multiValue: (base) => ({
@@ -1422,33 +1422,35 @@ function EventDetails() {
                 </div>
 
                 {isEditing && (
-                  <>
-                    <div className="col-auto relative">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setIsEditing(false);
-                          LoadDetails();
-                        }}
-                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
-                      >
-                        Cancel
-                      </button>
+                  <div className="col-12 d-flex justify-end">
+                    <div className="row">
+                      <div className="col-auto relative">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsEditing(false);
+                            LoadDetails();
+                          }}
+                          className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <div className="col-auto relative">
+                        <button
+                          disabled={submitForm}
+                          type="submit"
+                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                        >
+                          {!submitForm ? (
+                            `Save`
+                          ) : (
+                            <span className="btn-spinner"></span>
+                          )}
+                        </button>
+                      </div>
                     </div>
-                    <div className="col-auto relative">
-                      <button
-                        disabled={submitForm}
-                        type="submit"
-                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                      >
-                        {!submitForm ? (
-                          `Save`
-                        ) : (
-                          <span className="btn-spinner"></span>
-                        )}
-                      </button>
-                    </div>
-                  </>
+                  </div>
                 )}
               </div>
             </Form>

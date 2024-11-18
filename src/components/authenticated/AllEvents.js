@@ -301,7 +301,7 @@ function AllEvents() {
     // const url = `${url1}event-details/${removeSpace(
     //   displayName
     // )}/${encryptedParam}`;
-    const url = `http://fitizenorg.we3.in/event/dashboard/${encryptedParam}`;
+    const url = `http://uatfitizenorg.we3.in/event/dashboard/${encryptedParam}`;
     const message = `${displayName}\n${url}`;
     if (navigator.share) {
       try {
@@ -438,7 +438,7 @@ function AllEvents() {
                                     if (
                                       !value ||
                                       (regex.test(value.toString()) &&
-                                        value.length <= 200)
+                                        value.length <= 50)
                                     ) {
                                       setFieldValue("Event_Name", value);
                                     } else {

@@ -431,6 +431,7 @@ const CustomAccordion = ({
         return;
       }
       if (result) {
+        toast.dismiss();
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
         console.log(values.isNew);
         // if (values.isNew) {
@@ -833,7 +834,7 @@ const CustomAccordion = ({
         <div className="text-14 fw-500">
           {category?.EventCategory_Display_Name
             ? category?.EventCategory_Display_Name
-            : ""}
+            : "New Ticket"}
         </div>
       </AccordionSummary>
       <AccordionDetails
@@ -2019,7 +2020,7 @@ const CustomAccordion = ({
                 {category.isNew || isEditing ? (
                   <div className="col-12 d-flex justify-end">
                     <div className="row">
-                      <div className="col-auto relative">
+                      {/* <div className="col-auto relative">
                         <button
                           onClick={(e) => {
                             e.preventDefault();
@@ -2035,7 +2036,7 @@ const CustomAccordion = ({
                         >
                           Cancel
                         </button>
-                      </div>
+                      </div> */}
                       <div className="col-auto relative">
                         <button
                           disabled={submitForm}

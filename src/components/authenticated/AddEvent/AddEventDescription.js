@@ -231,7 +231,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                         className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
                       >
                         {!submitForm ? (
-                          `Save`
+                          `Save & Next`
                         ) : (
                           <span className="btn-spinner"></span>
                         )}

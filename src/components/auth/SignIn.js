@@ -198,8 +198,8 @@ function SignIn() {
         </div>
         <div className="container">
           <div className="row justify-between">
-            <div className="col-lg-7">
-              <div className="d-flex items-end h-full">
+            <div className="col-lg-7" style={{ margin: "100px 0" }}>
+              <div className="d-flex items-end">
                 <h1 className="text-40 lg:text-20 md:text-30 text-white font-inter italic">
                   Marathon and Sports Event Management Platform
                 </h1>
@@ -251,7 +251,7 @@ function SignIn() {
                               <form onSubmit={formik.handleSubmit}>
                                 <div className="col-12 mt-20 y-gap-10">
                                   <div className="col-12 mt-20">
-                                    <div className="single-field y-gap-20">
+                                    <div className="single-field y-gap-10">
                                       <label className="text-13 fw-500">
                                         Phone Number
                                       </label>

@@ -247,8 +247,9 @@ function EventParticipant() {
       }
 
       if (result) {
-        // toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
-        toast.success("Saved");
+        toast.dismiss();
+        toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+        // toast.success("Saved");
       }
     } catch (err) {
       toast.error(err?.Result?.Table1[0]?.Result_Description);
@@ -583,7 +584,7 @@ function EventParticipant() {
                         className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
                       >
                         {!submitQuestionForm ? (
-                          `Save`
+                          `Save Order`
                         ) : (
                           <span className="btn-spinner"></span>
                         )}

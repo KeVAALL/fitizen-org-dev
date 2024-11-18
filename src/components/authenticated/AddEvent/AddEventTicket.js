@@ -40,6 +40,22 @@ function AddEventTicket({ handleStep, prevIndex, nextIndex }) {
     });
     setAllCategory(updatedForms);
   };
+  const FetchCategoryOptions = async () => {
+    try {
+      const reqdata = {
+        Method_Name: "GetEventCategory",
+        Session_User_Id: user?.User_Id,
+        Org_Id: user?.Org_Id,
+        ParentField_Id: selectedCategory?.value,
+        SearchText: "",
+      };
+      const response = await RestfulApiService(reqdata, "master/Getdropdown");
+
+      setRaceDistanceCategory(response.data.Result.Table1);
+    } catch (error) {
+      return [];
+    }
+  };
   async function LoadCategory() {
     const reqdata = {
       Method_Name: "Get_Category",
@@ -75,22 +91,6 @@ function AddEventTicket({ handleStep, prevIndex, nextIndex }) {
       setFetchingCategory(false);
     }
   }
-  const FetchCategoryOptions = async () => {
-    try {
-      const reqdata = {
-        Method_Name: "GetEventCategory",
-        Session_User_Id: user?.User_Id,
-        Org_Id: user?.Org_Id,
-        ParentField_Id: selectedCategory?.value,
-        SearchText: "",
-      };
-      const response = await RestfulApiService(reqdata, "master/Getdropdown");
-
-      setRaceDistanceCategory(response.data.Result.Table1);
-    } catch (error) {
-      return [];
-    }
-  };
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -101,6 +101,7 @@ function AddEventTicket({ handleStep, prevIndex, nextIndex }) {
       FetchCategoryOptions();
     }
   }, [newEventId]);
+  console.log(isOneAccordionOpen);
 
   return (
     <div
@@ -180,42 +181,46 @@ function AddEventTicket({ handleStep, prevIndex, nextIndex }) {
           )}
         </>
       )}
-
-      <div className="col-12 d-flex justify-end mt-20">
-        <div className="row">
-          <div className="col-auto relative">
-            <button
-              type="button"
-              onClick={() => {
-                handleStep(prevIndex);
-              }}
-              className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
+      {/* !allCategory.some((item) => item.isNew) || */}
+      {!allCategory.some((item) => item.isNew) && isOneAccordionOpen === "" ? (
+        <div className="col-12 d-flex justify-end mt-20">
+          <div className="row">
+            <div className="col-auto relative">
+              <button
+                type="button"
+                onClick={() => {
+                  handleStep(prevIndex);
+                }}
+                className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
+              >
+                Back
+              </button>
+            </div>
+            <div
+              className={`col-auto relative${
+                allCategory.some((item) => item.isNew) ? " d-none" : ""
+              }`}
             >
-              Back
-            </button>
-          </div>
-          <div
-            className={`col-auto relative${
-              allCategory.some((item) => item.isNew) ? " d-none" : ""
-            }`}
-          >
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                if (allCategory.length < 1) {
-                  toast.error("Add at least one category");
-                } else {
-                  handleStep(nextIndex);
-                }
-              }}
-              className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-            >
-              Save & Next
-            </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (allCategory.length < 1) {
+                    toast.error("Add at least one category");
+                  } else {
+                    handleStep(nextIndex);
+                  }
+                }}
+                className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+              >
+                Save & Next
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
