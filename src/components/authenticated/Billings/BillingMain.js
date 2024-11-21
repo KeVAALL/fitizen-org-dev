@@ -109,27 +109,37 @@ function BillingMain() {
                       }}
                     >
                       <div className="row y-gap-20 justify-between items-center">
-                        <div className="col-lg-5">
-                          <div className="fw-500 lh-14 text-11 text-light-1">
-                            Next Payout On (Only for transactions till{" "}
-                            {getData[0]?.transactiontill ?? ""})
+                        {getData[0] ? (
+                          <>
+                            <div className="col-lg-5">
+                              <div className="fw-500 lh-14 text-11 text-light-1">
+                                Next Payout On (Only for transactions till{" "}
+                                {getData[0]?.transactiontill ?? ""})
+                              </div>
+                              <div className="text-15 text-primary lh-16 fw-600 mt-5">
+                                {getData[0]?.next_cycledate ?? ""}{" "}
+                              </div>
+                            </div>
+                            <div className="col-lg-5">
+                              <div className="fw-500 lh-14 text-11 text-light-1">
+                                Payout Cycle
+                              </div>
+                              <div className="text-15 text-primary lh-16 fw-600 mt-5">
+                                {getData[0]?.Payment_Feq ?? ""} to{" "}
+                                {getData[0]?.Bank_Name ?? ""}
+                                {getData[0]?.Account_Number
+                                  ? `••••${getData[0].Account_Number.slice(-4)}`
+                                  : ""}
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="col-lg-10">
+                            <div className="text-18 text-primary lh-16 fw-600 mt-5">
+                              Please setup Payout Cycle!
+                            </div>
                           </div>
-                          <div className="text-15 text-primary lh-16 fw-600 mt-5">
-                            {getData[0]?.next_cycledate ?? ""}{" "}
-                          </div>
-                        </div>
-                        <div className="col-lg-5">
-                          <div className="fw-500 lh-14 text-11 text-light-1">
-                            Payout Cycle
-                          </div>
-                          <div className="text-15 text-primary lh-16 fw-600 mt-5">
-                            {getData[0]?.Payment_Feq ?? ""} to{" "}
-                            {getData[0]?.Bank_Name ?? ""}
-                            {getData[0]?.Account_Number
-                              ? `••••${getData[0].Account_Number.slice(-4)}`
-                              : ""}
-                          </div>
-                        </div>
+                        )}
                         <div className="col-lg-2">
                           <button
                             onClick={(e) => {

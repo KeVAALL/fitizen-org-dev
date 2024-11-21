@@ -49,6 +49,7 @@ function BankDetails({ handleShowBankDetails }) {
   });
 
   const [showBankModal, setShowBankModal] = useState(false);
+  const [isEditingBank, setIsEditingBank] = useState(false);
   const [bankDetails, setShowBankDetails] = useState([]);
   const [editData, setEditData] = useState({
     Bank_Id: "",
@@ -252,6 +253,7 @@ function BankDetails({ handleShowBankDetails }) {
               </div>
               <i
                 onClick={() => {
+                  setIsEditingBank(false);
                   setShowBankModal((prevState) => !prevState);
                   setEditData({
                     Bank_Id: "",
@@ -279,13 +281,12 @@ function BankDetails({ handleShowBankDetails }) {
               //   Account_Type: editData?.Account_Type ?? "",
               //   Branch_Name: editData?.Bank_Name ?? "",
               // }}
+              enableReinitialize
               initialValues={editData}
               validationSchema={validationSchema}
               onSubmit={async (values) => {
-                console.log(values);
                 const bankDetails = {
-                  Method_Name:
-                    Object?.keys(editData).length > 0 ? "Update" : "Create",
+                  Method_Name: isEditingBank ? "Update" : "Create",
                   Session_User_Id: user?.User_Id,
                   Session_User_Name: user?.User_Display_Name,
                   Session_Organzier_Id: user?.Organizer_Id,
@@ -360,12 +361,25 @@ function BankDetails({ handleShowBankDetails }) {
                             </label>
                             <div className="form-control">
                               <Field
+                                type="text"
                                 name="Bank_Name"
                                 className="form-control"
                                 placeholder="Bank Name"
                                 onChange={(e) => {
-                                  setFieldValue("Bank_Name", e.target.value);
-                                  // validateField("Bank_Name");
+                                  e.preventDefault();
+                                  const { value } = e.target;
+
+                                  const regex = /^[A-Za-z][A-Za-z ]*$/;
+
+                                  if (
+                                    !value ||
+                                    (regex.test(value.toString()) &&
+                                      value.length <= 100)
+                                  ) {
+                                    setFieldValue("Bank_Name", value);
+                                  } else {
+                                    return;
+                                  }
                                 }}
                               />
                             </div>
@@ -384,15 +398,25 @@ function BankDetails({ handleShowBankDetails }) {
                             </label>
                             <div className="form-control">
                               <Field
+                                type="text"
                                 name="Account_Holder_Name"
                                 className="form-control"
                                 placeholder="Account Holder Name"
                                 onChange={(e) => {
-                                  setFieldValue(
-                                    "Account_Holder_Name",
-                                    e.target.value
-                                  );
-                                  // validateField("Account_Holder_Name");
+                                  e.preventDefault();
+                                  const { value } = e.target;
+
+                                  const regex = /^[^\s].*$/;
+
+                                  if (
+                                    !value ||
+                                    (regex.test(value.toString()) &&
+                                      value.length <= 50)
+                                  ) {
+                                    setFieldValue("Account_Holder_Name", value);
+                                  } else {
+                                    return;
+                                  }
                                 }}
                               />
                             </div>
@@ -420,15 +444,22 @@ function BankDetails({ handleShowBankDetails }) {
                             </label>
                             <div className="form-control">
                               <Field
+                                type="text"
                                 name="Account_Number"
                                 className="form-control"
                                 placeholder="Account Number"
                                 onChange={(e) => {
-                                  setFieldValue(
-                                    "Account_Number",
-                                    e.target.value
-                                  );
-                                  // validateField("Account_Number");
+                                  const { value } = e.target;
+                                  const regex = /^[a-zA-Z0-9]+$/;
+                                  if (
+                                    !value ||
+                                    (regex.test(value) && value.length <= 15)
+                                  ) {
+                                    setFieldValue(
+                                      "Account_Number",
+                                      value.toUpperCase()
+                                    );
+                                  }
                                 }}
                               />
                             </div>
@@ -447,15 +478,25 @@ function BankDetails({ handleShowBankDetails }) {
                             </label>
                             <div className="form-control">
                               <Field
+                                type="text"
                                 name="Bank_IFSC_Code"
                                 className="form-control"
                                 placeholder="Bank IFSC Code"
                                 onChange={(e) => {
-                                  setFieldValue(
-                                    "Bank_IFSC_Code",
-                                    e.target.value
-                                  );
-                                  // validateField("Bank_IFSC_Code");
+                                  e.preventDefault();
+                                  const { value } = e.target;
+
+                                  const regex = /^[A-Za-z0-9]+$/;
+
+                                  if (
+                                    !value ||
+                                    (regex.test(value.toString()) &&
+                                      value.length <= 12)
+                                  ) {
+                                    setFieldValue("Bank_IFSC_Code", value);
+                                  } else {
+                                    return;
+                                  }
                                 }}
                               />
                             </div>
@@ -487,15 +528,8 @@ function BankDetails({ handleShowBankDetails }) {
                                 styles={selectCustomStyle}
                                 options={dropDownAccountType}
                                 value={values.Account_Type}
-                                // value={
-                                //   dropDownAccountType.find(
-                                //     (option) =>
-                                //       option.value === values.Account_Type
-                                //   ) || dropDownAccountType[0]
-                                // } // Select the first option if no value is set
                                 onChange={(event) => {
                                   setFieldValue("Account_Type", event); // Set the value in Formik
-                                  // validateField("Account_Type"); // Validate the field
                                 }}
                               />
                             </div>
@@ -514,12 +548,25 @@ function BankDetails({ handleShowBankDetails }) {
                             </label>
                             <div className="form-control">
                               <Field
+                                type="text"
                                 name="Branch_Name"
                                 className="form-control"
                                 placeholder="Branch Name"
                                 onChange={(e) => {
-                                  setFieldValue("Branch_Name", e.target.value);
-                                  // validateField("Branch_Name");
+                                  e.preventDefault();
+                                  const { value } = e.target;
+
+                                  const regex = /^[^\s].*$/;
+
+                                  if (
+                                    !value ||
+                                    (regex.test(value.toString()) &&
+                                      value.length <= 50)
+                                  ) {
+                                    setFieldValue("Branch_Name", value);
+                                  } else {
+                                    return;
+                                  }
                                 }}
                               />
                             </div>
@@ -550,9 +597,7 @@ function BankDetails({ handleShowBankDetails }) {
                         type="submit"
                         className="button bg-primary w-350 h-50 rounded-24 py-15 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
                       >
-                        {Object?.keys(editData).length > 0
-                          ? "Update Details"
-                          : "Add Details"}
+                        {isEditingBank ? "Update Details" : "Add Details"}
                       </button>
                     </div>
                   </Stack>
@@ -581,6 +626,7 @@ function BankDetails({ handleShowBankDetails }) {
                 <div className="col-lg-6 text-right pb-5">
                   <button
                     onClick={() => {
+                      setIsEditingBank(false);
                       setEditData({
                         Bank_Id: "",
                         Bank_Name: "",
@@ -651,30 +697,27 @@ function BankDetails({ handleShowBankDetails }) {
                                 </td>
 
                                 <td className="" style={{ color: "#aeaeae" }}>
-                                  <a
-                                    href="#"
+                                  <button
                                     className="px-10"
                                     onClick={() =>
                                       handleDelete(curBank?.Bank_Id)
                                     }
                                   >
                                     <i className="far fa-trash-alt text-18"></i>
-                                  </a>
-                                  <a
-                                    href="#"
+                                  </button>
+                                  <button
                                     className="px-10"
                                     onClick={() => {
                                       console.log(curBank);
-                                      // setEditData(curBank);
+                                      setIsEditingBank(true);
                                       handleEdit(curBank);
-
                                       return setShowBankModal(
                                         (previous) => !previous
                                       );
                                     }}
                                   >
                                     <i className="far fa-edit text-18"></i>
-                                  </a>
+                                  </button>
                                 </td>
                               </tr>
                             );

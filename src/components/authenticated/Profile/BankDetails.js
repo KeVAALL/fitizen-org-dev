@@ -246,6 +246,21 @@ function BankDetails({ updateTab, nextIndex, prevIndex, UpdateProfile }) {
                       name="BankBranch_Name"
                       placeholder="Branch Name"
                       className="form-control"
+                      onChange={(e) => {
+                        e.preventDefault();
+                        const { value } = e.target;
+
+                        const regex = /^[^\s].*$/;
+
+                        if (
+                          !value ||
+                          (regex.test(value.toString()) && value.length <= 50)
+                        ) {
+                          setFieldValue("BankBranch_Name", value);
+                        } else {
+                          return;
+                        }
+                      }}
                     />
                   </div>
                   <ErrorMessage

@@ -402,6 +402,7 @@ function Discount() {
               {showDiscountForm ? (
                 <div class="col-xl-12 col-md-12">
                   <Formik
+                    enableReinitialize
                     initialValues={getOneData}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
