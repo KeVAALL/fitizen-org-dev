@@ -12,12 +12,14 @@ import Social from "./Social";
 // Utility imports
 import { setOrgProfile } from "../../../redux/slices/profileSlice";
 import { RestfulApiService } from "../../../config/service";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
   const [activeTab, setActiveTab] = useState(1);
   const user = useSelector((state) => state.user.userProfile);
   const orgProfile = useSelector((state) => state.orgProfile.profile);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const updateTab = (tabNumber) => {
     setActiveTab(tabNumber);
@@ -98,6 +100,7 @@ function Profile() {
         };
         dispatch(setOrgProfile(apiResponse));
         if (currindex === 3) {
+          navigate("/dashboard/all-events");
           return;
         }
         updateTab(nextIndex);

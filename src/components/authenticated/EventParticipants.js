@@ -257,6 +257,7 @@ function EventParticipants() {
         Filter: SelectColumnFilter,
         // filter: "includes", // Use the custom multiSelect filter
         filter: "multiSelect", // Use the custom multiSelect filter
+        minWidth: 250,
       },
     ],
     [] // Empty dependency array as this data is static
@@ -2364,6 +2365,8 @@ function EventParticipants() {
                             <GlobalFilter
                               globalFilter={globalFilter}
                               setGlobalFilter={setGlobalFilter}
+                              placeholder="Search by Name, Email ID, or Phone Number"
+                              sx={{ width: "350px" }}
                             />
                             <div className="d-flex gap-15">
                               <button
@@ -2953,9 +2956,6 @@ function EventParticipants() {
                                   );
                                 })}
                               </Stack>
-                              {/* <button className="button w-full rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
-                                View Participants
-                              </button>{" "} */}
                             </>
                           )}
                         </Stack>
@@ -3118,156 +3118,11 @@ function EventParticipants() {
                                     })}
                                   </div>
                                 </Stack>
-
-                                {/* <div className="w-full d-flex justify-end mt-40">
-                                  {stateData?.length > 0 && (
-                                    <button className="button w-200 rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
-                                      View Participants
-                                    </button>
-                                  )}
-                                </div> */}
                               </Stack>
                             </div>
                           </div>
                         </Stack>
                       </div>
-
-                      {/* <div className="col-xl-4 col-md-4">
-                        <Stack
-                          direction="column"
-                          alignItems="center"
-                          spacing={6}
-                          className="py-35 px-30 border-light rounded-24"
-                        >
-                          <Stack spacing={4} textAlign="center">
-                            <div className="text-20 lh-16 fw-500">
-                              Event Rating
-                            </div>
-                            <div className="text-60 lh-16 fw-600 text-primary mt-10">
-                              4.5
-                            </div>
-                          </Stack>
-
-                          <Stack spacing={6} textAlign="center">
-                            <div className="text-20 lh-16 fw-500">
-                              Average Rating
-                            </div>
-                            <div className="text-30 lh-16 fw-500 text-green mt-10">
-                              <i className="fas fa-star"></i>{" "}
-                              <i className="fas fa-star"></i>{" "}
-                              <i className="fas fa-star text-45"></i>{" "}
-                              <i className="fas fa-star"></i>{" "}
-                              <i className="fas fa-star-half-alt"></i>
-                            </div>
-                          </Stack>
-                        </Stack>
-                      </div>
-
-                      <div className="col-xl-8 col-md-4">
-                        <Stack
-                          direction="column"
-                          spacing={2}
-                          className="py-15 px-30 border-light rounded-24"
-                        >
-                          <div className="text-16 lh-16 fw-600 mt-5">
-                            Total Reviews
-                          </div>
-
-                          <div className="text-24 lh-16 fw-600 mt-10">
-                            300 Reviews
-                          </div>
-
-                          <div className="py-20">
-                            <div className="progressBar">
-                              <div className="">
-                                <div
-                                  className="progressBar__bg bg-blue-2"
-                                  style={{ height: "12px" }}
-                                ></div>
-                                <div
-                                  className="progressBar__bar"
-                                  style={{
-                                    width: "80%",
-                                    backgroundColor: "#15682C",
-                                  }}
-                                >
-                                  <span className="text-12 fw-600">80%</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="progressBar mt-30">
-                              <div className="mt-20">
-                                <div
-                                  className="progressBar__bg bg-blue-2"
-                                  style={{ height: "12px" }}
-                                >
-                                  {" "}
-                                </div>
-                                <div
-                                  className="progressBar__bar"
-                                  style={{
-                                    width: "70%",
-                                    backgroundColor: "#3DAF58",
-                                  }}
-                                >
-                                  <span className="text-12 fw-600">70%</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="progressBar mt-30">
-                              <div className="mt-20">
-                                <div
-                                  className="progressBar__bg bg-blue-2"
-                                  style={{ height: "12px" }}
-                                ></div>
-                                <div
-                                  className="progressBar__bar"
-                                  style={{
-                                    width: "30%",
-                                    backgroundColor: "#E9BA4F",
-                                  }}
-                                >
-                                  <span className="text-12 fw-600">35%</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="progressBar mt-30">
-                              <div className="mt-20">
-                                <div
-                                  className="progressBar__bg bg-blue-2"
-                                  style={{ height: "12px" }}
-                                ></div>
-                                <div
-                                  className="progressBar__bar"
-                                  style={{
-                                    width: "10%",
-                                    backgroundColor: "#F19B67",
-                                  }}
-                                >
-                                  <span className="text-12 fw-600">10%</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="progressBar mt-30">
-                              <div className="mt-20">
-                                <div
-                                  className="progressBar__bg bg-blue-2"
-                                  style={{ height: "12px" }}
-                                ></div>
-                                <div
-                                  className="progressBar__bar"
-                                  style={{
-                                    width: "10%",
-                                    backgroundColor: "#EB4556",
-                                  }}
-                                >
-                                  <span className="text-12 fw-600">5%</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </Stack>
-                      </div> */}
                     </>
                   )}
                 </>

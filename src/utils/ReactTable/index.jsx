@@ -735,6 +735,10 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     borderLeft: "none",
     borderRight: "none",
     borderBottom: "1px solid #BEBEBE",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "250px",
   },
 }));
 export const StyledDotedTableCell = styled(TableCell)(({ theme }) => ({
@@ -759,6 +763,10 @@ export const StyledDotedTableCell = styled(TableCell)(({ theme }) => ({
     borderRight: "none",
     borderTop: "none",
     borderBottom: "1px dashed #BEBEBE",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "250px",
   },
 }));
 

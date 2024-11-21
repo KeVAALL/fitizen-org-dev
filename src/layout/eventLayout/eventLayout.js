@@ -198,8 +198,8 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                           : ""
                       }`}
                     >
-                      <i className="fas fa-home mr-15"></i>
-                      Main Dashboard
+                      <i className="fas fa-arrow-left mr-15"></i>
+                      Go Back
                     </a>
                   </div>
                 </div>

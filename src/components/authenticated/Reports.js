@@ -295,7 +295,8 @@ function Reports() {
                           className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25"
                           onClick={handleDownloadSummary}
                         >
-                          Download
+                          {/* Download */}
+                          <i className="fas fa-download"></i>
                         </button>
                       </Stack>
                       {getData?.Table2?.length > 0 && (
@@ -360,7 +361,7 @@ function Reports() {
                             className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25"
                             onClick={handleDownload}
                           >
-                            Download
+                            <i className="fas fa-download"></i>
                           </button>
                         </Stack>
 
@@ -418,7 +419,7 @@ function Reports() {
                             className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25"
                             onClick={handleNumberOfTicketSold}
                           >
-                            Download
+                            <i className="fas fa-download"></i>
                           </button>
                         </Stack>
                         <Box
