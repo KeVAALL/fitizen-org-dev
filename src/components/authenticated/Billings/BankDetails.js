@@ -17,7 +17,7 @@ import { decryptData } from "../../../utils/DataEncryption";
 import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import EventTitle from "../EventTitle";
 
-const dropDwonAccountType = [
+const dropDownAccountType = [
   {
     label: "Saving",
     value: "saving",
@@ -44,14 +44,43 @@ function BankDetails({ handleShowBankDetails }) {
     Bank_IFSC_Code: Yup.string()
       .required("Bank IFSC Code is required")
       .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"),
-    Account_Type: Yup.string().required("Account Type is required"),
+    Account_Type: Yup.object().required("Account Type is required"),
     Branch_Name: Yup.string().required("Branch Name is required"),
   });
 
   const [showBankModal, setShowBankModal] = useState(false);
   const [bankDetails, setShowBankDetails] = useState([]);
-  const [editData, setEditData] = useState({});
+  const [editData, setEditData] = useState({
+    Bank_Id: "",
+    Bank_Name: "",
+    Account_Holder_Name: "",
+    Account_Number: "",
+    Bank_IFSC_Code: "",
+    Account_Type: {
+      label: "Saving",
+      value: "saving",
+    },
+    Branch_Name: "",
+  });
 
+  const handleEdit = (values) => {
+    setEditData({
+      Bank_Id: values?.Bank_Id ?? "",
+      Bank_Name: values?.Bank_Name ?? "",
+      Account_Holder_Name: values?.Account_Holder_Name ?? "",
+      Account_Number: values?.Account_Number ?? "",
+      Bank_IFSC_Code: values?.IFSC_Code ?? "",
+      Account_Type: values?.Account_Type
+        ? dropDownAccountType.find(
+            (option) => option.value === values.Account_Type
+          )
+        : {
+            label: "Saving",
+            value: "saving",
+          },
+      Branch_Name: values?.Bank_Name ?? "",
+    });
+  };
   const handleGetBankDetails = useCallback(async () => {
     const bankDetails = {
       Method_Name: "Get",
@@ -192,6 +221,7 @@ function BankDetails({ handleShowBankDetails }) {
   useEffect(() => {
     handleGetBankDetails();
   }, [handleGetBankDetails]);
+
   return (
     <>
       {/* ========== for the bank ========= */}
@@ -221,26 +251,38 @@ function BankDetails({ handleShowBankDetails }) {
                 Add Bank Details
               </div>
               <i
-                onClick={() => setShowBankModal((prevState) => !prevState)}
+                onClick={() => {
+                  setShowBankModal((prevState) => !prevState);
+                  setEditData({
+                    Bank_Id: "",
+                    Bank_Name: "",
+                    Account_Holder_Name: "",
+                    Account_Number: "",
+                    Bank_IFSC_Code: "",
+                    Account_Type: {
+                      label: "Saving",
+                      value: "saving",
+                    },
+                    Branch_Name: "",
+                  });
+                }}
                 class="fas fa-times text-16 text-primary cursor-pointer"
               ></i>
             </Stack>
             <Formik
-              initialValues={{
-                Bank_Id: editData?.Bank_Id ?? "",
-                Bank_Name: editData?.Bank_Name ?? "",
-                Account_Holder_Name: editData?.Account_Holder_Name ?? "",
-                Account_Number: editData?.Account_Number ?? "",
-                Bank_IFSC_Code: editData?.IFSC_Code ?? "",
-                Account_Type: editData?.Account_Type ?? "",
-                Branch_Name: editData?.Bank_Name ?? "",
-              }}
+              // initialValues={{
+              //   Bank_Id: editData?.Bank_Id ?? "",
+              //   Bank_Name: editData?.Bank_Name ?? "",
+              //   Account_Holder_Name: editData?.Account_Holder_Name ?? "",
+              //   Account_Number: editData?.Account_Number ?? "",
+              //   Bank_IFSC_Code: editData?.IFSC_Code ?? "",
+              //   Account_Type: editData?.Account_Type ?? "",
+              //   Branch_Name: editData?.Bank_Name ?? "",
+              // }}
+              initialValues={editData}
               validationSchema={validationSchema}
-              // validateOnBlur={false}
-              // validateOnChange={false}
               onSubmit={async (values) => {
                 console.log(values);
-                // Your submit logic here
                 const bankDetails = {
                   Method_Name:
                     Object?.keys(editData).length > 0 ? "Update" : "Create",
@@ -252,7 +294,7 @@ function BankDetails({ handleShowBankDetails }) {
                   Bank_Id: values?.Bank_Id ?? "", // this will empty for the create
                   IFSC_Code: values?.Bank_IFSC_Code ?? "",
                   Account_Number: values?.Account_Number ?? "",
-                  Account_Type: values?.Account_Type ?? "",
+                  Account_Type: values?.Account_Type?.value ?? "",
                   Branch_Name: values?.Branch_Name ?? "",
                   Bank_Name: values?.Bank_Name ?? "",
                   Account_Holder_Name: values?.Account_Holder_Name ?? "",
@@ -323,7 +365,7 @@ function BankDetails({ handleShowBankDetails }) {
                                 placeholder="Bank Name"
                                 onChange={(e) => {
                                   setFieldValue("Bank_Name", e.target.value);
-                                  validateField("Bank_Name");
+                                  // validateField("Bank_Name");
                                 }}
                               />
                             </div>
@@ -350,7 +392,7 @@ function BankDetails({ handleShowBankDetails }) {
                                     "Account_Holder_Name",
                                     e.target.value
                                   );
-                                  validateField("Account_Holder_Name");
+                                  // validateField("Account_Holder_Name");
                                 }}
                               />
                             </div>
@@ -386,7 +428,7 @@ function BankDetails({ handleShowBankDetails }) {
                                     "Account_Number",
                                     e.target.value
                                   );
-                                  validateField("Account_Number");
+                                  // validateField("Account_Number");
                                 }}
                               />
                             </div>
@@ -413,7 +455,7 @@ function BankDetails({ handleShowBankDetails }) {
                                     "Bank_IFSC_Code",
                                     e.target.value
                                   );
-                                  validateField("Bank_IFSC_Code");
+                                  // validateField("Bank_IFSC_Code");
                                 }}
                               />
                             </div>
@@ -443,16 +485,17 @@ function BankDetails({ handleShowBankDetails }) {
                               <Select
                                 isSearchable={false}
                                 styles={selectCustomStyle}
-                                options={dropDwonAccountType}
-                                value={
-                                  dropDwonAccountType.find(
-                                    (option) =>
-                                      option.value === values.Account_Type
-                                  ) || dropDwonAccountType[0]
-                                } // Select the first option if no value is set
+                                options={dropDownAccountType}
+                                value={values.Account_Type}
+                                // value={
+                                //   dropDownAccountType.find(
+                                //     (option) =>
+                                //       option.value === values.Account_Type
+                                //   ) || dropDownAccountType[0]
+                                // } // Select the first option if no value is set
                                 onChange={(event) => {
-                                  setFieldValue("Account_Type", event.value); // Set the value in Formik
-                                  validateField("Account_Type"); // Validate the field
+                                  setFieldValue("Account_Type", event); // Set the value in Formik
+                                  // validateField("Account_Type"); // Validate the field
                                 }}
                               />
                             </div>
@@ -476,7 +519,7 @@ function BankDetails({ handleShowBankDetails }) {
                                 placeholder="Branch Name"
                                 onChange={(e) => {
                                   setFieldValue("Branch_Name", e.target.value);
-                                  validateField("Branch_Name");
+                                  // validateField("Branch_Name");
                                 }}
                               />
                             </div>
@@ -538,7 +581,18 @@ function BankDetails({ handleShowBankDetails }) {
                 <div className="col-lg-6 text-right pb-5">
                   <button
                     onClick={() => {
-                      setEditData({});
+                      setEditData({
+                        Bank_Id: "",
+                        Bank_Name: "",
+                        Account_Holder_Name: "",
+                        Account_Number: "",
+                        Bank_IFSC_Code: "",
+                        Account_Type: {
+                          label: "Saving",
+                          value: "saving",
+                        },
+                        Branch_Name: "",
+                      });
                       setShowBankModal((previous) => !previous);
                     }}
                     className="w-150 button -primary-1 rounded-22 px-20 py-10 text-primary border-primary bg-white text-12 d-inline-block"
@@ -610,7 +664,9 @@ function BankDetails({ handleShowBankDetails }) {
                                     href="#"
                                     className="px-10"
                                     onClick={() => {
-                                      setEditData(curBank);
+                                      console.log(curBank);
+                                      // setEditData(curBank);
+                                      handleEdit(curBank);
 
                                       return setShowBankModal(
                                         (previous) => !previous
