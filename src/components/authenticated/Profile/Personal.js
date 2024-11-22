@@ -256,7 +256,7 @@ function Personal({
       {fetchingProfile ? (
         <Loader fetching={fetchingProfile} />
       ) : (
-        <div className="row y-gap-40 pt-20">
+        <div className="row y-gap-40 pt-20 px-15">
           <div
             className={`tabs__pane${
               activeTab === 1 ? " is-tab-el-active -tab-item-1" : ""
@@ -539,7 +539,7 @@ function Personal({
                           />
                         </div>
                         {/* {!values?.Logo_Path && ( */}
-                        <div className="mt-10 w-full text-center">
+                        <div className="w-full text-center">
                           <i
                             class="text-light-1 text-10 fas fa-upload"
                             style={{ display: "inline" }}
@@ -548,12 +548,12 @@ function Personal({
                             className="text-light-1 text-10 text-center"
                             style={{ display: "inline", marginLeft: "5px" }}
                           >
-                            Upload Square image at least 200px by 200px
+                            Upload Square Logo at least 200px by 200px
                           </p>
                         </div>
                         {/* )} */}
                         {values?.Logo_Path && (
-                          <p className="text-light-1 text-10 mt-10 text-center">
+                          <p className="text-light-1 text-10 text-center">
                             {values?.Logo_Path?.split("/")[3]}
                           </p>
                         )}
