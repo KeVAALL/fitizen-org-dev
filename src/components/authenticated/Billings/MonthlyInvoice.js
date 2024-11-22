@@ -79,7 +79,7 @@ function MonthlyInvoice({ setShowMonthlyInvoice }) {
       {
         Header: "Amount Paid",
         accessor: "Total_Amount",
-        Cell: ({ row, value }) => inrCurrency(value), // Hardcoded serial number starting from 1
+        Cell: ({ row, value }) => inrCurrency(Number(value)), // Hardcoded serial number starting from 1
       },
       {
         Header: "Invoice No",
@@ -291,7 +291,7 @@ function MonthlyInvoice({ setShowMonthlyInvoice }) {
           <div className="text-16 lh-16 fw-600 mt-5">
             Total Amount Paid:{" "}
             <span className="text-16 fw-600 mt-5 text-primary">
-              {inrCurrency(totalPayment)}
+              {inrCurrency(Number(totalPayment))}
             </span>
           </div>
         </Stack>

@@ -13,46 +13,24 @@ import {
   useSortBy,
 } from "react-table";
 import {
-  Backdrop,
   Box,
-  Button,
-  CircularProgress,
-  Link,
-  Modal,
-  Stack,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  TextField,
 } from "@mui/material";
-import Select from "react-select";
-import toast from "react-hot-toast";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import * as Yup from "yup";
 
 // Project imports
 import {
   DefaultColumnFilter,
-  GlobalFilter,
   renderFilterTypes,
-  SelectColumnFilter,
   StyledTableCell,
   TablePagination,
-  IndeterminateCheckbox,
 } from "../../../utils/ReactTable";
-import { WhiteSingleTooltip, WhiteTooltip } from "../../../utils/Tooltip";
-import {
-  RestfulApiServiceDownload,
-  RestfulApiService,
-} from "../../../config/service";
+import { RestfulApiService } from "../../../config/service";
 import { decryptData } from "../../../utils/DataEncryption";
-import {
-  customRoundedStyles,
-  selectCustomStyle,
-} from "../../../utils/ReactSelectStyles";
+
 import { inrCurrency } from "../../../utils/UtilityFunctions";
 import TableLoader from "../TableLoader";
 
@@ -71,7 +49,7 @@ function PaymentHistoryInvoice({ isShowingInvoice }) {
       {
         Header: "Total Amount",
         accessor: "Total_Amount",
-        Cell: ({ row, value }) => inrCurrency(value), // Hardcoded serial number starting from 1
+        Cell: ({ row, value }) => inrCurrency(Number(value)), // Hardcoded serial number starting from 1
       },
       {
         Header: "Invoice No.",

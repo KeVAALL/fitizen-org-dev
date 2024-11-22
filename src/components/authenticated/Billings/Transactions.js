@@ -82,7 +82,7 @@ function Transactions({ setShowTransactions }) {
       {
         Header: "Amount",
         accessor: "Amount",
-        Cell: ({ row, value }) => inrCurrency(value),
+        Cell: ({ row, value }) => inrCurrency(Number(value)),
       },
     ],
     [] // Empty dependency array as this data is static
@@ -184,7 +184,7 @@ function Transactions({ setShowTransactions }) {
     const tableData = transactionData?.map((item) => ({
       Name: item?.Name ?? "",
       "Email ID": item?.Email_Id ?? 0,
-      Amount: inrCurrency(item.Amount) ?? "",
+      Amount: inrCurrency(Number(item.Amount)) ?? "",
     }));
 
     // Call the utility function to download the Excel file

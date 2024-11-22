@@ -20,7 +20,6 @@ import PaymentHistory from "./PaymentHistory";
 import Transactions from "./Transactions";
 import MonthlyInvoice from "./MonthlyInvoice";
 import EventTitle from "../EventTitle";
-import Loader from "../../../utils/BackdropLoader";
 
 function BillingMain() {
   const { event_id } = useParams();

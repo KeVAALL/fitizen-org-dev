@@ -175,18 +175,22 @@ function BIBExpo() {
                         times: Yup.array().of(
                           Yup.object().shape({
                             dayOne: Yup.date().required("Please select a date"),
-                            expoStartTime1: Yup.date().required(
-                              "Please enter the Expo Start Time 1"
-                            ),
-                            expoEndTime1: Yup.date().required(
-                              "Please enter the Expo End Time 1"
-                            ),
-                            expoStartTime2: Yup.date().required(
-                              "Please enter the Expo Start Time 2"
-                            ),
-                            expoEndTime2: Yup.date().required(
-                              "Please enter the Expo End Time 2"
-                            ),
+                            expoStartTime1: Yup.date().nullable(),
+                            //   .required(
+                            //   "Please enter the Expo Start Time 1"
+                            // ),
+                            expoEndTime1: Yup.date().nullable(),
+                            //   .required(
+                            //   "Please enter the Expo End Time 1"
+                            // ),
+                            expoStartTime2: Yup.date().nullable(),
+                            //   .required(
+                            //   "Please enter the Expo Start Time 2"
+                            // ),
+                            expoEndTime2: Yup.date().nullable(),
+                            //   .required(
+                            //   "Please enter the Expo End Time 2"
+                            // ),
                           })
                         ),
                         Is_BIB_Expo_Available: Yup.boolean().required(

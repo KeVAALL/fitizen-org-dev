@@ -82,7 +82,7 @@ function PaymentHistory({ setShowPaymentHistory }) {
       {
         Header: "Amount Paid",
         accessor: "Amount_Paid",
-        Cell: ({ row, value }) => inrCurrency(value), // Hardcoded serial number starting from 1
+        Cell: ({ row, value }) => inrCurrency(Number(value)), // Hardcoded serial number starting from 1
       },
       {
         Header: "Payment Date/ Time",
@@ -215,7 +215,7 @@ function PaymentHistory({ setShowPaymentHistory }) {
   const handleDownloadData = () => {
     const tableData = paymentHistoryData?.map((item) => ({
       "Payment ID": item?.Payment_Id ?? "",
-      "Amount Paid": inrCurrency(item.Amount_Paid) ?? 0,
+      "Amount Paid": inrCurrency(Number(item.Amount_Paid)) ?? 0,
       "Payment Date/ Time": item.Payment_Date ?? "",
     }));
 
@@ -326,7 +326,7 @@ function PaymentHistory({ setShowPaymentHistory }) {
           >
             Total Amount Paid:{" "}
             <span className="text-16 fw-600 mt-5 text-primary">
-              {inrCurrency(totalPayment)}
+              {inrCurrency(Number(totalPayment))}
             </span>
           </div>
         </Stack>

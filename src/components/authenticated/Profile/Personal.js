@@ -538,13 +538,22 @@ function Personal({
                             }}
                           />
                         </div>
-                        {!values?.Logo_Path && (
-                          <p className="text-light-1 text-10 mt-20 text-center">
+                        {/* {!values?.Logo_Path && ( */}
+                        <div className="mt-10 w-full text-center">
+                          <i
+                            class="text-light-1 text-10 fas fa-upload"
+                            style={{ display: "inline" }}
+                          ></i>
+                          <p
+                            className="text-light-1 text-10 text-center"
+                            style={{ display: "inline", marginLeft: "5px" }}
+                          >
                             Upload Square image at least 200px by 200px
                           </p>
-                        )}
+                        </div>
+                        {/* )} */}
                         {values?.Logo_Path && (
-                          <p className="text-light-1 text-10 mt-20 text-center">
+                          <p className="text-light-1 text-10 mt-10 text-center">
                             {values?.Logo_Path?.split("/")[3]}
                           </p>
                         )}
