@@ -10,6 +10,7 @@ import * as Yup from "yup";
 // Third-party imports
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import toast from "react-hot-toast";
 
 // Utility imports
@@ -43,6 +44,7 @@ function Personal({
   const [allUserDetails, setAllUserDetails] = useState([]);
   const [addingUserDetails, setAddingUserDetails] = useState(false);
   const [editingUserDetails, setEditingUserDetails] = useState(false);
+  const [eventDropdown, setEventDropdown] = useState([]);
   const userRoleDropdown = [
     {
       label: "Organizer Admin",
@@ -58,6 +60,7 @@ function Personal({
     mobile_number: "",
     email_id: "",
     Organizer_Role_Id: null,
+    Event_List: [],
   };
   function generateUserDetailsXML(data) {
     let xml = "<D>";
@@ -106,6 +109,7 @@ function Personal({
       .email("Invalid email address")
       .required("User email is required"),
     Organizer_Role_Id: Yup.object().required("Please select Organizer role"),
+    Event_List: Yup.array(),
   });
   const validationSchema = Yup.object({
     Organizer_Name: Yup.string().required("Organizer Name is required"),
@@ -245,10 +249,34 @@ function Personal({
     } finally {
     }
   }
+  async function LoadEventDropdown() {
+    const reqdata = {
+      Method_Name: "Event",
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Organizer_User_Id: user?.Organizer_Role_Id,
+    };
+    try {
+      const result = await RestfulApiService(
+        reqdata,
+        "organizer/GetOrganizerUser"
+      );
+      if (result) {
+        console.log(result);
+        const formResult = result?.data?.Result?.Table1;
+        setEventDropdown(formResult);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+    }
+  }
 
   useEffect(() => {
     LoadProfile();
     LoadUserDetails();
+    LoadEventDropdown();
   }, []);
 
   return (
@@ -263,15 +291,6 @@ function Personal({
             } px-40 rounded-8 border-light pb-20`}
           >
             <Formik
-              //   initialValues={{
-              //     Contact_Name: "",
-              //     Mobile_Number: "",
-              //     Email_Id: "",
-              //     Logo_Path: null,
-              //     PAN_No: "",
-              //     Has_GST_No: "",
-              //     GST_No: "",
-              //   }}
               initialValues={orgProfile}
               validationSchema={validationSchema}
               onSubmit={(values) => {
@@ -706,6 +725,11 @@ function Personal({
                   validationSchema={orgUserValidation}
                   onSubmit={async (values) => {
                     console.log(values);
+                    console.log(
+                      values.Event_List?.map((event) => {
+                        return event.value;
+                      }).join(",")
+                    );
                     console.log(generateUserDetailsXML(values));
                     const reqdata = {
                       Method_Name: editingUserDetails ? "Update" : "Create",
@@ -715,6 +739,9 @@ function Personal({
                       Org_Id: user?.Org_Id,
                       User_Id: editingUserDetails ? values.User_Id : "",
                       XMLData: generateUserDetailsXML(values),
+                      Eevent_List: values.Event_List?.map((event) => {
+                        return event.value;
+                      }).join(","),
                     };
                     try {
                       setAddingUserDetails(true);
@@ -796,7 +823,7 @@ function Personal({
                       </div>
 
                       <div className="y-gap-10">
-                        <label className="text-13 text-reading fw-500">
+                        <label className="text-13 fw-500">
                           User Role <sup className="asc">*</sup>
                         </label>
                         <div className="p-0">
@@ -818,7 +845,38 @@ function Personal({
                         />
                       </div>
 
-                      <div className="single-field py-10 y-gap-10">
+                      <div className="py-10 y-gap-10">
+                        <label className="text-13 fw-500">Events List</label>
+                        <CreatableSelect
+                          isMulti
+                          styles={{
+                            ...selectCustomStyle,
+                            multiValue: (base) => ({
+                              ...base,
+                              borderRadius: "4px",
+                              backgroundColor: "#fff9e1",
+                              color: "#000",
+                            }),
+                            multiValueLabel: (base) => ({
+                              ...base,
+                              fontSize: "75%",
+                            }),
+                          }}
+                          options={eventDropdown}
+                          value={values.Event_List}
+                          onChange={(value) => {
+                            console.log(value);
+                            setFieldValue("Event_List", value);
+                          }}
+                        />
+                        <ErrorMessage
+                          name="Event_List"
+                          component="div"
+                          className="text-error-2 text-13"
+                        />
+                      </div>
+
+                      <div className="single-field y-gap-10">
                         <label className="text-13 fw-500">
                           Mobile No <sup className="asc">*</sup>
                         </label>
@@ -888,7 +946,7 @@ function Personal({
                           <button
                             disabled={addingUserDetails}
                             type="submit"
-                            className="button bg-primary w-150 h-50 rounded-24 px-15 text-white border-light load-button"
+                            className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light load-button"
                           >
                             {!addingUserDetails ? (
                               `Save`
@@ -916,6 +974,7 @@ function Personal({
                   <StyledTableCell>Email ID</StyledTableCell>
                   <StyledTableCell>User Role</StyledTableCell>
                   <StyledTableCell>Active Status</StyledTableCell>
+                  <StyledTableCell>Event List</StyledTableCell>
                   <StyledTableCell>
                     <div
                       style={{ display: "flex", justifyContent: "flex-end" }}
@@ -925,9 +984,9 @@ function Personal({
                           e.preventDefault();
                           setOrganizerUserModal(true);
                         }}
-                        className="button w-100 fw-400 rounded-8 px-20 py-10 text-white text-14 bg-primary d-flex justify-center gap-10"
+                        className="button w-100 fw-400 rounded-8 px-15 py-10 text-white text-14 bg-primary d-flex justify-center gap-10"
                       >
-                        <i className="fas fa-plus" /> Add
+                        <i className="fas fa-plus text-12" /> Add
                       </button>
                     </div>
                   </StyledTableCell>
@@ -954,6 +1013,31 @@ function Personal({
                           {user?.Is_Active ? "Active" : "In-active"}
                         </StyledTableCell>
                         <StyledTableCell>
+                          <div className="d-flex flex-column gap-5">
+                            {user.Event_Names?.split(",").map((name) => {
+                              return (
+                                <div
+                                  style={{
+                                    minWidth: 0,
+                                    backgroundColor: "#fff9e1",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                    borderRadius: "2px",
+                                    color: "hsl(0, 0%, 20%)",
+                                    fontSize: "80%",
+                                    padding: "3px",
+                                    paddingLeft: "6px",
+                                    boxSizing: "border-box",
+                                  }}
+                                >
+                                  {name}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </StyledTableCell>
+                        <StyledTableCell>
                           <div
                             className="text-14 text-reading lh-16 fw-500"
                             style={{
@@ -967,7 +1051,7 @@ function Personal({
                               className="fas fa-pencil-alt"
                               onClick={() => {
                                 setEditingUserDetails(true);
-                                console.log();
+                                console.log(user);
                                 setUserDetailsInitialValues({
                                   ...user,
                                   mobile_number: user.Mobile_Number,
@@ -975,6 +1059,11 @@ function Personal({
                                   Organizer_Role_Id: userRoleDropdown.filter(
                                     (u) => u.value === user?.Organizer_Role_Id
                                   )[0],
+                                  Event_List: eventDropdown.filter((event) =>
+                                    user?.Event_Id?.split(",").includes(
+                                      event.value
+                                    )
+                                  ),
                                 });
                                 setOrganizerUserModal(true);
                               }}

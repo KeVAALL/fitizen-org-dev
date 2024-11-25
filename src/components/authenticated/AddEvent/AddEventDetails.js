@@ -758,6 +758,7 @@ function AddEventDetails({ handleStep, index }) {
                         multiValueLabel: (base) => ({
                           ...base,
                           padding: "0px 8px 0px 8px",
+                          fontSize: "80%",
                         }),
                       }}
                       options={takeawayDropdown}
@@ -788,6 +789,11 @@ function AddEventDetails({ handleStep, index }) {
                           borderRadius: "4px",
                           backgroundColor: "#fff9e1",
                           color: "#000",
+                        }),
+                        multiValueLabel: (base) => ({
+                          ...base,
+                          padding: "0px 8px 0px 8px",
+                          fontSize: "80%",
                         }),
                       }}
                       options={facilityDropdown}

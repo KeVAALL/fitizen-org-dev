@@ -51,6 +51,14 @@ function AllEvents() {
       label: "Future Events",
       value: "Future",
     },
+    {
+      label: "In-active Events",
+      value: 0,
+    },
+    {
+      label: "Draft Events",
+      value: "Draft",
+    },
   ];
   const initialValues = {
     Event_Name: "",
@@ -150,7 +158,12 @@ function AllEvents() {
     }
 
     const reqdata = {
-      Method_Name: "HomePage",
+      Method_Name:
+        eventTimeline === 0
+          ? "Status"
+          : eventTimeline === "Draft"
+          ? "Draft"
+          : "HomePage",
       SearchBy: "",
       TypeEvent: "",
       EventId: "",

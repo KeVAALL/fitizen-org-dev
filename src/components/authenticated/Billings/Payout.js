@@ -52,7 +52,7 @@ function Payout({ setShowPayout, getData }) {
       Method_Name: "GetBank",
       Org_Id: user?.Org_Id,
       ParentField_Id: decryptData(event_id),
-      SearchText: "",
+      SearchText: user.Organizer_Id,
       Session_User_Id: user?.User_Id,
     };
 
