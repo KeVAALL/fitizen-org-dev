@@ -120,7 +120,7 @@ function Personal({
     Email_Id: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
-    Logo_Path: Yup.mixed().required("Profile image is required"),
+    Logo_Path: Yup.string().required("Profile image is required"),
     PAN_No: Yup.string()
       .matches(/^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/, "Invalid PAN format")
       .required("Pan Number is required"),
@@ -521,10 +521,11 @@ function Personal({
                                     loading: "Uploading...",
                                     success: (result) => {
                                       if (result) {
-                                        setFieldValue(
-                                          "Logo_Path",
-                                          result?.data?.Result
+                                        console.log(
+                                          result?.data?.Result,
+                                          result?.data?.Description
                                         );
+
                                         // setFieldTouched("Image_Name", true);
                                         setFieldValue(
                                           "Logo_Path",

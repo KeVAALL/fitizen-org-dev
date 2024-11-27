@@ -206,6 +206,7 @@ function AddEventTicket({ handleStep, prevIndex, nextIndex }) {
                 onClick={(e) => {
                   e.preventDefault();
                   if (allCategory.length < 1) {
+                    toast.dismiss();
                     toast.error("Add at least one category");
                   } else {
                     handleStep(nextIndex);

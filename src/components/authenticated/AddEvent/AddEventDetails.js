@@ -28,7 +28,10 @@ import {
   TableRow,
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { StyledTableCell } from "../../../utils/ReactTable";
+import {
+  EventDetailTableCell,
+  StyledTableCell,
+} from "../../../utils/ReactTable";
 
 function AddEventDetails({ handleStep, index }) {
   const dispatch = useDispatch();
@@ -1113,10 +1116,10 @@ function AddEventDetails({ handleStep, index }) {
                       </TableHead>
                       <TableBody className="table_body_main">
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             GST
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <Box className="h-full">
                               <div>
                                 <Select
@@ -1143,8 +1146,8 @@ function AddEventDetails({ handleStep, index }) {
                                 />
                               </div>
                             </Box>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isDisabled={true}
@@ -1162,9 +1165,9 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1195,13 +1198,13 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             Platform Fees
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <Box className="h-full">
                               <div>
                                 <Select
@@ -1224,8 +1227,8 @@ function AddEventDetails({ handleStep, index }) {
                                 />
                               </div>
                             </Box>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isSearchable={false}
@@ -1242,9 +1245,9 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1274,13 +1277,13 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             Convenience Fees (Participant)
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isSearchable={false}
@@ -1301,8 +1304,8 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isSearchable={false}
@@ -1319,9 +1322,9 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1351,13 +1354,13 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             Convenience Fees (Organizer)
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isSearchable={false}
@@ -1378,8 +1381,8 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isSearchable={false}
@@ -1396,9 +1399,9 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1428,13 +1431,13 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             Payment Gateway Charges
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isSearchable={false}
@@ -1455,8 +1458,8 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isSearchable={false}
@@ -1473,9 +1476,9 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1505,7 +1508,7 @@ function AddEventDetails({ handleStep, index }) {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                       </TableBody>
                     </Table>

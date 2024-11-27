@@ -14,7 +14,10 @@ import * as Yup from "yup";
 // Project imports
 import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import { setSelectedCategory } from "../../../redux/slices/categorySlice";
-import { StyledTableCell } from "../../../utils/ReactTable";
+import {
+  EventDetailTableCell,
+  StyledTableCell,
+} from "../../../utils/ReactTable";
 import { decryptData } from "../../../utils/DataEncryption";
 import { HtmlLightTooltip } from "../../../utils/Tooltip";
 import { RestfulApiService } from "../../../config/service";
@@ -1020,10 +1023,10 @@ function EventDetails() {
                       </TableHead>
                       <TableBody className="table_body_main">
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             GST
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <Box className="h-full">
                               <div>
                                 <Select
@@ -1044,8 +1047,8 @@ function EventDetails() {
                                 />
                               </div>
                             </Box>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 // isDisabled={!isEditing}
@@ -1064,9 +1067,9 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1098,13 +1101,13 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             Platform Fees
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <Box className="h-full">
                               <div>
                                 <Select
@@ -1128,8 +1131,8 @@ function EventDetails() {
                                 />
                               </div>
                             </Box>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isDisabled={!isEditing}
@@ -1147,9 +1150,9 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1180,13 +1183,13 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             Convenience Fees (Participant)
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isDisabled={!isEditing}
@@ -1208,8 +1211,8 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isDisabled={!isEditing}
@@ -1227,9 +1230,9 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1260,13 +1263,13 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             Convenience Fees (Organizer)
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isDisabled={!isEditing}
@@ -1288,8 +1291,8 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isDisabled={!isEditing}
@@ -1307,9 +1310,9 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1340,13 +1343,13 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                         <TableRow>
-                          <StyledTableCell className="text-14 text-black">
+                          <EventDetailTableCell className="text-14 text-black">
                             Payment Gateway Charges
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isDisabled={!isEditing}
@@ -1368,8 +1371,8 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
-                          <StyledTableCell>
+                          </EventDetailTableCell>
+                          <EventDetailTableCell>
                             <div>
                               <Select
                                 isDisabled={!isEditing}
@@ -1387,9 +1390,9 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
 
-                          <StyledTableCell>
+                          <EventDetailTableCell>
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
@@ -1420,7 +1423,7 @@ function EventDetails() {
                                 className="text-error-2 text-13 mt-10"
                               />
                             </div>
-                          </StyledTableCell>
+                          </EventDetailTableCell>
                         </TableRow>
                       </TableBody>
                     </Table>
