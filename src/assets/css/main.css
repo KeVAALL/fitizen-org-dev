@@ -13995,3 +13995,7 @@ input:-webkit-autofill::first-line {
   width: 480px;
   /* height: calc(100% -20%); */
 }
+.other-info-checkbox .MuiSvgIcon-root {
+  width: 0.8em;
+  height: 0.8em;
+}

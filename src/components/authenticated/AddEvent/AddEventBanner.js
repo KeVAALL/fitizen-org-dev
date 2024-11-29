@@ -229,6 +229,13 @@ function AddEventBanner({ handleStep, prevIndex }) {
       top: 0,
       behavior: "smooth", // Smooth scrolling
     });
+    // if (cropperRef.current) {
+    //   const cropper = cropperRef.current.cropper;
+
+    //   cropper.setCanvasData({
+    //     width: Math.min(cropper.getCanvasData().naturalWidth, 1000), // Set max width to 1000px
+    //   });
+    // }
     if (newEventId) {
       LoadBanners();
     }
@@ -297,7 +304,8 @@ function AddEventBanner({ handleStep, prevIndex }) {
                       >
                         <Cropper
                           style={{
-                            maxWidth: "100%",
+                            maxWidth: "1000px", // Set maximum width to 1000px
+                            width: "100%",
                             height: "300px", // Set a fixed height for the cropper
                             objectFit: "contain", // Ensures the image fits within the cropper
                           }}
@@ -305,8 +313,9 @@ function AddEventBanner({ handleStep, prevIndex }) {
                           zoomTo={0.5}
                           initialAspectRatio={16 / 9} // Set the initial aspect ratio to 16:9
                           aspectRatio={16 / 9} // Maintain a landscape aspect ratio of 16:9
-                          minCropBoxWidth={400} // Set to a reasonable width for landscape images
-                          minCropBoxHeight={200} // Set to a reasonable height
+                          minCropBoxWidth={800} // Set to a reasonable width for landscape images
+                          minCropBoxHeight={400} // Set to a reasonable height
+                          // cropBoxResizable={false}
                           preview=".img-preview"
                           src={image}
                           viewMode={1}

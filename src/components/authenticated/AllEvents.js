@@ -11,6 +11,7 @@ import { encryptData } from "../../utils/DataEncryption";
 import { customRoundedStyles } from "../../utils/ReactSelectStyles";
 import Loader from "../../utils/BackdropLoader";
 import noResultFound from "../../assets/img/general/not-found.png";
+import defaultImg from "../../assets/img/masthead/default-event.png";
 
 // MUI imports (separated)
 import Box from "@mui/material/Box";
@@ -647,7 +648,11 @@ function AllEvents() {
                               <div className="cardImage__content">
                                 <img
                                   className="rounded-16 col-12"
-                                  src={`${MEDIA_URL}${ev?.Image_Path}`}
+                                  src={
+                                    ev?.Image_Path
+                                      ? `${MEDIA_URL}${ev?.Image_Path}`
+                                      : defaultImg
+                                  }
                                   alt="card"
                                 />
                               </div>
