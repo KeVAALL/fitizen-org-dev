@@ -13,11 +13,11 @@ import YoutubeIcon from "../../../assets/img/icons/youtube.png";
 import GlobeIcon from "../../../assets/img/icons/globe.png";
 
 const validationSchema = Yup.object().shape({
-  Org_Facebook: Yup.string().url("Enter a valid URL"),
-  Org_Instagram: Yup.string().url("Enter a valid URL"),
-  Org_LinkedIn: Yup.string().url("Enter a valid URL"),
-  Org_Youtube: Yup.string().url("Enter a valid URL"),
-  Org_Website: Yup.string().url("Enter a valid URL"),
+  Org_Facebook: Yup.string().url("Enter a valid URL").nullable(),
+  Org_Instagram: Yup.string().url("Enter a valid URL").nullable(),
+  Org_LinkedIn: Yup.string().url("Enter a valid URL").nullable(),
+  Org_Youtube: Yup.string().url("Enter a valid URL").nullable(),
+  Org_Website: Yup.string().url("Enter a valid URL").nullable(),
 });
 
 function Social({ updateTab, prevIndex, UpdateProfile }) {

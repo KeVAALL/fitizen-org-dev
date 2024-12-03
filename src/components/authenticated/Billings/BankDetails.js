@@ -626,6 +626,13 @@ function BankDetails({ handleShowBankDetails }) {
                 <div className="col-lg-6 text-right pb-5">
                   <button
                     onClick={() => {
+                      if (user?.Organizer_Role_Id !== "MU05001") {
+                        toast.dismiss();
+                        toast.error(
+                          "You do not have permission to edit these details. Please contact your organizer for assistance"
+                        );
+                        return;
+                      }
                       setIsEditingBank(false);
                       setEditData({
                         Bank_Id: "",
@@ -699,16 +706,33 @@ function BankDetails({ handleShowBankDetails }) {
                                 <td className="" style={{ color: "#aeaeae" }}>
                                   <button
                                     className="px-10"
-                                    onClick={() =>
-                                      handleDelete(curBank?.Bank_Id)
-                                    }
+                                    onClick={() => {
+                                      if (
+                                        user?.Organizer_Role_Id !== "MU05001"
+                                      ) {
+                                        toast.dismiss();
+                                        toast.error(
+                                          "You do not have permission to edit these details. Please contact your organizer for assistance"
+                                        );
+                                        return;
+                                      }
+                                      handleDelete(curBank?.Bank_Id);
+                                    }}
                                   >
                                     <i className="far fa-trash-alt text-18"></i>
                                   </button>
                                   <button
                                     className="px-10"
                                     onClick={() => {
-                                      console.log(curBank);
+                                      if (
+                                        user?.Organizer_Role_Id !== "MU05001"
+                                      ) {
+                                        toast.dismiss();
+                                        toast.error(
+                                          "You do not have permission to edit these details. Please contact your organizer for assistance"
+                                        );
+                                        return;
+                                      }
                                       setIsEditingBank(true);
                                       handleEdit(curBank);
                                       return setShowBankModal(

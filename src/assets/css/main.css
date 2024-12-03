@@ -5193,6 +5193,9 @@ div[data-slider] > input[type="range"]::-ms-tooltip {
     left: 20px;
     right: 20px;
   }
+  .fixed-card {
+    width: 415px !important;
+  }
 }
 
 @media (max-width: 1199px) {
@@ -13992,7 +13995,7 @@ input:-webkit-autofill::first-line {
 .fixed-card {
   position: fixed;
   top: 120px;
-  width: 480px;
+  width: 490px;
   /* height: calc(100% -20%); */
 }
 .other-info-checkbox .MuiSvgIcon-root {

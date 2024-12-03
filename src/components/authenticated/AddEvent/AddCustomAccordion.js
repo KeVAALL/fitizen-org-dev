@@ -228,6 +228,21 @@ const AddCustomAccordion = ({
             const { Ticket_Sale_End_Date } = this.parent;
             return dayjs(value).isSameOrBefore(Ticket_Sale_End_Date);
           }
+        )
+        .test(
+          "is-valid-sale-start-date",
+          "Ticket Sale Start Date must be between today and Event start date",
+          function (value) {
+            const { Event_Start_Date } = this.parent;
+            const currentDate = dayjs().startOf("day");
+            const eventStartDate = dayjs(Event_Start_Date);
+
+            return (
+              value &&
+              dayjs(value).isSameOrAfter(currentDate) &&
+              dayjs(value).isSameOrBefore(eventStartDate)
+            );
+          }
         ),
       Ticket_Sale_Start_Time: Yup.date().required(
         "Ticket sale start time is required"

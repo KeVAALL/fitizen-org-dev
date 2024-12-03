@@ -21,6 +21,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 // React Drag n Drop imports
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
+import GuestGuard from "./utils/route-guard/GuestCuard";
 
 // Layout
 const AuthLayout = lazy(() => import("./layout/AuthHeader/AuthLayout"));
@@ -90,7 +91,11 @@ const theme = createTheme({
 const appLayout = createBrowserRouter([
   {
     path: `/`,
-    element: <AuthLayout />,
+    element: (
+      <GuestGuard>
+        <AuthLayout />
+      </GuestGuard>
+    ),
     children: [
       {
         path: "/",

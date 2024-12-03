@@ -20,6 +20,8 @@ import * as Yup from "yup";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc"; // Import UTC plugin for working with UTC
 import timezone from "dayjs/plugin/timezone";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import toast from "react-hot-toast";
 
 // Project imports
@@ -31,6 +33,8 @@ import { timePlaceholder } from "../../utils/UtilityFunctions";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 function BIBExpo() {
   const { event_id } = useParams();
@@ -52,27 +56,29 @@ function BIBExpo() {
     ],
     Is_BIB_Expo_Available: false,
   });
+  const [Start_Date, setStart_Date] = useState(null);
+  const [End_Date, setEnd_Date] = useState(null);
 
   const convertToExpoDetailsXml = (timesArray) => {
     let xmlString = "<ExpoDetails>\n";
 
     timesArray.forEach((time) => {
       xmlString += "    <ExpoDatesTag>\n";
-      xmlString += `        <ExpoDate>${dayjs(time.dayOne).format(
-        "YYYY-MM-DD"
-      )}</ExpoDate>\n`;
-      xmlString += `        <TimeSolt1starttime>${dayjs(
-        time.expoStartTime1
-      ).format("HH:mm:ss")}</TimeSolt1starttime>\n`;
-      xmlString += `        <TimeSolt1endtime>${dayjs(time.expoEndTime1).format(
-        "HH:mm:ss"
-      )}</TimeSolt1endtime>\n`;
-      xmlString += `        <TimeSolt2starttime>${dayjs(
-        time.expoStartTime2
-      ).format("HH:mm:ss")}</TimeSolt2starttime>\n`;
-      xmlString += `        <TimeSolt2endtime>${dayjs(time.expoEndTime2).format(
-        "HH:mm:ss"
-      )}</TimeSolt2endtime>\n`;
+      xmlString += `        <ExpoDate>${
+        time.dayOne ? dayjs(time.dayOne).format("YYYY-MM-DD") : ""
+      }</ExpoDate>\n`;
+      xmlString += `        <TimeSolt1starttime>${
+        time.expoStartTime1 ? dayjs(time.expoStartTime1).format("HH:mm:ss") : ""
+      }</TimeSolt1starttime>\n`;
+      xmlString += `        <TimeSolt1endtime>${
+        time.expoEndTime1 ? dayjs(time.expoEndTime1).format("HH:mm:ss") : ""
+      }</TimeSolt1endtime>\n`;
+      xmlString += `        <TimeSolt2starttime>${
+        time.expoStartTime2 ? dayjs(time.expoStartTime2).format("HH:mm:ss") : ""
+      }</TimeSolt2starttime>\n`;
+      xmlString += `        <TimeSolt2endtime>${
+        time.expoEndTime2 ? dayjs(time.expoEndTime2).format("HH:mm:ss") : ""
+      }</TimeSolt2endtime>\n`;
       xmlString += "    </ExpoDatesTag>\n";
     });
 
@@ -80,7 +86,8 @@ function BIBExpo() {
     return xmlString;
   };
   const combineDateAndTime = (dateString, timeString) => {
-    if (!dateString || !timeString) return null; // Return null if either value is missing
+    // if (!dateString || !timeString) return null; // Return null if either value is missing
+    if (!dateString || !timeString || timeString === "00:00:00") return null;
 
     const date = dayjs(dateString); // Parse the date
     const [hours, minutes, seconds] = timeString.split(":").map(Number); // Split time into components
@@ -107,7 +114,8 @@ function BIBExpo() {
       if (result) {
         console.log(result?.data?.Result?.Table1);
 
-        // setAllBib(result?.data?.Result?.Table1);
+        setStart_Date(result?.data?.Result?.Table1[0]?.Start_Date);
+        setEnd_Date(result?.data?.Result?.Table1[0]?.End_Date);
         setInitialValues({
           Expo_Venue: result?.data?.Result?.Table1[0]?.BIB_Expo_Venue,
           Expo_Remarks: result?.data?.Result?.Table1[0]?.BIB_Expo_Comments,
@@ -174,7 +182,27 @@ function BIBExpo() {
                         ),
                         times: Yup.array().of(
                           Yup.object().shape({
-                            dayOne: Yup.date().required("Please select a date"),
+                            dayOne: Yup.date()
+                              .required("Please select a date")
+                              .test(
+                                "dayOne-range",
+                                `The date must be between ${dayjs(
+                                  Start_Date
+                                ).format("DD-MM-YYYY")} and ${dayjs(
+                                  End_Date
+                                ).format("DD-MM-YYYY")}`,
+                                (value) => {
+                                  if (!value) return false;
+                                  const start = dayjs(Start_Date);
+                                  const end = dayjs(End_Date);
+                                  const current = dayjs(value);
+                                  // Check if the current date is within the range (inclusive)
+                                  return (
+                                    current.isSameOrAfter(start, "date") &&
+                                    current.isSameOrBefore(end, "date")
+                                  );
+                                }
+                              ),
                             expoStartTime1: Yup.date().nullable(),
                             //   .required(
                             //   "Please enter the Expo Start Time 1"

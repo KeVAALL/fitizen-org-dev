@@ -25,12 +25,14 @@ const GuestGuard = ({ children }) => {
     (user?.Is_Email_Verified && user?.Is_Mobile_Verified) ||
     (user?.Is_Google_Verified && user?.Is_Mobile_Verified);
   console.log(user);
+  console.log(location?.state?.from?.pathname);
 
   useEffect(() => {
     if (isLoggedIn && verifyToken(token) && isVerified) {
       console.log("Here");
-      const redirectPath = location?.state?.from?.pathname || "/";
-      navigate(redirectPath, { replace: true });
+      const redirectPath = location?.state?.from?.pathname || "/sign-in";
+      // navigate(redirectPath, { replace: true });
+      navigate("/dashboard/all-events");
     }
   }, [
     isLoggedIn,

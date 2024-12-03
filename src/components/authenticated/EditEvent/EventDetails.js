@@ -36,6 +36,7 @@ import {
 
 function EventDetails() {
   const { event_id } = useParams();
+  const [newEventName, setNewEventName] = useState("");
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userProfile);
   const [fetchingDetails, setFetchingDetails] = useState(false);
@@ -57,6 +58,7 @@ function EventDetails() {
     City: "",
     Event_Venue: "",
     Is_External_Event: 0,
+    Is_Private_Event: 0,
     External_Event_Url: "",
     Timezone: null,
     Is_Gst: {
@@ -146,6 +148,7 @@ function EventDetails() {
     City: Yup.string().required("City is required"),
     Event_Venue: Yup.string().required("Event Venue is required"),
     Is_External_Event: Yup.number(),
+    Is_Private_Event: Yup.number(),
     External_Event_Url: Yup.string().when("Is_External_Event", {
       is: (value) => value === 1,
       then: () =>
@@ -273,6 +276,10 @@ function EventDetails() {
     XMLData +=
       "<R><FN>External_Event_Url</FN><FV>" +
       values?.External_Event_Url +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
+      "<R><FN>Is_Private_Event</FN><FV>" +
+      values?.Is_Private_Event +
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>Is_Gst</FN><FV>" +
@@ -452,6 +459,7 @@ function EventDetails() {
           Event_Venue: result1?.Event_Venue,
           Is_External_Event: result1?.Is_External_Event,
           External_Event_Url: result1?.External_Event_Url,
+          Is_Private_Event: result1?.Is_Private_Event,
           Timezone: result?.data?.Result?.Table2?.filter(
             (type) => type.value === result1?.TimeZone_Id
           )[0],
@@ -499,6 +507,7 @@ function EventDetails() {
             ? result1?.ConvenienceFee2_Value
             : 0,
         });
+        setNewEventName(result1.Event_Name);
       }
     } catch (err) {
       console.log(err);
@@ -931,7 +940,7 @@ function EventDetails() {
 
                 <div className="col-lg-6 col-md-6"></div>
 
-                <div className="col-lg-6 col-md-6 d-flex items-center">
+                <div className="col-lg-3 col-md-3 d-flex items-center">
                   <div className="d-flex items-center gap-15">
                     <Checkbox
                       disabled={!isEditing}
@@ -949,6 +958,23 @@ function EventDetails() {
                       }}
                     />
                     <label className="text-14 fw-500">External Event</label>
+                  </div>
+                </div>
+
+                <div className="col-lg-3 col-md-3 d-flex items-center">
+                  <div className="d-flex items-center gap-15">
+                    <Checkbox
+                      disabled={!isEditing}
+                      checked={values.Is_Private_Event}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        setFieldValue(
+                          "Is_Private_Event",
+                          Number(e.target.checked)
+                        );
+                      }}
+                    />
+                    <label className="text-14 fw-500">Is Private event?</label>
                   </div>
                 </div>
 
@@ -1430,37 +1456,67 @@ function EventDetails() {
                   </Box>
                 </div>
 
-                {isEditing && (
-                  <div className="col-12 d-flex justify-end">
-                    <div className="row">
-                      <div className="col-auto relative">
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setIsEditing(false);
-                            LoadDetails();
-                          }}
-                          className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                      <div className="col-auto relative">
-                        <button
-                          disabled={submitForm}
-                          type="submit"
-                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                        >
-                          {!submitForm ? (
-                            `Save`
-                          ) : (
-                            <span className="btn-spinner"></span>
-                          )}
-                        </button>
-                      </div>
+                <div className="col-12 d-flex justify-end">
+                  <div className="row">
+                    <div className="col-auto relative">
+                      <button
+                        disabled={submitForm}
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          try {
+                            const baseUrl = window.location.href.includes(
+                              "uatorganizer"
+                            )
+                              ? "https://uat.fitizenindia.com"
+                              : "https://fitizenindia.com";
+
+                            const formattedEventName = newEventName
+                              .split(" ")
+                              .join("-");
+                            const eventUrl = `${baseUrl}/event-details/${formattedEventName}/${event_id}`;
+
+                            await navigator.clipboard.writeText(eventUrl);
+                            toast.success("Link copied to clipboard!");
+                          } catch (error) {
+                            toast.error("Failed to copy link.");
+                          }
+                        }}
+                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary text-12"
+                      >
+                        Copy Link
+                      </button>
                     </div>
+                    {isEditing && (
+                      <>
+                        <div className="col-auto relative">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setIsEditing(false);
+                              LoadDetails();
+                            }}
+                            className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        <div className="col-auto relative">
+                          <button
+                            disabled={submitForm}
+                            type="submit"
+                            className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                          >
+                            {!submitForm ? (
+                              `Save`
+                            ) : (
+                              <span className="btn-spinner"></span>
+                            )}
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </Form>
           )}

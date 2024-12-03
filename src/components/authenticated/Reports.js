@@ -28,9 +28,10 @@ import { RestfulApiService } from "../../config/service";
 import { useSelector } from "react-redux";
 import { downloadExcel, inrCurrency } from "../../utils/UtilityFunctions";
 import Loader from "../../utils/BackdropLoader";
+import dayjs from "dayjs";
 
 const initialValues = {
-  Select_Event: null,
+  Select_Event: { value: "All", label: "All" },
 };
 function Reports() {
   const user = useSelector((state) => state.user.userProfile);
@@ -39,6 +40,32 @@ function Reports() {
   const [getData, setGetData] = useState({});
   const [getEventData, setGetEventData] = useState([]);
   const [storeData, setStoreData] = useState(initialValues);
+  const [selectedTimeline, setSelectedTimeline] = useState({
+    label: "All-time",
+    value: "All-time",
+  });
+  const eventFilter = [
+    {
+      label: "Today",
+      value: "Today",
+    },
+    {
+      label: "1 Year",
+      value: "1 Year",
+    },
+    {
+      label: "6 Months",
+      value: "6 Months",
+    },
+    {
+      label: "3 Months",
+      value: "3 Months",
+    },
+    {
+      label: "All-time",
+      value: "All-time",
+    },
+  ];
 
   const handleGetEvent = useCallback(async () => {
     setLoading(true);
@@ -63,12 +90,25 @@ function Reports() {
         toast.error(Description || "Something went wrong");
         return;
       }
-      setGetEventData(
-        Table1?.map((curItem) => ({
-          label: curItem.Item_Name,
-          value: curItem.Item_Id,
-        }))
-      );
+
+      let newTable = Table1?.map((curItem) => ({
+        label: curItem.Item_Name,
+        value: curItem.Item_Id,
+      }));
+      newTable = [
+        ...newTable,
+        {
+          label: "All",
+          value: "All",
+        },
+      ];
+      // setGetEventData(
+      //   Table1?.map((curItem) => ({
+      //     label: curItem.Item_Name,
+      //     value: curItem.Item_Id,
+      //   }))
+      // );
+      setGetEventData(newTable);
     } catch (err) {
       console.log(err);
     } finally {
@@ -83,15 +123,49 @@ function Reports() {
   const handleGetData = useCallback(async () => {
     setLoading(true);
 
+    let From_Date = "";
+    let To_Date = "";
+
+    const today = dayjs().format("YYYY-MM-DD");
+
+    switch (selectedTimeline.value) {
+      case "Today":
+        From_Date = today;
+        To_Date = today;
+        break;
+      case "1 Year":
+        From_Date = dayjs().subtract(1, "year").format("YYYY-MM-DD");
+        To_Date = today;
+        break;
+      case "6 Months":
+        From_Date = dayjs().subtract(6, "months").format("YYYY-MM-DD");
+        To_Date = today;
+        break;
+      case "3 Months":
+        From_Date = dayjs().subtract(3, "months").format("YYYY-MM-DD");
+        To_Date = today;
+        break;
+      case "All-time":
+        From_Date = dayjs().subtract(3, "years").format("YYYY-MM-DD");
+        To_Date = today;
+        break;
+      default:
+        From_Date = "";
+        To_Date = "";
+    }
+
     const reqdata = {
       Method_Name: "toufiq_report",
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
       Session_Organzier_Id: user?.Organizer_Id,
       Org_Id: user?.Org_Id,
-      Event_Id: storeData?.Select_Event?.value
-        ? storeData?.Select_Event?.value
-        : "",
+      Event_Id:
+        storeData?.Select_Event?.value !== "All"
+          ? storeData?.Select_Event?.value
+          : "",
+      From_Date,
+      To_Date,
     };
 
     try {
@@ -106,6 +180,7 @@ function Reports() {
       setLoading(false);
     }
   }, [
+    selectedTimeline,
     storeData?.Select_Event,
     user?.Org_Id,
     user?.Organizer_Id,
@@ -135,7 +210,6 @@ function Reports() {
     // Call the utility function to download the Excel file
     downloadExcel(tableData, "Page Views Data", "Page_Views_Data");
   };
-
   const handleNumberOfTicketSold = () => {
     const tableData = getData?.Table4?.map((item) => ({
       Item: item?.Ticket_Name ?? "",
@@ -145,6 +219,7 @@ function Reports() {
     // Call the utility function to download the Excel file
     downloadExcel(tableData, "Page Views Data", "Page_Views_Data");
   };
+
   return (
     <div className="dashboard__main">
       <div className="dashboard__content pt-20">
@@ -176,6 +251,19 @@ function Reports() {
                               ...prevState,
                               Select_Event: selectedOption,
                             }));
+                          }}
+                        />
+                      </div>
+
+                      <div className="col-xl-2 col-md-6">
+                        <Select
+                          isSearchable={false}
+                          styles={customRoundedStyles}
+                          options={eventFilter}
+                          value={selectedTimeline}
+                          onChange={async (e) => {
+                            setSelectedTimeline(e);
+                            // handleDateFilter(e.value);
                           }}
                         />
                       </div>
@@ -311,6 +399,7 @@ function Reports() {
                             {/* Table Header */}
                             <TableHead>
                               <TableRow>
+                                <StyledTableCell>Event Name</StyledTableCell>
                                 <StyledTableCell>Item</StyledTableCell>
                                 <StyledTableCell>Quantity</StyledTableCell>
                                 <StyledTableCell>Amount (INR)</StyledTableCell>
@@ -321,6 +410,9 @@ function Reports() {
                                 getData?.Table2?.map((curData, index) => {
                                   return (
                                     <TableRow key={index}>
+                                      <StyledTableCell>
+                                        {curData?.Event_Name ?? ""}
+                                      </StyledTableCell>
                                       <StyledTableCell>
                                         {curData?.Item ?? ""}
                                       </StyledTableCell>
@@ -433,6 +525,7 @@ function Reports() {
                             {/* Table Header */}
                             <TableHead>
                               <TableRow>
+                                <StyledTableCell>Event Name</StyledTableCell>
                                 <StyledTableCell>Item</StyledTableCell>
                                 <StyledTableCell>Quantity</StyledTableCell>
                                 <StyledTableCell>Amount (INR)</StyledTableCell>
@@ -443,6 +536,9 @@ function Reports() {
                                 getData?.Table3?.map((curData) => {
                                   return (
                                     <TableRow>
+                                      <StyledTableCell>
+                                        {curData?.Event_Name ?? ""}
+                                      </StyledTableCell>
                                       <StyledTableCell>
                                         {curData?.Ticket_Name ?? ""}
                                       </StyledTableCell>
@@ -464,13 +560,10 @@ function Reports() {
                         </Box>
 
                         <div className="row">
-                          {console.log(
-                            "asfdasfas",
-                            getData?.Table3?.map((curData) => curData)
-                          )}
-                          <div className="col-xl-6 col-md-6">
-                            <Stack className="py-15 px-15 border-light rounded-8">
+                          <div className="col-xl-12 col-md-12">
+                            <Stack className="py-15 px-15 border-light rounded-8 w-full">
                               <LineChart
+                                className="w-full"
                                 xAxis={[
                                   {
                                     scaleType: "point",
@@ -517,7 +610,7 @@ function Reports() {
                             </Stack>
                           </div>
 
-                          <div className="col-xl-6 col-md-6">
+                          <div className="col-xl-12 col-md-12 mt-20">
                             <Stack
                               direction="column"
                               alignItems="center"
@@ -527,12 +620,7 @@ function Reports() {
                               <div className="text-16 lh-16 fw-600 mt-5">
                                 Breakup of Tickets Sold
                               </div>
-                              {console.log(
-                                "Last two data items:",
-                                getData?.Table3?.slice(-2)?.map(
-                                  (curData) => curData
-                                )
-                              )}
+
                               <Stack direction="column" alignItems="center">
                                 <PieChart
                                   className="pie-chart-report w-200"
@@ -542,8 +630,8 @@ function Reports() {
                                       data: getData?.Table3?.map((g, id) => {
                                         return {
                                           id: id,
-                                          value: 40,
-                                          label: "10K",
+                                          value: g?.Quantity,
+                                          label: g?.Ticket_Name,
                                         };
                                       }),
                                       innerRadius: 60,
@@ -556,7 +644,11 @@ function Reports() {
                                   slotProps={{ legend: { hidden: true } }}
                                 />
 
-                                <Stack direction="row" spacing={4}>
+                                <div
+                                  className="row y-gap-10 mt-20"
+                                  // direction="row"
+                                  // spacing={2}
+                                >
                                   {getData?.Table3?.map((curData, index) => {
                                     // const randomColor = getRandomColor(); // Get random color for each category
                                     const ageColors = [
@@ -568,45 +660,73 @@ function Reports() {
                                     ];
 
                                     return (
-                                      <div className="boxes" key={index}>
-                                        <div
-                                          // className={randomColor}
-                                          className="color-box"
-                                          style={{ backgroundColor: ageColors }}
-                                        />
-
-                                        <Stack spacing={0.5}>
-                                          <p
-                                            className="text-12"
+                                      <div className="col-3">
+                                        <div className="boxes" key={index}>
+                                          <div
+                                            // className={randomColor}
+                                            className="color-box"
                                             style={{
-                                              whiteSpace: "nowrap",
-                                              overflow: "hidden",
-                                              textOverflow: "ellipsis",
-                                              width: "50px",
-                                              display: "inline-block",
-                                              position: "relative",
+                                              backgroundColor: ageColors,
                                             }}
-                                            title={curData?.Ticket_Name} // Tooltip effect on hover
-                                          >
-                                            {curData?.Ticket_Name?.length > 5
-                                              ? `${curData?.Ticket_Name.slice(
-                                                  0,
-                                                  curData?.Ticket_Name[4] ===
-                                                    " "
-                                                    ? 4
-                                                    : 5
-                                                )}...`
-                                              : curData?.Ticket_Name ?? ""}
-                                          </p>
+                                          />
 
-                                          <p className="text-12 fw-600">
-                                            {curData?.Quantity ?? 0}
-                                          </p>
-                                        </Stack>
+                                          <Stack spacing={0.2}>
+                                            <p
+                                              className="text-12"
+                                              style={{
+                                                // whiteSpace: "nowrap",
+                                                // overflow: "hidden",
+                                                // textOverflow: "ellipsis",
+                                                // width: "50px",
+                                                display: "inline-block",
+                                                position: "relative",
+                                              }}
+                                              title={curData?.Event_Name} // Tooltip effect on hover
+                                            >
+                                              {curData?.Event_Name}
+                                              {/* {curData?.Event_Name?.length > 5
+                                                ? `${curData?.Event_Name.slice(
+                                                    0,
+                                                    curData?.Event_Name[4] ===
+                                                      " "
+                                                      ? 4
+                                                      : 5
+                                                  )}...`
+                                                : curData?.Event_Name ?? ""} */}
+                                            </p>
+                                            <p
+                                              className="text-12"
+                                              style={{
+                                                // whiteSpace: "nowrap",
+                                                // overflow: "hidden",
+                                                // textOverflow: "ellipsis",
+                                                // width: "50px",
+                                                display: "inline-block",
+                                                position: "relative",
+                                              }}
+                                              title={curData?.Ticket_Name} // Tooltip effect on hover
+                                            >
+                                              {curData?.Ticket_Name}
+                                              {/* {curData?.Ticket_Name?.length > 5
+                                                ? `${curData?.Ticket_Name.slice(
+                                                    0,
+                                                    curData?.Ticket_Name[4] ===
+                                                      " "
+                                                      ? 4
+                                                      : 5
+                                                  )}...`
+                                                : curData?.Ticket_Name ?? ""} */}
+                                            </p>
+
+                                            <p className="text-12 fw-600">
+                                              {curData?.Quantity ?? 0}
+                                            </p>
+                                          </Stack>
+                                        </div>
                                       </div>
                                     );
                                   })}
-                                </Stack>
+                                </div>
                               </Stack>
                             </Stack>
                           </div>

@@ -311,11 +311,11 @@ function AllEvents() {
   };
   const shareContent = async (eventId, displayName) => {
     const encryptedParam = encryptData(eventId);
-    // const url1 = window.location.href;
-    // const url = `${url1}event-details/${removeSpace(
-    //   displayName
-    // )}/${encryptedParam}`;
-    const url = `http://uatfitizenorg.we3.in/event/dashboard/${encryptedParam}`;
+
+    const baseUrl = window.location.href.includes("uatorganizer")
+      ? "https://uatorganizer.fitizenindia.com"
+      : "https://organizer.fitizenindia.com";
+    const url = `${baseUrl}/event/dashboard/${encryptedParam}`;
     const message = `${displayName}\n${url}`;
     if (navigator.share) {
       try {
@@ -346,7 +346,6 @@ function AllEvents() {
               <div className="col-lg-2">
                 <div className="py-10">
                   <Select
-                    // menuIsOpen={true}
                     isSearchable={false}
                     styles={customRoundedStyles}
                     options={eventFilter}
@@ -643,7 +642,7 @@ function AllEvents() {
                     <div className="col-xl-4 col-lg-4 col-sm-6">
                       <div className="border-light rounded-16 px-15 py-15 -hover-shadow h-full">
                         <div className="eventsCard -type-1">
-                          <div className="eventsCard__image">
+                          <div className="eventsCard__image mb-10">
                             <div className="cardImage ratio ratio-2:1">
                               <div className="cardImage__content">
                                 <img
@@ -717,14 +716,21 @@ function AllEvents() {
                               </div>
                             </div>
                           </div>
-                          <div className="eventsCard__content mt-10">
-                            <a href={`/event/dashboard/${encryptedParam}`}>
+                          <a
+                            className="eventsCard__content mt-10"
+                            href={`/event/dashboard/${encryptedParam}`}
+                            // onClick={(e) => {
+                            //   // e.preventDefault();
+                            //   // navigate(`/event/dashboard/${encryptedParam}`);
+                            // }}
+                          >
+                            <div>
                               <h4 className="eventsCard__title text-dark-1 text-15 lh-13 fw-600">
                                 <span className="trim-2">
                                   {ev?.Display_Name}
                                 </span>
                               </h4>
-                            </a>
+                            </div>
                             <div className="mt-10">
                               <span className="text-light-1 lh-14 text-13 fw-500 mt-5">
                                 <i className="fas fa-map-marker-alt text-primary text-12 fw-600"></i>{" "}
@@ -803,7 +809,7 @@ function AllEvents() {
                                 </div>
                               </div>
                             </div>
-                          </div>
+                          </a>
                         </div>
                       </div>
                     </div>

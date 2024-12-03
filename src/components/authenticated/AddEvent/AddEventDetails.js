@@ -32,11 +32,13 @@ import {
   EventDetailTableCell,
   StyledTableCell,
 } from "../../../utils/ReactTable";
+import { decryptData, encryptData } from "../../../utils/DataEncryption";
 
 function AddEventDetails({ handleStep, index }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userProfile);
   const newEventId = useSelector((state) => state.newEvent.currentEventId);
+  const [newEventName, setNewEventName] = useState("");
   const [fetchingDetails, setFetchingDetails] = useState(false);
   const [eventTypeDropdown, setEventTypeDropdown] = useState([]);
   const [takeawayDropdown, setTakeawayDropdown] = useState([]);
@@ -58,6 +60,7 @@ function AddEventDetails({ handleStep, index }) {
     City: "",
     Event_Venue: "",
     Is_External_Event: 0,
+    Is_Private_Event: 0,
     External_Event_Url: "",
     Timezone: null,
     Is_Gst: {
@@ -132,6 +135,7 @@ function AddEventDetails({ handleStep, index }) {
     City: Yup.string().required("City is required"),
     Event_Venue: Yup.string().required("Event Venue is required"),
     Is_External_Event: Yup.number(),
+    Is_Private_Event: Yup.number(),
     External_Event_Url: Yup.string().when("Is_External_Event", {
       is: (value) => value === 1,
       then: () =>
@@ -261,6 +265,10 @@ function AddEventDetails({ handleStep, index }) {
       values?.External_Event_Url +
       "</FV><FT>Text</FT></R>";
     XMLData +=
+      "<R><FN>Is_Private_Event</FN><FV>" +
+      values?.Is_Private_Event +
+      "</FV><FT>Text</FT></R>";
+    XMLData +=
       "<R><FN>Is_Gst</FN><FV>" +
       values?.Is_Gst.value +
       "</FV><FT>Text</FT></R>";
@@ -388,7 +396,8 @@ function AddEventDetails({ handleStep, index }) {
           currentEventId: result?.data?.Result?.Table1[0]?.Result_Extra_Key,
         };
         dispatch(setCurrentEventId(apiResponse));
-        handleStep(index);
+        setNewEventName(values.Event_Name);
+        // handleStep(index);
       }
     } catch (err) {
       toast.error(err?.Result?.Table1[0]?.Result_Description);
@@ -542,6 +551,7 @@ function AddEventDetails({ handleStep, index }) {
           Event_Venue: result1?.Event_Venue,
           Is_External_Event: result1?.Is_External_Event,
           External_Event_Url: result1?.External_Event_Url,
+          Is_Private_Event: result1?.Is_Private_Event,
           Timezone: timezoneValue,
           Is_Gst: chargesDropdown?.filter(
             (c) => Number(c.value) === result1?.Is_Gst
@@ -587,6 +597,7 @@ function AddEventDetails({ handleStep, index }) {
             ? result1?.ConvenienceFee2_Value
             : 0,
         });
+        setNewEventName(result1.Event_Name);
       }
     } catch (err) {
       console.log(err);
@@ -1025,7 +1036,7 @@ function AddEventDetails({ handleStep, index }) {
 
                 <div className="col-lg-6 col-md-6"></div>
 
-                <div className="col-lg-6 col-md-6 d-flex items-center">
+                <div className="col-lg-3 col-md-3 d-flex items-center">
                   <div className="d-flex items-center gap-15">
                     <Checkbox
                       checked={values.Is_External_Event}
@@ -1042,6 +1053,22 @@ function AddEventDetails({ handleStep, index }) {
                       }}
                     />
                     <label className="text-14 fw-500">External Event</label>
+                  </div>
+                </div>
+
+                <div className="col-lg-3 col-md-3 d-flex items-center">
+                  <div className="d-flex items-center gap-15">
+                    <Checkbox
+                      checked={values.Is_Private_Event}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        setFieldValue(
+                          "Is_Private_Event",
+                          Number(e.target.checked)
+                        );
+                      }}
+                    />
+                    <label className="text-14 fw-500">Is Private event?</label>
                   </div>
                 </div>
 
@@ -1517,6 +1544,40 @@ function AddEventDetails({ handleStep, index }) {
 
                 <div className="col-12 d-flex justify-end">
                   <div className="row">
+                    {newEventId ? (
+                      <div className="col-auto relative">
+                        <button
+                          disabled={submitForm}
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            try {
+                              const baseUrl = window.location.href.includes(
+                                "uatorganizer"
+                              )
+                                ? "https://uat.fitizenindia.com"
+                                : "https://fitizenindia.com";
+
+                              const formattedEventName = newEventName
+                                .split(" ")
+                                .join("-");
+                              const eventUrl = `${baseUrl}/event-details/${formattedEventName}/${encryptData(
+                                newEventId
+                              )}`;
+
+                              await navigator.clipboard.writeText(eventUrl);
+                              toast.success("Link copied to clipboard!");
+                            } catch (error) {
+                              toast.error("Failed to copy link.");
+                            }
+                          }}
+                          className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary text-12"
+                        >
+                          Copy Event Link
+                        </button>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
                     <div className="col-auto relative">
                       <button
                         disabled={submitForm}
@@ -1524,12 +1585,27 @@ function AddEventDetails({ handleStep, index }) {
                         className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
                       >
                         {!submitForm ? (
-                          `Save & Next`
+                          `Save`
                         ) : (
                           <span className="btn-spinner"></span>
                         )}
                       </button>
                     </div>
+                    {newEventId ? (
+                      <div className="col-auto relative">
+                        <button
+                          disabled={submitForm}
+                          onClick={(e) => {
+                            handleStep(index);
+                          }}
+                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 </div>
               </div>

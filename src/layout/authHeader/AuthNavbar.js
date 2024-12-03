@@ -1,8 +1,11 @@
 import { Avatar } from "@mui/material";
 import React from "react";
 import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const user = useSelector((state) => state.user.userProfile);
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   const isVerified =
@@ -23,10 +26,10 @@ function Navbar() {
         <div className="row justify-between items-center">
           <div className="col-auto">
             <div className="d-flex items-center">
-              <a href="*" className="header-logo">
+              <div className="header-logo">
                 <img src="img/general/logo-dark.png" alt="logo icon" />
                 <img src="img/general/logo-dark.png" alt="logo icon" />
-              </a>
+              </div>
             </div>
           </div>
           <div className="col-auto"></div>
@@ -44,9 +47,14 @@ function Navbar() {
                 </div>
               </div>
               {isLoggedIn && isVerified ? (
-                <a
+                <button
                   className="d-flex items-center gap-10"
-                  href="/dashboard/profile"
+                  // href="/dashboard/profile"
+                  onClick={() => {
+                    navigate("/dashboard/profile", {
+                      state: { from: location },
+                    });
+                  }}
                 >
                   <div className="ml-15">
                     <Avatar
@@ -65,7 +73,7 @@ function Navbar() {
                   <div className="text-15 text-black fw-500">
                     Hi, {user?.User_Name?.split(" ")[0]}
                   </div>
-                </a>
+                </button>
               ) : (
                 <></>
               )}

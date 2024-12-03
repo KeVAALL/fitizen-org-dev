@@ -12,6 +12,7 @@ import "react-quill/dist/quill.snow.css";
 // Project imports
 import { RestfulApiService } from "../../../config/service";
 import Loader from "../../../utils/BackdropLoader";
+import QuillEditor from "../../QuillEditor";
 
 const initialFormValues = {
   Event_Description: "",
@@ -141,13 +142,18 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                     <label className="text-13 fw-500">Description</label>
                     <Field name="Event_Description">
                       {({ field, form }) => (
-                        <ReactQuill
-                          theme="snow"
+                        // <ReactQuill
+                        //   theme="snow"
+                        //   value={field.value}
+                        //   onChange={(content) =>
+                        //     setFieldValue("Event_Description", content)
+                        //   }
+                        //   placeholder="Add more about event"
+                        // />
+                        <QuillEditor
+                          name="Event_Description"
                           value={field.value}
-                          onChange={(content) =>
-                            setFieldValue("Event_Description", content)
-                          }
-                          placeholder="Add more about event"
+                          setFieldValue={form.setFieldValue}
                         />
                       )}
                     </Field>
@@ -166,13 +172,18 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                     </label>
                     <Field name="Refund_Cancellation">
                       {({ field, form }) => (
-                        <ReactQuill
-                          theme="snow"
+                        // <ReactQuill
+                        //   theme="snow"
+                        //   value={field.value}
+                        //   onChange={(content) =>
+                        //     setFieldValue("Refund_Cancellation", content)
+                        //   }
+                        //   placeholder="Add Refund and Cancellation Policy"
+                        // />
+                        <QuillEditor
+                          name="Refund_Cancellation"
                           value={field.value}
-                          onChange={(content) =>
-                            setFieldValue("Refund_Cancellation", content)
-                          }
-                          placeholder="Add Refund and Cancellation Policy"
+                          setFieldValue={form.setFieldValue}
                         />
                       )}
                     </Field>
@@ -191,13 +202,18 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                     </label>
                     <Field name="Rules_Regulations">
                       {({ field, form }) => (
-                        <ReactQuill
-                          theme="snow"
+                        // <ReactQuill
+                        //   theme="snow"
+                        //   value={field.value}
+                        //   onChange={(content) =>
+                        //     setFieldValue("Rules_Regulations", content)
+                        //   }
+                        //   placeholder="Add Rules and Regulations"
+                        // />
+                        <QuillEditor
+                          name="Rules_Regulations"
                           value={field.value}
-                          onChange={(content) =>
-                            setFieldValue("Rules_Regulations", content)
-                          }
-                          placeholder="Add Rules and Regulations"
+                          setFieldValue={form.setFieldValue}
                         />
                       )}
                     </Field>
@@ -217,7 +233,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                         onClick={() => {
                           handleStep(prevIndex);
                         }}
-                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
+                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary text-12 d-flex gap-25 load-button"
                       >
                         Back
                       </button>

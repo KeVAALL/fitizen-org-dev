@@ -215,7 +215,6 @@ const CustomAccordion = ({
         then: () => Yup.string().required("Event Prize is required"),
         otherwise: () => Yup.string().notRequired().nullable(),
       }),
-
       Is_Paid_Event: Yup.string().required("Please select Paid or Free"),
       Event_Price: Yup.number().when("Is_Paid_Event", {
         is: (value) => value === "Paid",
@@ -233,6 +232,21 @@ const CustomAccordion = ({
           function (value) {
             const { Ticket_Sale_End_Date } = this.parent;
             return dayjs(value).isSameOrBefore(Ticket_Sale_End_Date);
+          }
+        )
+        .test(
+          "is-valid-sale-start-date",
+          "Ticket Sale Start Date must be between today and Event start date",
+          function (value) {
+            const { Event_Start_Date } = this.parent;
+            const currentDate = dayjs().startOf("day");
+            const eventStartDate = dayjs(Event_Start_Date);
+
+            return (
+              value &&
+              dayjs(value).isSameOrAfter(currentDate) &&
+              dayjs(value).isSameOrBefore(eventStartDate)
+            );
           }
         ),
       Ticket_Sale_Start_Time: Yup.date().required(
@@ -365,97 +379,68 @@ const CustomAccordion = ({
 
     return XMLData;
   }
-  function convertPrizesToXML(eventPrizes) {
-    let prizeXMLData = "";
 
-    eventPrizes.forEach((prize) => {
-      const {
-        EventPrizeEntry_Id,
-        Gender: { value: Gender },
-        Min_Age,
-        Max_Age,
-        First_Prize,
-        Second_Prize,
-        Third_Prize,
-      } = prize;
-
-      prizeXMLData += "<R>";
-      prizeXMLData += `<EID>${
-        EventPrizeEntry_Id ? EventPrizeEntry_Id : "New"
-      }</EID>`;
-      prizeXMLData += `<G>${Gender}</G>`;
-      prizeXMLData += `<MIN>${Min_Age}</MIN>`;
-      prizeXMLData += `<MAX>${Max_Age}</MAX>`;
-      prizeXMLData += `<FP>${First_Prize}</FP>`;
-      prizeXMLData += `<SP>${Second_Prize}</SP>`;
-      prizeXMLData += `<TP>${Third_Prize}</TP>`;
-      prizeXMLData += "</R>";
-    });
-
-    return `<D>${prizeXMLData}</D>`;
-  }
   const submitCategoryForm = async (values) => {
     console.log(values);
     console.log(convertToXML(values));
-    const reqdata = {
-      Method_Name: values.isNew ? "Create" : "Update",
-      Session_User_Id: user?.User_Id,
-      Session_User_Name: user?.User_Display_Name,
-      Session_Organzier_Id: user?.Organizer_Id,
-      Org_Id: user?.Org_Id,
-      Event_Id: decryptData(event_id),
-      EventCategoryEntry_Id: values?.EventCategoryEntry_Id
-        ? values?.EventCategoryEntry_Id
-        : "",
-      EventCategory_Id: values?.EventCategory_Id.value,
-      EventCategory_Name: values?.EventCategory_Name,
-      ImagePath: values?.ImagePath,
-      ImageName: values?.Image_Name,
-      XMLData: convertToXML(values),
-      PrizeXMLData: values.Event_Prize,
-      // PrizeXMLData:
-      //   values.Event_Prize.length > 0
-      //     ? convertPrizesToXML(values.Event_Prize)
-      //     : "",
-    };
+    // const reqdata = {
+    //   Method_Name: values.isNew ? "Create" : "Update",
+    //   Session_User_Id: user?.User_Id,
+    //   Session_User_Name: user?.User_Display_Name,
+    //   Session_Organzier_Id: user?.Organizer_Id,
+    //   Org_Id: user?.Org_Id,
+    //   Event_Id: decryptData(event_id),
+    //   EventCategoryEntry_Id: values?.EventCategoryEntry_Id
+    //     ? values?.EventCategoryEntry_Id
+    //     : "",
+    //   EventCategory_Id: values?.EventCategory_Id.value,
+    //   EventCategory_Name: values?.EventCategory_Name,
+    //   ImagePath: values?.ImagePath,
+    //   ImageName: values?.Image_Name,
+    //   XMLData: convertToXML(values),
+    //   PrizeXMLData: values.Event_Prize,
+    //   // PrizeXMLData:
+    //   //   values.Event_Prize.length > 0
+    //   //     ? convertPrizesToXML(values.Event_Prize)
+    //   //     : "",
+    // };
 
-    try {
-      setSubmitForm(true);
+    // try {
+    //   setSubmitForm(true);
 
-      const result = await RestfulApiService(
-        reqdata,
-        "organizer/addupdatecategory"
-      );
-      if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
-        toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
-        return;
-      }
-      if (result) {
-        toast.dismiss();
-        toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
-        console.log(values.isNew);
-        // if (values.isNew) {
-        //   handleNewItemSubmit(id);
-        // }
-        setAccordionOpen(false);
-        setIsOneAccordionOpen("");
-        LoadCategory();
-        // setEventCategoryName(
-        //   `${values.EventCategory_Id.value === "C007003" ? values.Race_Distance : values.EventCategory_Id.label} ${
-        //     values.Race_Distance_Unit?.value || values.Race_Distance_Unit
-        //   } ${values.Timed_Event?.value} ${values.EventCategory_Name}`
-        // );
-        // setAccordionOpen(false);
-        // if (values.isNew) {
-        //   setAccordionOpen(false)
-        // }
-        // setIsOneAccordionOpen("");
-      }
-    } catch (err) {
-      toast.error(err?.Result?.Table1[0]?.Result_Description);
-    } finally {
-      setSubmitForm(false);
-    }
+    //   const result = await RestfulApiService(
+    //     reqdata,
+    //     "organizer/addupdatecategory"
+    //   );
+    //   if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+    //     toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
+    //     return;
+    //   }
+    //   if (result) {
+    //     toast.dismiss();
+    //     toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+    //     console.log(values.isNew);
+    //     // if (values.isNew) {
+    //     //   handleNewItemSubmit(id);
+    //     // }
+    //     setAccordionOpen(false);
+    //     setIsOneAccordionOpen("");
+    //     LoadCategory();
+    //     // setEventCategoryName(
+    //     //   `${values.EventCategory_Id.value === "C007003" ? values.Race_Distance : values.EventCategory_Id.label} ${
+    //     //     values.Race_Distance_Unit?.value || values.Race_Distance_Unit
+    //     //   } ${values.Timed_Event?.value} ${values.EventCategory_Name}`
+    //     // );
+    //     // setAccordionOpen(false);
+    //     // if (values.isNew) {
+    //     //   setAccordionOpen(false)
+    //     // }
+    //   }
+    // } catch (err) {
+    //   toast.error(err?.Result?.Table1[0]?.Result_Description);
+    // } finally {
+    //   setSubmitForm(false);
+    // }
   };
   const handleEditClick = async (event, eventCategoryId) => {
     event.stopPropagation(); // Prevent accordion from toggling

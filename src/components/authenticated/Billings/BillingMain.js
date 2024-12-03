@@ -142,6 +142,13 @@ function BillingMain() {
                         <div className="col-lg-2">
                           <button
                             onClick={(e) => {
+                              if (user?.Organizer_Role_Id !== "MU05001") {
+                                toast.dismiss();
+                                toast.error(
+                                  "You do not have permission to edit these details. Please contact your organizer for assistance"
+                                );
+                                return;
+                              }
                               e.preventDefault();
                               setShowPayout(true);
                             }}

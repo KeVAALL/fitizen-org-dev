@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 
 // Asset imports
 import UploadIcon from "../../../assets/img/icons/upload.png";
@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import toast from "react-hot-toast";
+import Cropper from "react-cropper";
+import "cropperjs/dist/cropper.css";
 
 // Utility imports
 import Loader from "../../../utils/BackdropLoader";
@@ -45,6 +47,11 @@ function Personal({
   const [addingUserDetails, setAddingUserDetails] = useState(false);
   const [editingUserDetails, setEditingUserDetails] = useState(false);
   const [eventDropdown, setEventDropdown] = useState([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [openCropper, setOpenCropper] = useState(false);
+  const [image, setImage] = useState(null);
+  const [imageName, setImageName] = useState(null);
+  const cropperRef = createRef();
   const userRoleDropdown = [
     {
       label: "Organizer Admin",
@@ -120,7 +127,8 @@ function Personal({
     Email_Id: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
-    Logo_Path: Yup.string().required("Profile image is required"),
+    Logo_Path: Yup.string().nullable(),
+    // .required("Profile image is required"),
     PAN_No: Yup.string()
       .matches(/^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/, "Invalid PAN format")
       .required("Pan Number is required"),
@@ -241,8 +249,11 @@ function Personal({
       );
       if (result) {
         console.log(result);
-        const formResult = result?.data?.Result?.Table1;
-        setAllUserDetails(formResult);
+        // const formResult = result?.data?.Result?.Table1;
+        const newTable = result?.data?.Result?.Table1?.filter(
+          (org) => org?.User_Id !== user.User_Id
+        );
+        setAllUserDetails(newTable);
       }
     } catch (err) {
       console.log(err);
@@ -272,6 +283,103 @@ function Personal({
     } finally {
     }
   }
+  const handleFileChange = async (event) => {
+    if (user?.Organizer_Role_Id !== "MU05001") {
+      return;
+    }
+    const file = event.currentTarget.files[0];
+
+    // Check if the file is an image
+    if (file && !file.type.startsWith("image/")) {
+      toast.error("Please upload an image.");
+      event.target.value = ""; // Reset the input value
+      return;
+    }
+    // Check if the file size is above 2MB (2 * 1024 * 1024 bytes)
+    const maxSize = 2 * 1024 * 1024;
+    if (file && file.size > maxSize) {
+      toast.error("File size should not exceed 2MB.");
+      event.target.value = ""; // Reset the input value
+      return;
+    }
+
+    if (file instanceof Blob) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageName(file.name);
+        setImage(reader.result);
+        setOpenCropper(true); // Open the modal
+      };
+      reader.readAsDataURL(file);
+    } else {
+      return;
+    }
+  };
+  const zoomIn = () => {
+    if (cropperRef.current) {
+      cropperRef.current.cropper.zoom(0.1); // Zoom in by 0.1
+    }
+  };
+  const zoomOut = () => {
+    if (cropperRef.current) {
+      cropperRef.current.cropper.zoom(-0.1); // Zoom out by 0.1
+    }
+  };
+  const getCropData = async (setFieldValue, setUploadingImage) => {
+    if (typeof cropperRef.current?.cropper !== "undefined") {
+      const croppedImage = cropperRef.current?.cropper
+        .getCroppedCanvas()
+        .toDataURL();
+
+      // Convert base64 to file
+      const blob = await (await fetch(croppedImage)).blob();
+      const croppedFile = new File([blob], imageName, {
+        type: "image/png",
+      });
+
+      const reqdata = new FormData();
+      reqdata.append("ModuleName", "OrganizationProfile");
+      reqdata.append("File", croppedFile);
+
+      // Start uploading
+      setUploadingImage(true);
+
+      try {
+        await toast.promise(
+          RestfulApiService(reqdata, "master/uploadfile"),
+          {
+            loading: "Uploading Image...",
+            success: (result) => {
+              if (result) {
+                // const formValues = {
+                //   Image_Path: result?.data?.Description,
+                //   Image_Name: result?.data?.Result,
+                // };
+                setFieldValue("Logo_Path", result?.data?.Description);
+              }
+              return "Image uploaded successfully!";
+            },
+            error: (err) => {
+              const errorMessage =
+                err?.Result?.Table1[0]?.Result_Description || "Upload failed";
+              return errorMessage;
+            },
+          },
+          {
+            success: {
+              duration: 5000,
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Upload failed:", error);
+      } finally {
+        // End uploading
+        setUploadingImage(false);
+        setOpenCropper(false); // Close the modal
+      }
+    }
+  };
 
   useEffect(() => {
     LoadProfile();
@@ -302,6 +410,103 @@ function Personal({
             >
               {({ values, setFieldValue }) => (
                 <Form>
+                  <Modal open={openCropper} onClose={() => {}}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: "50%",
+                        top: "20%",
+                        width: "650px",
+                        maxWidth: "100%",
+                        height: "auto",
+                        transform: "translateX(-50%)",
+                        padding: "20px",
+                        backgroundColor: "white",
+                      }}
+                    >
+                      <div className="d-flex flex-column items-end mb-10">
+                        <button
+                          className="pointer"
+                          onClick={() => {
+                            setOpenCropper(false);
+                          }}
+                        >
+                          <i className="far fa-times-circle text-primary text-25"></i>
+                        </button>
+                      </div>
+                      <div
+                        style={{
+                          position: "relative",
+                          height: "300px",
+                        }}
+                      >
+                        <Cropper
+                          style={{
+                            maxWidth: "1000px", // Set maximum width to 1000px
+                            width: "100%",
+                            height: "300px", // Set a fixed height for the cropper
+                            objectFit: "contain", // Ensures the image fits within the cropper
+                          }}
+                          ref={cropperRef}
+                          zoomTo={0.5}
+                          // initialAspectRatio={16 / 9} // Set the initial aspect ratio to 16:9
+                          // aspectRatio={16 / 9} // Maintain a landscape aspect ratio of 16:9
+                          // initialAspectRatio={1 / 1} // Set the initial aspect ratio to 16:9
+                          aspectRatio={1 / 1} // Maintain a landscape aspect ratio of 16:9
+                          minCropBoxWidth={400} // Set to a reasonable width for landscape images
+                          minCropBoxHeight={200} // Set to a reasonable height
+                          // cropBoxResizable={false}
+                          preview=".img-preview"
+                          src={image}
+                          viewMode={1}
+                          background={false}
+                          responsive={true}
+                          autoCropArea={1}
+                          checkOrientation={false}
+                          guides={true}
+                        />
+
+                        {/* Zoom buttons positioned at the top right corner */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "10px",
+                            right: "10px",
+                          }}
+                        >
+                          <div className="d-flex gap-10">
+                            <button
+                              onClick={zoomIn}
+                              className="button h-30 w-30 px-5 text-black bg-white -grey-1 rounded-8"
+                            >
+                              <i className="fas fa-search-plus text-primary text-14"></i>
+                            </button>
+                            <button
+                              onClick={zoomOut}
+                              className="button h-30 w-30 px-5 text-black bg-white -grey-1 rounded-8"
+                            >
+                              <i className="fas fa-search-minus text-primary text-14"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="d-flex flex-column items-end mb-10">
+                        <button
+                          disabled={uploadingImage}
+                          onClick={async (e) => {
+                            getCropData(setFieldValue, setUploadingImage);
+                          }}
+                          type="submit"
+                          className="button h-40 px-30 text-white bg-primary -grey-1 rounded-16 load-button relative w-200 mt-20"
+                        >
+                          {!uploadingImage && "Crop & Upload"}
+                          {uploadingImage && (
+                            <span className="btn-spinner"></span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </Modal>
                   <div className="row y-gap-30 pt-20">
                     <div className="col-lg-8">
                       <div className="row justify-between pt-20">
@@ -312,6 +517,7 @@ function Personal({
                             </label>
                             <div className="form-control">
                               <Field
+                                disabled={user?.Organizer_Role_Id !== "MU05001"}
                                 type="text"
                                 name="Organizer_Name"
                                 className="form-control"
@@ -341,26 +547,7 @@ function Personal({
                             />
                           </div>
                         </div>
-                        {/* <div className="col-lg-6">
-                      <div className="single-field py-10 y-gap-10">
-                        <label className="text-13 fw-500">
-                          Name of Organization <sup className="asc">*</sup>
-                        </label>
-                        <div className="form-control">
-                          <Field
-                            type="text"
-                            name="organization"
-                            className="form-control"
-                            placeholder="Full name"
-                          />
-                        </div>
-                        <ErrorMessage
-                          name="organization"
-                          component="div"
-                          className="text-error-2 text-13"
-                        />
-                      </div>
-                    </div> */}
+
                         <div className="col-lg-6">
                           <div className="single-field py-10 y-gap-10">
                             <label className="text-13 fw-500">
@@ -368,6 +555,7 @@ function Personal({
                             </label>
                             <div className="form-control">
                               <Field
+                                disabled={user?.Organizer_Role_Id !== "MU05001"}
                                 type="tel"
                                 name="Mobile_Number"
                                 className="form-control"
@@ -397,6 +585,7 @@ function Personal({
                             </label>
                             <div className="form-control">
                               <Field
+                                disabled={user?.Organizer_Role_Id !== "MU05001"}
                                 type="email"
                                 name="Email_Id"
                                 className="form-control"
@@ -429,6 +618,7 @@ function Personal({
                             </label>
                             <div className="form-control">
                               <Field
+                                disabled={user?.Organizer_Role_Id !== "MU05001"}
                                 type="text"
                                 name="PAN_No"
                                 className="form-control"
@@ -480,82 +670,77 @@ function Personal({
                             type="file"
                             name="Logo_Path"
                             className="upload-pf"
-                            // onChange={(event) => {
-                            //   setFieldValue(
-                            //     "Logo_Path",
-                            //     event.currentTarget.files[0]
+                            onChange={handleFileChange}
+                            // onChange={async (event) => {
+                            //   const file = event.currentTarget.files[0];
+
+                            //   if (file && !file.type.startsWith("image/")) {
+                            //     toast.error("Please upload an image.");
+                            //     event.target.value = ""; // Reset the input value
+                            //     return;
+                            //   }
+                            //   // Check if the file size is above 2MB (2 * 1024 * 1024 bytes)
+                            //   const maxSize = 2 * 1024 * 1024;
+                            //   if (file && file.size > maxSize) {
+                            //     toast.error("File size should not exceed 2MB.");
+                            //     event.target.value = ""; // Reset the input value
+                            //     return;
+                            //   }
+
+                            //   const reqdata = new FormData();
+                            //   reqdata.append(
+                            //     "ModuleName",
+                            //     "OrganizationProfile"
                             //   );
-                            //                           }}
-                            onChange={async (event) => {
-                              const file = event.currentTarget.files[0];
+                            //   reqdata.append("File", file);
 
-                              if (file && !file.type.startsWith("image/")) {
-                                toast.error("Please upload an image.");
-                                event.target.value = ""; // Reset the input value
-                                return;
-                              }
-                              // Check if the file size is above 2MB (2 * 1024 * 1024 bytes)
-                              const maxSize = 2 * 1024 * 1024;
-                              if (file && file.size > maxSize) {
-                                toast.error("File size should not exceed 2MB.");
-                                event.target.value = ""; // Reset the input value
-                                return;
-                              }
+                            //   // Start uploading
 
-                              const reqdata = new FormData();
-                              reqdata.append(
-                                "ModuleName",
-                                "OrganizationProfile"
-                              );
-                              reqdata.append("File", file);
+                            //   try {
+                            //     await toast.promise(
+                            //       RestfulApiService(
+                            //         reqdata,
+                            //         "master/uploadfile"
+                            //       ),
+                            //       {
+                            //         loading: "Uploading...",
+                            //         success: (result) => {
+                            //           if (result) {
+                            //             console.log(
+                            //               result?.data?.Result,
+                            //               result?.data?.Description
+                            //             );
 
-                              // Start uploading
-
-                              try {
-                                await toast.promise(
-                                  RestfulApiService(
-                                    reqdata,
-                                    "master/uploadfile"
-                                  ),
-                                  {
-                                    loading: "Uploading...",
-                                    success: (result) => {
-                                      if (result) {
-                                        console.log(
-                                          result?.data?.Result,
-                                          result?.data?.Description
-                                        );
-
-                                        // setFieldTouched("Image_Name", true);
-                                        setFieldValue(
-                                          "Logo_Path",
-                                          result?.data?.Description
-                                        );
-                                        // setFieldTouched("ImagePath", true);
-                                      }
-                                      return "Uploaded successfully!";
-                                    },
-                                    error: (err) => {
-                                      const errorMessage =
-                                        err?.Result?.Table1[0]
-                                          ?.Result_Description ||
-                                        "Upload failed";
-                                      return errorMessage;
-                                    },
-                                  },
-                                  {
-                                    success: {
-                                      duration: 2000,
-                                    },
-                                  }
-                                );
-                              } catch (error) {
-                                console.error("Upload failed:", error);
-                              } finally {
-                                // End uploading
-                                event.target.value = "";
-                              }
-                            }}
+                            //             // setFieldTouched("Image_Name", true);
+                            //             setFieldValue(
+                            //               "Logo_Path",
+                            //               result?.data?.Description
+                            //             );
+                            //             // setFieldTouched("ImagePath", true);
+                            //           }
+                            //           return "Uploaded successfully!";
+                            //         },
+                            //         error: (err) => {
+                            //           const errorMessage =
+                            //             err?.Result?.Table1[0]
+                            //               ?.Result_Description ||
+                            //             "Upload failed";
+                            //           return errorMessage;
+                            //         },
+                            //       },
+                            //       {
+                            //         success: {
+                            //           duration: 2000,
+                            //         },
+                            //       }
+                            //     );
+                            //   } catch (error) {
+                            //     console.error("Upload failed:", error);
+                            //   } finally {
+                            //     // End uploading
+                            //     event.target.value = "";
+                            //   }
+                            // }}
                           />
                         </div>
                         {/* {!values?.Logo_Path && ( */}
@@ -595,11 +780,20 @@ function Personal({
                         <label className="text-13 fw-500">GST Applicable</label>
                         <div className="d-flex gap-15 mt-10">
                           <div className="form-radio d-flex items-center">
-                            <Field type="radio" name="Has_GST_No" value="yes" />
+                            <Field
+                              disabled={user?.Organizer_Role_Id !== "MU05001"}
+                              type="radio"
+                              name="Has_GST_No"
+                              value="yes"
+                              onChange={(e) => {
+                                setFieldValue("Has_GST_No", e.target.value);
+                              }}
+                            />
                             <div className="text-14 lh-1 ml-10">Yes</div>
                           </div>
                           <div className="form-radio d-flex items-center">
                             <Field
+                              disabled={user?.Organizer_Role_Id !== "MU05001"}
                               type="radio"
                               name="Has_GST_No"
                               value="no"
@@ -627,6 +821,7 @@ function Personal({
                           </label>
                           <div className="form-control">
                             <Field
+                              disabled={user?.Organizer_Role_Id !== "MU05001"}
                               autoComplete="off"
                               type="text"
                               name="GST_No"
@@ -663,7 +858,10 @@ function Personal({
                       <div className="row">
                         <div className="col-auto relative">
                           <button
-                            disabled={addingPersonal}
+                            disabled={
+                              addingPersonal ||
+                              user?.Organizer_Role_Id !== "MU05001"
+                            }
                             type="submit"
                             className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light load-button"
                           >
@@ -738,6 +936,7 @@ function Personal({
                       Session_User_Name: user?.User_Display_Name,
                       Session_Organzier_Id: user?.Organizer_Id,
                       Org_Id: user?.Org_Id,
+                      User_Display_Name: values.mobile_number,
                       User_Id: editingUserDetails ? values.User_Id : "",
                       XMLData: generateUserDetailsXML(values),
                       Eevent_List: values.Event_List?.map((event) => {
@@ -848,8 +1047,9 @@ function Personal({
 
                       <div className="py-10 y-gap-10">
                         <label className="text-13 fw-500">Events List</label>
-                        <CreatableSelect
+                        <Select
                           isMulti
+                          placeholder="Assign Multiple Events"
                           styles={{
                             ...selectCustomStyle,
                             multiValue: (base) => ({
@@ -963,131 +1163,157 @@ function Personal({
               </Stack>
             </Box>
           </Modal>
-          <div className="d-flex flex-column gap-20 mt-20 px-20 rounded-8 border-light">
-            <label className="text-16 fw-600" style={{ color: "#505050" }}>
-              Organizer Users
-            </label>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>User Name</StyledTableCell>
-                  <StyledTableCell>Mobile No</StyledTableCell>
-                  <StyledTableCell>Email ID</StyledTableCell>
-                  <StyledTableCell>User Role</StyledTableCell>
-                  <StyledTableCell>Active Status</StyledTableCell>
-                  <StyledTableCell>Event List</StyledTableCell>
-                  <StyledTableCell>
-                    <div
-                      style={{ display: "flex", justifyContent: "flex-end" }}
-                    >
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setOrganizerUserModal(true);
-                        }}
-                        className="button w-100 fw-400 rounded-8 px-15 py-10 text-white text-14 bg-primary d-flex justify-center gap-10"
-                      >
-                        <i className="fas fa-plus text-12" /> Add
-                      </button>
-                    </div>
-                  </StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody className="table_body_main">
-                {allUserDetails?.length > 0 ? (
-                  allUserDetails?.map((user) => {
-                    return (
-                      <TableRow>
-                        <StyledTableCell>
-                          {user?.User_Display_Name}
-                        </StyledTableCell>
-                        <StyledTableCell>{user?.Mobile_Number}</StyledTableCell>
-                        <StyledTableCell>{user?.Email_Id}</StyledTableCell>
-                        <StyledTableCell>
-                          {
-                            userRoleDropdown.filter(
-                              (u) => u.value === user?.Organizer_Role_Id
-                            )[0].label
-                          }
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          {user?.Is_Active ? "Active" : "In-active"}
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <div className="d-flex flex-column gap-5">
-                            {user.Event_Names?.split(",").map((name) => {
-                              return (
-                                <div
-                                  style={{
-                                    minWidth: 0,
-                                    backgroundColor: "#fff9e1",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                    borderRadius: "2px",
-                                    color: "hsl(0, 0%, 20%)",
-                                    fontSize: "80%",
-                                    padding: "3px",
-                                    paddingLeft: "6px",
-                                    boxSizing: "border-box",
-                                  }}
-                                >
-                                  {name}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <div
-                            className="text-14 text-reading lh-16 fw-500"
-                            style={{
-                              display: "flex",
-                              gap: "24px",
-                              justifyContent: "flex-end",
-                              cursor: "pointer",
+          {user?.Organizer_Role_Id === "MU05001" ? (
+            <div className="d-flex flex-column gap-20 mt-20 px-20 rounded-8 border-light">
+              <label className="text-16 fw-600" style={{ color: "#505050" }}>
+                Organizer Users
+              </label>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>User Name</StyledTableCell>
+                    <StyledTableCell>Mobile No</StyledTableCell>
+                    <StyledTableCell>Email ID</StyledTableCell>
+                    <StyledTableCell>User Role</StyledTableCell>
+                    <StyledTableCell>Active Status</StyledTableCell>
+                    <StyledTableCell>Event List</StyledTableCell>
+                    {user?.Organizer_Role_Id === "MU05001" ? (
+                      <StyledTableCell>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                          }}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setOrganizerUserModal(true);
                             }}
+                            className="button w-100 fw-400 rounded-8 px-15 py-10 text-white text-14 bg-primary d-flex justify-center gap-10"
                           >
-                            <i
-                              className="fas fa-pencil-alt"
-                              onClick={() => {
-                                setEditingUserDetails(true);
-                                console.log(user);
-                                setUserDetailsInitialValues({
-                                  ...user,
-                                  mobile_number: user.Mobile_Number,
-                                  email_id: user.Email_Id,
-                                  Organizer_Role_Id: userRoleDropdown.filter(
-                                    (u) => u.value === user?.Organizer_Role_Id
-                                  )[0],
-                                  Event_List: eventDropdown.filter((event) =>
-                                    user?.Event_Id?.split(",").includes(
-                                      event.value
-                                    )
-                                  ),
-                                });
-                                setOrganizerUserModal(true);
-                              }}
-                            ></i>
-                            <i
-                              className="far fa-trash-alt action-button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleDelete(user);
-                                //
-                              }}
-                            ></i>{" "}
-                          </div>
-                        </StyledTableCell>
-                      </TableRow>
-                    );
-                  })
-                ) : (
-                  <></>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                            <i className="fas fa-plus text-12" /> Add
+                          </button>
+                        </div>
+                      </StyledTableCell>
+                    ) : (
+                      <></>
+                    )}
+                  </TableRow>
+                </TableHead>
+                <TableBody className="table_body_main">
+                  {allUserDetails?.length > 0 ? (
+                    allUserDetails?.map((userDetails) => {
+                      return (
+                        <TableRow>
+                          <StyledTableCell>
+                            {userDetails?.User_Display_Name}
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            {userDetails?.Mobile_Number}
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            {userDetails?.Email_Id}
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            {
+                              userRoleDropdown.filter(
+                                (u) =>
+                                  u.value === userDetails?.Organizer_Role_Id
+                              )[0].label
+                            }
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            {userDetails?.Is_Active ? "Active" : "In-active"}
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <div className="d-flex flex-column gap-5">
+                              {userDetails.Event_Names?.split(",").map(
+                                (name) => {
+                                  return (
+                                    <div
+                                      style={{
+                                        minWidth: 0,
+                                        backgroundColor: "#fff9e1",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        borderRadius: "2px",
+                                        color: "hsl(0, 0%, 20%)",
+                                        fontSize: "80%",
+                                        padding: "3px",
+                                        paddingLeft: "6px",
+                                        boxSizing: "border-box",
+                                      }}
+                                    >
+                                      {name}
+                                    </div>
+                                  );
+                                }
+                              )}
+                            </div>
+                          </StyledTableCell>
+                          {user?.Organizer_Role_Id === "MU05001" ? (
+                            <StyledTableCell>
+                              <div
+                                className="text-14 text-reading lh-16 fw-500"
+                                style={{
+                                  display: "flex",
+                                  gap: "24px",
+                                  justifyContent: "flex-end",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <i
+                                  className="fas fa-pencil-alt"
+                                  onClick={() => {
+                                    setEditingUserDetails(true);
+                                    console.log(user);
+                                    setUserDetailsInitialValues({
+                                      ...userDetails,
+                                      mobile_number: userDetails.Mobile_Number,
+                                      email_id: userDetails.Email_Id,
+                                      Organizer_Role_Id:
+                                        userRoleDropdown.filter(
+                                          (u) =>
+                                            u.value ===
+                                            userDetails?.Organizer_Role_Id
+                                        )[0],
+                                      Event_List: eventDropdown.filter(
+                                        (event) =>
+                                          userDetails?.Event_Id?.split(
+                                            ","
+                                          ).includes(event.value)
+                                      ),
+                                    });
+                                    setOrganizerUserModal(true);
+                                  }}
+                                ></i>
+                                <i
+                                  className="far fa-trash-alt action-button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDelete(userDetails);
+                                    //
+                                  }}
+                                ></i>
+                              </div>
+                            </StyledTableCell>
+                          ) : (
+                            <></>
+                          )}
+                        </TableRow>
+                      );
+                    })
+                  ) : (
+                    <></>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
       )}
     </>

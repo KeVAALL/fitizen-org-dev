@@ -273,8 +273,8 @@ function EventBanner() {
                           zoomTo={0.5}
                           // initialAspectRatio={1} // Set the initial aspect ratio to 2:1
                           // aspectRatio={1} // Maintain the aspect ratio of 2:1
-                          initialAspectRatio={16 / 9} // Set the initial aspect ratio to 16:9
-                          aspectRatio={16 / 9} // Maintain a landscape aspect ratio of 16:9
+                          initialAspectRatio={4 / 2} // Set the initial aspect ratio to 16:9
+                          aspectRatio={2 / 1} // Maintain a landscape aspect ratio of 16:9
                           minCropBoxWidth={400} // Set to a reasonable width for landscape images
                           minCropBoxHeight={200} // Set to a reasonable height
                           preview=".img-preview"

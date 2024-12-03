@@ -356,7 +356,7 @@ function EventParticipant() {
       if (result) {
         toast.dismiss();
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
-        // toast.success("Saved");
+        setOtherInfoAccordion(false);
       }
     } catch (err) {
       toast.error(err?.Result?.Table1[0]?.Result_Description);
@@ -744,14 +744,14 @@ function EventParticipant() {
                       {values.Is_Mandatory ? (
                         <div className="single-field w-full y-gap-10">
                           <label className="text-13 text-reading fw-500">
-                            Mandatory Name <sup className="asc">*</sup>
+                            Error message <sup className="asc">*</sup>
                           </label>
                           <div className="form-control">
                             <Field
                               type="text"
                               name="Mandatory_Msg"
                               className="form-control"
-                              placeholder="Enter Mandatory Name"
+                              placeholder="Enter Error message"
                               onChange={(e) => {
                                 e.preventDefault();
                                 const { value } = e.target;

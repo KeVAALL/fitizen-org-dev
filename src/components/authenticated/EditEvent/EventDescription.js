@@ -1,5 +1,5 @@
 // React imports
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 // Third-party imports
 import { useParams } from "react-router-dom";
@@ -7,13 +7,14 @@ import { useSelector } from "react-redux";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+// import ReactQuill from "react-quill";
+// import "react-quill/dist/quill.snow.css";
 
 // Project imports
 import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
 import Loader from "../../../utils/BackdropLoader";
+import QuillEditor from "../../QuillEditor";
 
 const initialFormValues = {
   Event_Description: "",
@@ -102,6 +103,7 @@ function EventDescription() {
       setFetchingDescription(false);
     }
   }
+
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -152,14 +154,20 @@ function EventDescription() {
                     <label className="text-13 fw-500">Enter Description</label>
                     <Field name="Event_Description">
                       {({ field, form }) => (
-                        <ReactQuill
-                          readOnly={!isEditing}
-                          theme="snow"
+                        // <ReactQuill
+                        //   readOnly={!isEditing}
+                        //   theme="snow"
+                        //   value={field.value}
+                        //   onChange={(content) =>
+                        //     setFieldValue("Event_Description", content)
+                        //   }
+                        //   placeholder="Add more about event"
+                        // />
+                        <QuillEditor
+                          name="Event_Description"
                           value={field.value}
-                          onChange={(content) =>
-                            setFieldValue("Event_Description", content)
-                          }
-                          placeholder="Add more about event"
+                          readOnly={!isEditing}
+                          setFieldValue={form.setFieldValue}
                         />
                       )}
                     </Field>
@@ -178,14 +186,20 @@ function EventDescription() {
                     </label>
                     <Field name="Refund_Cancellation">
                       {({ field, form }) => (
-                        <ReactQuill
-                          readOnly={!isEditing}
-                          theme="snow"
+                        // <ReactQuill
+                        //   readOnly={!isEditing}
+                        //   theme="snow"
+                        //   value={field.value}
+                        //   onChange={(content) =>
+                        //     setFieldValue("Refund_Cancellation", content)
+                        //   }
+                        //   placeholder="Add Refund and Cancellation Policy"
+                        // />
+                        <QuillEditor
+                          name="Refund_Cancellation"
                           value={field.value}
-                          onChange={(content) =>
-                            setFieldValue("Refund_Cancellation", content)
-                          }
-                          placeholder="Add Refund and Cancellation Policy"
+                          readOnly={!isEditing}
+                          setFieldValue={form.setFieldValue}
                         />
                       )}
                     </Field>
@@ -204,14 +218,20 @@ function EventDescription() {
                     </label>
                     <Field name="Rules_Regulations">
                       {({ field, form }) => (
-                        <ReactQuill
-                          readOnly={!isEditing}
-                          theme="snow"
+                        // <ReactQuill
+                        //   readOnly={!isEditing}
+                        //   theme="snow"
+                        //   value={field.value}
+                        //   onChange={(content) =>
+                        //     setFieldValue("Rules_Regulations", content)
+                        //   }
+                        //   placeholder="Add Rules and Regulations"
+                        // />
+                        <QuillEditor
+                          name="Rules_Regulations"
                           value={field.value}
-                          onChange={(content) =>
-                            setFieldValue("Rules_Regulations", content)
-                          }
-                          placeholder="Add Rules and Regulations"
+                          readOnly={!isEditing}
+                          setFieldValue={form.setFieldValue}
                         />
                       )}
                     </Field>

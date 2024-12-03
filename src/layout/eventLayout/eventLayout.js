@@ -73,13 +73,13 @@ const Header = ({ open, handleDrawerToggle }) => {
                 </div>
               </div> */}
 
-              <div className="row items-center x-gap-5 y-gap-20 pl-20 lg:d-none">
+              {/* <div className="row items-center x-gap-5 y-gap-20 pl-20 lg:d-none">
                 <div className="col-auto">
                   <button className="button -blue-1-05 size-50 rounded-22 flex-center">
                     <i className="far fa-bell text-20"></i>
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               <div className="d-flex items-center gap-10">
                 <div className="pl-15">
@@ -144,16 +144,16 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                 alignItems: "center",
                 gap: "10px",
               }}
-              onClick={() => {
-                navigate("/sign-in");
-              }}
+              // onClick={() => {
+              //   navigate("/sign-in");
+              // }}
               className="border-bottom-light"
             >
               <img
                 src={DarkLogo}
                 style={{
                   height: "100%",
-                  width: "190px",
+                  width: "155px",
                 }}
                 alt="main-logo"
               />
@@ -166,16 +166,16 @@ const ReactSidebar = ({ open, menu, navigate, event_id }) => {
                 display: "flex",
                 justifyContent: "center",
               }}
-              onClick={() => {
-                navigate("/sign-in");
-              }}
+              // onClick={() => {
+              //   navigate("/sign-in");
+              // }}
               className="border-bottom-light"
             >
               <img
                 src={FavLogo}
                 style={{
                   height: "100%",
-                  width: "50px",
+                  width: "37px",
                 }}
                 alt="fav-logo"
               />

@@ -182,46 +182,46 @@ function AddEventTicket({ handleStep, prevIndex, nextIndex }) {
         </>
       )}
       {/* !allCategory.some((item) => item.isNew) || */}
-      {!allCategory.some((item) => item.isNew) && isOneAccordionOpen === "" ? (
-        <div className="col-12 d-flex justify-end mt-20">
-          <div className="row">
-            <div className="col-auto relative">
-              <button
-                type="button"
-                onClick={() => {
-                  handleStep(prevIndex);
-                }}
-                className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
-              >
-                Back
-              </button>
-            </div>
-            <div
-              className={`col-auto relative${
-                allCategory.some((item) => item.isNew) ? " d-none" : ""
-              }`}
+      {/* {!allCategory.some((item) => item.isNew) && isOneAccordionOpen === "" ? ( */}
+      <div className="col-12 d-flex justify-end mt-20">
+        <div className="row">
+          <div className="col-auto relative">
+            <button
+              type="button"
+              onClick={() => {
+                handleStep(prevIndex);
+              }}
+              className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
             >
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (allCategory.length < 1) {
-                    toast.dismiss();
-                    toast.error("Add at least one category");
-                  } else {
-                    handleStep(nextIndex);
-                  }
-                }}
-                className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-              >
-                Save & Next
-              </button>
-            </div>
+              Back
+            </button>
+          </div>
+          <div
+            className={`col-auto relative${
+              allCategory.some((item) => item.isNew) ? " d-none" : ""
+            }`}
+          >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                if (allCategory.length < 1) {
+                  toast.dismiss();
+                  toast.error("Add at least one category");
+                } else {
+                  handleStep(nextIndex);
+                }
+              }}
+              className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+            >
+              Save & Next
+            </button>
           </div>
         </div>
-      ) : (
+      </div>
+      {/* ) : (
         <></>
-      )}
+      )} */}
     </div>
   );
 }
