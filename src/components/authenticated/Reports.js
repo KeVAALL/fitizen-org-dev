@@ -194,6 +194,7 @@ function Reports() {
 
   const handleDownloadSummary = () => {
     const tableData = getData?.Table2?.map((item) => ({
+      "Event Name": item?.Event_Name ?? "",
       Item: item?.Item ?? "",
       Quantity: item.Quantity ?? 0,
       "Amount (INR)": item.Amount ?? 0,
@@ -202,19 +203,21 @@ function Reports() {
     // Call the utility function to download the Excel file
     downloadExcel(tableData, "Page Summary Data", "Page_Summary_Data");
   };
-  const handleDownload = () => {
-    const tableData = getData?.Table4?.map((item) => ({
-      "Ticket Name": item.Event_Name ?? "",
-      "Page Views": item.Number_count ?? 0,
+  const handleNumberOfTicketSold = () => {
+    const tableData = getData?.Table3?.map((item) => ({
+      "Event Name": item?.Event_Name ?? "",
+      Item: item?.Ticket_Name ?? "",
+      Quantity: item.Quantity ?? 0,
+      "Amount (INR)": item.Sales ?? 0,
     }));
     // Call the utility function to download the Excel file
     downloadExcel(tableData, "Page Views Data", "Page_Views_Data");
   };
-  const handleNumberOfTicketSold = () => {
+
+  const handleDownload = () => {
     const tableData = getData?.Table4?.map((item) => ({
-      Item: item?.Ticket_Name ?? "",
-      Quantity: item.Quantity ?? 0,
-      "Amount (INR)": item.Sales ?? 0,
+      "Ticket Name": item.Event_Name ?? "",
+      "Page Views": item.Number_count ?? 0,
     }));
     // Call the utility function to download the Excel file
     downloadExcel(tableData, "Page Views Data", "Page_Views_Data");
@@ -269,6 +272,7 @@ function Reports() {
                       </div>
                     </div>
                   </div>
+
                   {getData?.Table1?.map((curData, index) => {
                     return (
                       <React.Fragment key={index}>
@@ -383,7 +387,6 @@ function Reports() {
                           className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25"
                           onClick={handleDownloadSummary}
                         >
-                          {/* Download */}
                           <i className="fas fa-download"></i>
                         </button>
                       </Stack>
@@ -433,6 +436,7 @@ function Reports() {
                       )}
                     </Stack>
                   </div>
+
                   {/* ====== extra ======= */}
                   {getData?.Table4?.length > 0 && (
                     <div className="col-xl-12 col-md-12">
@@ -492,6 +496,7 @@ function Reports() {
                       </Stack>
                     </div>
                   )}
+
                   {getData?.Table3?.length > 0 && (
                     <div className="col-xl-12 col-md-12 y-gap-30">
                       <Stack

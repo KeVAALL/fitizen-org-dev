@@ -113,7 +113,7 @@ function EventMain() {
                         </div>
                         <div className="col-8">
                           <div className="fw-500 lh-14 text-12">
-                            Total Tickets sold till date
+                            Total Tickets sold
                           </div>
                           <div className="text-20 lh-16 fw-700 mt-5">
                             {selectedEvent?.TicketSaleCount}

@@ -32,7 +32,7 @@ import {
   EventDetailTableCell,
   StyledTableCell,
 } from "../../../utils/ReactTable";
-import { decryptData, encryptData } from "../../../utils/DataEncryption";
+import { encryptData } from "../../../utils/DataEncryption";
 
 function AddEventDetails({ handleStep, index }) {
   const dispatch = useDispatch();
@@ -397,7 +397,9 @@ function AddEventDetails({ handleStep, index }) {
         };
         dispatch(setCurrentEventId(apiResponse));
         setNewEventName(values.Event_Name);
-        // handleStep(index);
+        if (newEventId) {
+          handleStep(index);
+        }
       }
     } catch (err) {
       toast.error(err?.Result?.Table1[0]?.Result_Description);
@@ -409,7 +411,6 @@ function AddEventDetails({ handleStep, index }) {
   async function LoadDropdownOptions() {
     const reqdata = {
       Method_Name: "GetDropdownEvent",
-      // Event_Id: decryptData(event_id),
       Event_Id: "",
       Session_User_Id: user?.User_Id,
       Session_User_Name: user?.User_Display_Name,
@@ -423,7 +424,6 @@ function AddEventDetails({ handleStep, index }) {
       setFetchingDetails(true);
       const result = await RestfulApiService(reqdata, "organizer/GetEvent");
       if (result) {
-        const result1 = result?.data?.Result?.Table1[0];
         setInitialValues({
           Event_Name: "",
           EventType_Id: null,
@@ -439,6 +439,7 @@ function AddEventDetails({ handleStep, index }) {
           City: "",
           Event_Venue: "",
           Is_External_Event: 0,
+          Is_Private_Event: 0,
           External_Event_Url: "",
           Timezone: result?.data?.Result?.Table1[0],
           Is_Gst: {
@@ -1578,29 +1579,35 @@ function AddEventDetails({ handleStep, index }) {
                     ) : (
                       <></>
                     )}
-                    <div className="col-auto relative">
-                      <button
-                        disabled={submitForm}
-                        type="submit"
-                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
-                      >
-                        {!submitForm ? (
-                          `Save`
-                        ) : (
-                          <span className="btn-spinner"></span>
-                        )}
-                      </button>
-                    </div>
+                    {!newEventId ? (
+                      <div className="col-auto relative">
+                        <button
+                          disabled={submitForm}
+                          type="submit"
+                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
+                        >
+                          {!submitForm ? (
+                            `Save`
+                          ) : (
+                            <span className="btn-spinner"></span>
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
                     {newEventId ? (
                       <div className="col-auto relative">
                         <button
                           disabled={submitForm}
-                          onClick={(e) => {
-                            handleStep(index);
-                          }}
+                          type="submit"
                           className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
                         >
-                          Next
+                          {!submitForm ? (
+                            `Save & Next`
+                          ) : (
+                            <span className="btn-spinner"></span>
+                          )}
                         </button>
                       </div>
                     ) : (

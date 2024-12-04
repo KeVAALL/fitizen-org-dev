@@ -682,7 +682,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
                           </label>
                           <div className="p-0">
                             <CreatableSelect
-                              placeholder="Add Options"
+                              placeholder="Type to add your own options"
                               isMulti
                               styles={{
                                 ...selectCustomStyle,

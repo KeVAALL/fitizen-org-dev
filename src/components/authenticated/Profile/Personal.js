@@ -513,7 +513,7 @@ function Personal({
                         <div className="col-lg-6">
                           <div className="single-field py-10 y-gap-10">
                             <label className="text-13 fw-500">
-                              Organizer Name <sup className="asc">*</sup>
+                              Organization Name <sup className="asc">*</sup>
                             </label>
                             <div className="form-control">
                               <Field

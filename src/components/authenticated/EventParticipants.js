@@ -564,6 +564,7 @@ function EventParticipants() {
     allColumns,
     state: { pageIndex, pageSize, globalFilter, hiddenColumns, selectedRowIds },
     selectedFlatRows,
+    toggleAllRowsSelected,
   } = useTable(
     {
       columns,
@@ -590,10 +591,14 @@ function EventParticipants() {
           disableSortBy: true,
           disableGroupBy: true,
           groupByBoundary: true,
-          Header: ({ getToggleAllPageRowsSelectedProps }) => (
+          Header: ({ getToggleAllPageRowsSelectedProps, allColumns }) => (
             <IndeterminateCheckbox
               // indeterminate
-              {...getToggleAllPageRowsSelectedProps()}
+              // {...getToggleAllPageRowsSelectedProps()}
+              onChange={(e) => {
+                const isChecked = e.target.checked;
+                toggleAllRowsSelected(isChecked); // Select/deselect all rows
+              }}
             />
           ),
           Cell: ({ row }) => (
@@ -706,15 +711,12 @@ function EventParticipants() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [showForm]);
-  // useEffect(() => {
-  //   console.log(
-  //     "Filtered Data: ",
-  //     rows.map((row) => row.original)
-  //   );
-  // }, [rows]);
-  // useEffect(() => {
-  //   console.log(selectedFlatRows.map((d) => d.original));
-  // }, [selectedFlatRows]);
+
+  useEffect(() => {
+    console.log(selectedFlatRows.length);
+    console.log(data.length);
+    console.log(selectedRowIds);
+  }, [data, selectedFlatRows, selectedRowIds]);
 
   return (
     <div className="dashboard__main">
@@ -2081,7 +2083,11 @@ function EventParticipants() {
                                   "Transferee Name is required"
                                 ),
                                 TransfereeEmail: Yup.string()
-                                  .email("Invalid email format")
+                                  // .email("Invalid email format")
+                                  .matches(
+                                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                    "Invalid email address"
+                                  )
                                   .required("Transferee Email is required"),
                                 TransferToName: Yup.string().required(
                                   "Transfer To Name is required"
@@ -2352,7 +2358,7 @@ function EventParticipants() {
                             <div className="text-16 lh-16 fw-600 mt-5">
                               Total Participants:{" "}
                               <span className="text-16 fw-600 mt-5 text-primary">
-                                {participants?.length}
+                                {rows.length ?? 0}
                               </span>
                             </div>
                           </Stack>
@@ -2746,7 +2752,7 @@ function EventParticipants() {
                         </Stack>
                       </div>
 
-                      <div className="col-xl-4 col-md-4">
+                      <div className="col-xl-6 col-md-12">
                         <Stack
                           direction="column"
                           alignItems="center"
@@ -2815,7 +2821,7 @@ function EventParticipants() {
                         </Stack>
                       </div>
 
-                      <div className="col-xl-4 col-md-4">
+                      <div className="col-xl-6 col-md-12">
                         <Stack
                           direction="column"
                           alignItems="center"
@@ -2861,7 +2867,10 @@ function EventParticipants() {
                                   <Stack spacing={0.5}>
                                     <p className="text-12">Male</p>
                                     <p className="text-12 fw-600">
-                                      {genderData[0]?.Percentage}%
+                                      {genderData[0]?.Percentage
+                                        ? genderData[0]?.Percentage
+                                        : 0}
+                                      %
                                     </p>
                                   </Stack>
                                 </div>
@@ -2870,7 +2879,10 @@ function EventParticipants() {
                                   <Stack spacing={0.5}>
                                     <p className="text-12">Female</p>
                                     <p className="text-12 fw-600">
-                                      {genderData[1]?.Percentage}%
+                                      {genderData[1]?.Percentage
+                                        ? genderData[1]?.Percentage
+                                        : 0}
+                                      %
                                     </p>
                                   </Stack>
                                 </div>
@@ -2879,7 +2891,10 @@ function EventParticipants() {
                                   <Stack spacing={0.5}>
                                     <p className="text-12">Other</p>
                                     <p className="text-12 fw-600">
-                                      {genderData[2]?.Percentage}%
+                                      {genderData[2]?.Percentage
+                                        ? genderData[2]?.Percentage
+                                        : 0}
+                                      %
                                     </p>
                                   </Stack>
                                 </div>
@@ -2893,7 +2908,7 @@ function EventParticipants() {
                         </Stack>
                       </div>
 
-                      <div className="col-xl-4 col-md-4">
+                      {/* <div className="col-xl-4 col-md-4">
                         <Stack
                           direction="column"
                           alignItems="center"
@@ -2958,9 +2973,84 @@ function EventParticipants() {
                             </>
                           )}
                         </Stack>
+                      </div> */}
+                      <div className="col-xl-12 col-md-12">
+                        <Stack
+                          direction="column"
+                          alignItems="flex-start"
+                          spacing={4}
+                          className="py-15 px-30 border-light rounded-24"
+                        >
+                          <div className="text-16 lh-16 fw-600 mt-5">
+                            City wise Participation
+                          </div>
+
+                          <div className="row w-full">
+                            <div className="col-xl-4 col-md-6">
+                              <PieChart
+                                className="pie-chart"
+                                colors={cityColors}
+                                series={[
+                                  {
+                                    data: cityData?.map((c, id) => {
+                                      return {
+                                        id: id,
+                                        value: c?.CityCount,
+                                        label: c?.City_Id,
+                                      };
+                                    }),
+                                    innerRadius: 50,
+                                    paddingAngle: 0,
+                                  },
+                                ]}
+                                sx={{ margin: "auto !important" }}
+                                width={400}
+                                height={200}
+                                slotProps={{ legend: { hidden: true } }}
+                              />
+                            </div>
+
+                            <div className="col-xl-8 col-md-6">
+                              <Stack spacing={2}>
+                                <Stack spacing={2}>
+                                  <div className="row y-gap-10">
+                                    {cityData.map((city, index) => {
+                                      const cityColor =
+                                        cityColors[index % colors.length];
+
+                                      return (
+                                        <div className="col-4">
+                                          <div className="boxes" key={index}>
+                                            <div
+                                              className="color-box"
+                                              style={{
+                                                backgroundColor: cityColor,
+                                              }}
+                                            />
+                                            <Stack
+                                              spacing={0.5}
+                                              className="w-full"
+                                            >
+                                              <p className="text-11 trim-1">
+                                                {city.City_Id}
+                                              </p>
+                                              <p className="text-12 fw-600 mt-0">
+                                                {city.CityPercentage}%
+                                              </p>
+                                            </Stack>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </Stack>
+                              </Stack>
+                            </div>
+                          </div>
+                        </Stack>
                       </div>
 
-                      <div className="col-xl-12 col-md-4">
+                      <div className="col-xl-12 col-md-12">
                         <Stack
                           direction="column"
                           alignItems="flex-start"
@@ -2974,7 +3064,6 @@ function EventParticipants() {
                           <div className="row w-full">
                             <div className="col-xl-4 col-md-6">
                               <PieChart
-                                // className="pie-chart"
                                 colors={categoryColor}
                                 series={[
                                   {
@@ -2996,13 +3085,11 @@ function EventParticipants() {
                               />
                             </div>
 
-                            {/* <Stack spacing={4} sx={{ width: "50%" }}> */}
                             <div className="col-xl-8 col-md-6">
                               <Stack spacing={2}>
                                 <Stack spacing={2}>
                                   <div className="row y-gap-10">
                                     {categoryData.map((category, index) => {
-                                      // const randomColor = getRandomColor(); // Get random color for each category
                                       const categoryColors =
                                         categoryColor[index % colors.length];
 
@@ -3032,21 +3119,13 @@ function EventParticipants() {
                                     })}
                                   </div>
                                 </Stack>
-
-                                {/* <div className="w-full d-flex justify-end mt-40">
-                                  {categoryData?.length > 0 && (
-                                    <button className="button w-200 rounded-24 py-15 px-15 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-25">
-                                      View Participants
-                                    </button>
-                                  )}
-                                </div> */}
                               </Stack>
                             </div>
                           </div>
                         </Stack>
                       </div>
 
-                      <div className="col-xl-12 col-md-4">
+                      <div className="col-xl-12 col-md-12">
                         <Stack
                           direction="column"
                           alignItems="flex-start"

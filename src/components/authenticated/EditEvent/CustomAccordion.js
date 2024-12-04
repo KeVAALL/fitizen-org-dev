@@ -91,8 +91,8 @@ const CustomAccordion = ({
       value: "Sec",
     },
     {
-      label: "Min",
-      value: "Min",
+      label: "Mins",
+      value: "Mins",
     },
     {
       label: "Hours",
@@ -132,17 +132,6 @@ const CustomAccordion = ({
     Event_End_Date: null,
     Event_End_Time: null,
     Event_Prize: "",
-    // Event_Prize: [
-    //   //   {
-    //   //     Gender: null,
-    //   //     Max_Age: "",
-    //   //     Min_Age: "",
-    //   //     First_Prize: "",
-    //   //     Second_Prize: "",
-    //   //     Third_Prize: "",
-    //   //     EventPrizeEntry_Id: "",
-    //   //   },
-    // ],
     // Image_Path: "",
     Image_Name: "",
     isNew: category.isNew,
@@ -196,7 +185,8 @@ const CustomAccordion = ({
           }
         )
         .nullable(),
-      Event_Start_Time: Yup.date().required("Race start time is required"),
+      Event_Start_Time: Yup.date().nullable(),
+      // .required("Race start time is required")
       Event_End_Date: Yup.date()
         .required("Race end date is required")
         .test(
@@ -208,7 +198,8 @@ const CustomAccordion = ({
           }
         )
         .nullable(),
-      Event_End_Time: Yup.date().required("Race end time is required"),
+      Event_End_Time: Yup.date().nullable(),
+      // .required("Race end time is required")
       Is_PriceMoneyAwarded: Yup.string().required("Please select Yes or No"),
       Event_Prize: Yup.string().when("Is_PriceMoneyAwarded", {
         is: (value) => value === "Yes",
@@ -249,9 +240,10 @@ const CustomAccordion = ({
             );
           }
         ),
-      Ticket_Sale_Start_Time: Yup.date().required(
-        "Ticket sale start time is required"
-      ),
+      Ticket_Sale_Start_Time: Yup.date().nullable(),
+      //   .required(
+      //   "Ticket sale start time is required"
+      // ),
       Ticket_Sale_End_Date: Yup.date()
         .required("Ticket sale end date is required")
         .test(
@@ -261,10 +253,26 @@ const CustomAccordion = ({
             const { Ticket_Sale_Start_Date } = this.parent;
             return dayjs(value).isSameOrAfter(Ticket_Sale_Start_Date);
           }
+        )
+        .test(
+          "is-valid-sale-start-date",
+          "Ticket Sale End Date must be before Event start date",
+          function (value) {
+            const { Event_Start_Date } = this.parent;
+            const currentDate = dayjs().startOf("day");
+            const eventStartDate = dayjs(Event_Start_Date);
+
+            return (
+              value &&
+              dayjs(value).isSameOrAfter(currentDate) &&
+              dayjs(value).isSameOrBefore(eventStartDate)
+            );
+          }
         ),
-      Ticket_Sale_End_Time: Yup.date().required(
-        "Ticket sale end time is required"
-      ),
+      Ticket_Sale_End_Time: Yup.date().nullable(),
+      //   .required(
+      //   "Ticket sale end time is required"
+      // ),
       Image_Name: Yup.string().nullable(),
       ImagePath: Yup.string().nullable(),
     },
@@ -278,15 +286,19 @@ const CustomAccordion = ({
 
   function formatRaceTiming(data) {
     const startDate = dayjs(data.Event_Start_Date).format("DD MMM YYYY");
-    const startTime = dayjs(data.Event_Start_Time).format("HH:mm");
+    const startTime = data.Event_Start_Time
+      ? dayjs(data.Event_Start_Time).format("HH:mm")
+      : "00:00:00";
     const endDate = dayjs(data.Event_End_Date).format("DD MMM YYYY");
-    const endTime = dayjs(data.Event_End_Time).format("HH:mm");
+    const endTime = data.Event_End_Time
+      ? dayjs(data.Event_End_Time).format("HH:mm")
+      : "00:00:00";
 
     // Combine into the desired format
     return `${startDate} ${startTime} to ${endDate} ${endTime}`;
   }
   const combineDateAndTime = (dateString, timeString) => {
-    if (!dateString || !timeString) return null; // Return null if either value is missing
+    if (!dateString || !timeString || timeString === "00:00") return null; // Return null if either value is missing
 
     const date = dayjs(dateString); // Parse the date
     const [hours, minutes, seconds = 0] = timeString.split(":").map(Number); // Split time into components, default seconds to 0
@@ -323,15 +335,19 @@ const CustomAccordion = ({
     addRow("Race_Timing", formatRaceTiming(data));
     addRow(
       "Event_Start_Date",
-      `${dayjs(data.Event_Start_Date).format("YYYY-MM-DD")}T${dayjs(
+      `${dayjs(data.Event_Start_Date).format("YYYY-MM-DD")}T${
         data.Event_Start_Time
-      ).format("HH:mm")}`
+          ? dayjs(data.Event_Start_Time).format("HH:mm")
+          : "00:00:00"
+      }`
     );
     addRow(
       "Event_End_Date",
-      `${dayjs(data.Event_End_Date).format("YYYY-MM-DD")}T${dayjs(
+      `${dayjs(data.Event_End_Date).format("YYYY-MM-DD")}T${
         data.Event_End_Time
-      ).format("HH:mm")}`
+          ? dayjs(data.Event_End_Time).format("HH:mm")
+          : "00:00:00"
+      }`
     );
     addRow("Is_Paid_Event", data.Is_Paid_Event === "Paid" ? 1 : 0);
     addRow("Number_Of_Tickets", data.Number_Of_Tickets);
@@ -339,15 +355,19 @@ const CustomAccordion = ({
     addRow("Event_Price", data.Event_Price);
     addRow(
       "Ticket_Sale_Start_Date",
-      `${dayjs(data.Ticket_Sale_Start_Date).format("YYYY-MM-DD")}T${dayjs(
+      `${dayjs(data.Ticket_Sale_Start_Date).format("YYYY-MM-DD")}T${
         data.Ticket_Sale_Start_Time
-      ).format("HH:mm")}`
+          ? dayjs(data.Ticket_Sale_Start_Time).format("HH:mm")
+          : "00:00:00"
+      }`
     );
     addRow(
       "Ticket_Sale_End_Date",
-      `${dayjs(data.Ticket_Sale_End_Date).format("YYYY-MM-DD")}T${dayjs(
+      `${dayjs(data.Ticket_Sale_End_Date).format("YYYY-MM-DD")}T${
         data.Ticket_Sale_End_Time
-      ).format("HH:mm")}`
+          ? dayjs(data.Ticket_Sale_End_Time).format("HH:mm")
+          : "00:00:00"
+      }`
     );
     addRow("Is_PriceMoneyAwarded", data.Is_PriceMoneyAwarded === "Yes" ? 1 : 0);
     addRow("Is_Active", data.Is_Active ? data.Is_Active : 1);
@@ -383,64 +403,64 @@ const CustomAccordion = ({
   const submitCategoryForm = async (values) => {
     console.log(values);
     console.log(convertToXML(values));
-    // const reqdata = {
-    //   Method_Name: values.isNew ? "Create" : "Update",
-    //   Session_User_Id: user?.User_Id,
-    //   Session_User_Name: user?.User_Display_Name,
-    //   Session_Organzier_Id: user?.Organizer_Id,
-    //   Org_Id: user?.Org_Id,
-    //   Event_Id: decryptData(event_id),
-    //   EventCategoryEntry_Id: values?.EventCategoryEntry_Id
-    //     ? values?.EventCategoryEntry_Id
-    //     : "",
-    //   EventCategory_Id: values?.EventCategory_Id.value,
-    //   EventCategory_Name: values?.EventCategory_Name,
-    //   ImagePath: values?.ImagePath,
-    //   ImageName: values?.Image_Name,
-    //   XMLData: convertToXML(values),
-    //   PrizeXMLData: values.Event_Prize,
-    //   // PrizeXMLData:
-    //   //   values.Event_Prize.length > 0
-    //   //     ? convertPrizesToXML(values.Event_Prize)
-    //   //     : "",
-    // };
+    const reqdata = {
+      Method_Name: values.isNew ? "Create" : "Update",
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      Event_Id: decryptData(event_id),
+      EventCategoryEntry_Id: values?.EventCategoryEntry_Id
+        ? values?.EventCategoryEntry_Id
+        : "",
+      EventCategory_Id: values?.EventCategory_Id.value,
+      EventCategory_Name: values?.EventCategory_Name,
+      ImagePath: values?.ImagePath,
+      ImageName: values?.Image_Name,
+      XMLData: convertToXML(values),
+      PrizeXMLData: values.Event_Prize,
+      // PrizeXMLData:
+      //   values.Event_Prize.length > 0
+      //     ? convertPrizesToXML(values.Event_Prize)
+      //     : "",
+    };
 
-    // try {
-    //   setSubmitForm(true);
+    try {
+      setSubmitForm(true);
 
-    //   const result = await RestfulApiService(
-    //     reqdata,
-    //     "organizer/addupdatecategory"
-    //   );
-    //   if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
-    //     toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
-    //     return;
-    //   }
-    //   if (result) {
-    //     toast.dismiss();
-    //     toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
-    //     console.log(values.isNew);
-    //     // if (values.isNew) {
-    //     //   handleNewItemSubmit(id);
-    //     // }
-    //     setAccordionOpen(false);
-    //     setIsOneAccordionOpen("");
-    //     LoadCategory();
-    //     // setEventCategoryName(
-    //     //   `${values.EventCategory_Id.value === "C007003" ? values.Race_Distance : values.EventCategory_Id.label} ${
-    //     //     values.Race_Distance_Unit?.value || values.Race_Distance_Unit
-    //     //   } ${values.Timed_Event?.value} ${values.EventCategory_Name}`
-    //     // );
-    //     // setAccordionOpen(false);
-    //     // if (values.isNew) {
-    //     //   setAccordionOpen(false)
-    //     // }
-    //   }
-    // } catch (err) {
-    //   toast.error(err?.Result?.Table1[0]?.Result_Description);
-    // } finally {
-    //   setSubmitForm(false);
-    // }
+      const result = await RestfulApiService(
+        reqdata,
+        "organizer/addupdatecategory"
+      );
+      if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+        toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
+        return;
+      }
+      if (result) {
+        toast.dismiss();
+        toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+        console.log(values.isNew);
+        // if (values.isNew) {
+        //   handleNewItemSubmit(id);
+        // }
+        setAccordionOpen(false);
+        setIsOneAccordionOpen("");
+        LoadCategory();
+        // setEventCategoryName(
+        //   `${values.EventCategory_Id.value === "C007003" ? values.Race_Distance : values.EventCategory_Id.label} ${
+        //     values.Race_Distance_Unit?.value || values.Race_Distance_Unit
+        //   } ${values.Timed_Event?.value} ${values.EventCategory_Name}`
+        // );
+        // setAccordionOpen(false);
+        // if (values.isNew) {
+        //   setAccordionOpen(false)
+        // }
+      }
+    } catch (err) {
+      toast.error(err?.Result?.Table1[0]?.Result_Description);
+    } finally {
+      setSubmitForm(false);
+    }
   };
   const handleEditClick = async (event, eventCategoryId) => {
     event.stopPropagation(); // Prevent accordion from toggling
@@ -1679,6 +1699,10 @@ const CustomAccordion = ({
                           inputFormat="DD/MM/YYYY"
                           value={values.Ticket_Sale_Start_Date}
                           disablePast
+                          maxDate={dayjs(values.Event_Start_Date).subtract(
+                            1,
+                            "day"
+                          )}
                           onChange={(newValue) =>
                             setFieldValue("Ticket_Sale_Start_Date", newValue)
                           }
@@ -1723,7 +1747,7 @@ const CustomAccordion = ({
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
-                      Ticket Sale Start Time <sup className="asc">*</sup>
+                      Ticket Sale Start Time
                     </label>
                     <div className="form-control">
                       <LocalizationProvider
@@ -1778,6 +1802,7 @@ const CustomAccordion = ({
                     />
                   </div>
                 </div>
+
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
@@ -1793,6 +1818,10 @@ const CustomAccordion = ({
                           inputFormat="DD/MM/YYYY"
                           value={values.Ticket_Sale_End_Date}
                           disablePast
+                          maxDate={dayjs(values.Event_Start_Date).subtract(
+                            1,
+                            "day"
+                          )}
                           onChange={(newValue) =>
                             setFieldValue("Ticket_Sale_End_Date", newValue)
                           }
@@ -1838,7 +1867,7 @@ const CustomAccordion = ({
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
-                      Ticket Sale End Time <sup className="asc">*</sup>
+                      Ticket Sale End Time
                     </label>
                     <div className="form-control">
                       <LocalizationProvider

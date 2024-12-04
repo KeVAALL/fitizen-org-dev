@@ -5,6 +5,7 @@ import { RestfulApiService } from "../../config/service";
 import { useParams } from "react-router-dom";
 import { setCurrentEvent } from "../../redux/slices/eventSlice";
 import { decryptData } from "../../utils/DataEncryption";
+import { MEDIA_URL } from "../../config/url";
 
 function EventTitle() {
   const user = useSelector((state) => state.user.userProfile);
@@ -60,7 +61,7 @@ function EventTitle() {
           <div className="col-1">
             <div className="w-50 h-50 rounded-full overflow-hidden">
               <img
-                src={Event5}
+                src={`${MEDIA_URL}${selectedEvent?.Image_Path}`}
                 className="w-full h-full object-cover"
                 alt="icon"
               />

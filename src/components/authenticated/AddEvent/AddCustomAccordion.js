@@ -51,22 +51,12 @@ const AddCustomAccordion = ({
   // console.log(category);
   const user = useSelector((state) => state.user.userProfile);
   const newEventId = useSelector((state) => state.newEvent.currentEventId);
-  const accordionRef = useRef(null);
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploadingRoute, setUploadingRoute] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [submitForm, setSubmitForm] = useState(false);
-  const genderDropdown = [
-    {
-      label: "Male",
-      value: "Male",
-    },
-    {
-      label: "Female",
-      value: "Female",
-    },
-  ];
+
   const raceDistanceUnitDropdown = [
     {
       label: "KM",
@@ -191,7 +181,8 @@ const AddCustomAccordion = ({
           }
         )
         .nullable(),
-      Event_Start_Time: Yup.date().required("Race start time is required"),
+      Event_Start_Time: Yup.date().nullable(),
+      // .required("Race start time is required"),
       Event_End_Date: Yup.date()
         .required("Race end date is required")
         .test(
@@ -203,7 +194,8 @@ const AddCustomAccordion = ({
           }
         )
         .nullable(),
-      Event_End_Time: Yup.date().required("Race end time is required"),
+      Event_End_Time: Yup.date().nullable(),
+      // .required("Race end time is required"),
       Is_PriceMoneyAwarded: Yup.string().required("Please select Yes or No"),
       Event_Prize: Yup.string().when("Is_PriceMoneyAwarded", {
         is: (value) => value === "Yes",
@@ -231,7 +223,7 @@ const AddCustomAccordion = ({
         )
         .test(
           "is-valid-sale-start-date",
-          "Ticket Sale Start Date must be between today and Event start date",
+          "Ticket Sale Start Date must be before Event start date",
           function (value) {
             const { Event_Start_Date } = this.parent;
             const currentDate = dayjs().startOf("day");
@@ -244,9 +236,8 @@ const AddCustomAccordion = ({
             );
           }
         ),
-      Ticket_Sale_Start_Time: Yup.date().required(
-        "Ticket sale start time is required"
-      ),
+      Ticket_Sale_Start_Time: Yup.date().nullable(),
+      // .required("Ticket sale start time is required"),
       Ticket_Sale_End_Date: Yup.date()
         .required("Ticket sale end date is required")
         .test(
@@ -256,10 +247,24 @@ const AddCustomAccordion = ({
             const { Ticket_Sale_Start_Date } = this.parent;
             return dayjs(value).isSameOrAfter(Ticket_Sale_Start_Date);
           }
+        )
+        .test(
+          "is-valid-sale-start-date",
+          "Ticket Sale End Date must be before Event start date",
+          function (value) {
+            const { Event_Start_Date } = this.parent;
+            const currentDate = dayjs().startOf("day");
+            const eventStartDate = dayjs(Event_Start_Date);
+
+            return (
+              value &&
+              dayjs(value).isSameOrAfter(currentDate) &&
+              dayjs(value).isSameOrBefore(eventStartDate)
+            );
+          }
         ),
-      Ticket_Sale_End_Time: Yup.date().required(
-        "Ticket sale end time is required"
-      ),
+      Ticket_Sale_End_Time: Yup.date().nullable(),
+      // .required("Ticket sale end time is required")
       Image_Name: Yup.string().nullable(),
       // .required("Please upload Category Route"),
       ImagePath: Yup.string().nullable(),
@@ -277,15 +282,19 @@ const AddCustomAccordion = ({
 
   function formatRaceTiming(data) {
     const startDate = dayjs(data.Event_Start_Date).format("DD MMM YYYY");
-    const startTime = dayjs(data.Event_Start_Time).format("HH:mm");
+    const startTime = data.Event_Start_Time
+      ? dayjs(data.Event_Start_Time).format("HH:mm")
+      : "00:00:00";
     const endDate = dayjs(data.Event_End_Date).format("DD MMM YYYY");
-    const endTime = dayjs(data.Event_End_Time).format("HH:mm");
+    const endTime = data.Event_End_Time
+      ? dayjs(data.Event_End_Time).format("HH:mm")
+      : "00:00:00";
 
     // Combine into the desired format
     return `${startDate} ${startTime} to ${endDate} ${endTime}`;
   }
   const combineDateAndTime = (dateString, timeString) => {
-    if (!dateString || !timeString) return null; // Return null if either value is missing
+    if (!dateString || !timeString || timeString === "00:00") return null; // Return null if either value is missing
 
     const date = dayjs(dateString); // Parse the date
     const [hours, minutes, seconds = 0] = timeString.split(":").map(Number); // Split time into components, default seconds to 0
@@ -322,15 +331,19 @@ const AddCustomAccordion = ({
     addRow("Race_Timing", formatRaceTiming(data));
     addRow(
       "Event_Start_Date",
-      `${dayjs(data.Event_Start_Date).format("YYYY-MM-DD")}T${dayjs(
+      `${dayjs(data.Event_Start_Date).format("YYYY-MM-DD")}T${
         data.Event_Start_Time
-      ).format("HH:mm")}`
+          ? dayjs(data.Event_Start_Time).format("HH:mm")
+          : "00:00:00"
+      }`
     );
     addRow(
       "Event_End_Date",
-      `${dayjs(data.Event_End_Date).format("YYYY-MM-DD")}T${dayjs(
+      `${dayjs(data.Event_End_Date).format("YYYY-MM-DD")}T${
         data.Event_End_Time
-      ).format("HH:mm")}`
+          ? dayjs(data.Event_End_Time).format("HH:mm")
+          : "00:00:00"
+      }`
     );
     addRow("Is_Paid_Event", data.Is_Paid_Event === "Paid" ? 1 : 0);
     addRow("Number_Of_Tickets", data.Number_Of_Tickets);
@@ -338,15 +351,19 @@ const AddCustomAccordion = ({
     addRow("Event_Price", data.Event_Price);
     addRow(
       "Ticket_Sale_Start_Date",
-      `${dayjs(data.Ticket_Sale_Start_Date).format("YYYY-MM-DD")}T${dayjs(
+      `${dayjs(data.Ticket_Sale_Start_Date).format("YYYY-MM-DD")}T${
         data.Ticket_Sale_Start_Time
-      ).format("HH:mm")}`
+          ? dayjs(data.Ticket_Sale_Start_Time).format("HH:mm")
+          : "00:00:00"
+      }`
     );
     addRow(
       "Ticket_Sale_End_Date",
-      `${dayjs(data.Ticket_Sale_End_Date).format("YYYY-MM-DD")}T${dayjs(
+      `${dayjs(data.Ticket_Sale_End_Date).format("YYYY-MM-DD")}T${
         data.Ticket_Sale_End_Time
-      ).format("HH:mm")}`
+          ? dayjs(data.Ticket_Sale_End_Time).format("HH:mm")
+          : "00:00:00"
+      }`
     );
     addRow("Is_PriceMoneyAwarded", data.Is_PriceMoneyAwarded === "Yes" ? 1 : 0);
     addRow("Is_Active", data.Is_Active ? data.Is_Active : 1);
@@ -442,9 +459,7 @@ const AddCustomAccordion = ({
       if (result) {
         toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
         console.log(values.isNew);
-        // if (values.isNew) {
-        //   handleNewItemSubmit(id);
-        // }
+
         setAccordionOpen(false);
         setIsOneAccordionOpen("");
         LoadCategory();
@@ -1123,7 +1138,9 @@ const AddCustomAccordion = ({
 
                 <div className="col-3">
                   <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">Race Start Date</label>
+                    <label className="text-13 fw-500">
+                      Race Start Date <sup className="asc">*</sup>
+                    </label>
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
@@ -1175,9 +1192,7 @@ const AddCustomAccordion = ({
                 </div>
                 <div className="col-3">
                   <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">
-                      Race Start Time <sup className="asc">*</sup>
-                    </label>
+                    <label className="text-13 fw-500">Race Start Time</label>
                     <div className="form-control">
                       <LocalizationProvider
                         dateAdapter={AdapterDayjs}
@@ -1230,7 +1245,9 @@ const AddCustomAccordion = ({
                 </div>
                 <div className="col-3">
                   <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">Race End Date</label>
+                    <label className="text-13 fw-500">
+                      Race End Date <sup className="asc">*</sup>
+                    </label>
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
@@ -1282,9 +1299,7 @@ const AddCustomAccordion = ({
                 </div>
                 <div className="col-3">
                   <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">
-                      Race End Time <sup className="asc">*</sup>
-                    </label>
+                    <label className="text-13 fw-500">Race End Time</label>
                     <div className="form-control">
                       <LocalizationProvider
                         dateAdapter={AdapterDayjs}
@@ -1716,6 +1731,10 @@ const AddCustomAccordion = ({
                           inputFormat="DD/MM/YYYY"
                           value={values.Ticket_Sale_Start_Date}
                           disablePast
+                          maxDate={dayjs(values.Event_Start_Date).subtract(
+                            1,
+                            "day"
+                          )}
                           onChange={(newValue) =>
                             setFieldValue("Ticket_Sale_Start_Date", newValue)
                           }
@@ -1760,7 +1779,7 @@ const AddCustomAccordion = ({
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
-                      Ticket Sale Start Time <sup className="asc">*</sup>
+                      Ticket Sale Start Time
                     </label>
                     <div className="form-control">
                       <LocalizationProvider
@@ -1830,6 +1849,10 @@ const AddCustomAccordion = ({
                           inputFormat="DD/MM/YYYY"
                           value={values.Ticket_Sale_End_Date}
                           disablePast
+                          maxDate={dayjs(values.Event_Start_Date).subtract(
+                            1,
+                            "day"
+                          )}
                           onChange={(newValue) =>
                             setFieldValue("Ticket_Sale_End_Date", newValue)
                           }
@@ -1875,7 +1898,7 @@ const AddCustomAccordion = ({
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
-                      Ticket Sale End Time <sup className="asc">*</sup>
+                      Ticket Sale End Time
                     </label>
                     <div className="form-control">
                       <LocalizationProvider

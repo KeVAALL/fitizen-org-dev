@@ -13811,8 +13811,9 @@ input:-webkit-autofill::first-line {
 }
 .pie-chart {
   width: 400px !important;
-  margin: auto !important;
+  /* margin: auto !important; */
   margin-top: 16px !important;
+  margin-left: 50px !important;
 }
 .pie-chart-report {
   height: 150px !important;
