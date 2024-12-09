@@ -371,71 +371,79 @@ function Reports() {
                     );
                   })}
 
-                  <div className="col-xl-12 col-md-12">
-                    <Stack
-                      direction="column"
-                      spacing={4}
-                      className="py-30 px-30 border-light rounded-8"
-                    >
+                  {getData?.Table2?.length > 0 ? (
+                    <div className="col-xl-12 col-md-12">
                       <Stack
-                        direction="row"
-                        spacing={2}
-                        justifyContent="space-between"
+                        direction="column"
+                        spacing={4}
+                        className="py-30 px-30 border-light rounded-8"
                       >
-                        <div className="text-16 lh-16 fw-600 mt-5">Summary</div>
-                        <button
-                          className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25"
-                          onClick={handleDownloadSummary}
+                        <Stack
+                          direction="row"
+                          spacing={2}
+                          justifyContent="space-between"
                         >
-                          <i className="fas fa-download"></i>
-                        </button>
+                          <div className="text-16 lh-16 fw-600 mt-5">
+                            Summary
+                          </div>
+                          <button
+                            className="button rounded-24 py-4 px-15 text-reading border-primary -primary-1 fw-400 text-12 d-flex gap-25"
+                            onClick={handleDownloadSummary}
+                          >
+                            <i className="fas fa-download"></i>
+                          </button>
+                        </Stack>
+                        {getData?.Table2?.length > 0 && (
+                          <Box
+                            sx={{
+                              width: "100%",
+                              overflowX: "auto",
+                              display: "block",
+                            }}
+                          >
+                            <Table>
+                              {/* Table Header */}
+                              <TableHead>
+                                <TableRow>
+                                  <StyledTableCell>Event Name</StyledTableCell>
+                                  <StyledTableCell>Item</StyledTableCell>
+                                  <StyledTableCell>Quantity</StyledTableCell>
+                                  <StyledTableCell>
+                                    Amount (INR)
+                                  </StyledTableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody className="table_body_main">
+                                {getData?.Table2?.length &&
+                                  getData?.Table2?.map((curData, index) => {
+                                    return (
+                                      <TableRow key={index}>
+                                        <StyledTableCell>
+                                          {curData?.Event_Name ?? ""}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                          {curData?.Item ?? ""}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                          {curData?.Quantity ?? 0}
+                                        </StyledTableCell>
+                                        <StyledTableCell>
+                                          {curData?.Amount
+                                            ? inrCurrency(curData?.Amount)
+                                            : 0}
+                                        </StyledTableCell>
+                                      </TableRow>
+                                    );
+                                  })}
+                              </TableBody>
+                            </Table>
+                          </Box>
+                        )}
                       </Stack>
-                      {getData?.Table2?.length > 0 && (
-                        <Box
-                          sx={{
-                            width: "100%",
-                            overflowX: "auto",
-                            display: "block",
-                          }}
-                        >
-                          <Table>
-                            {/* Table Header */}
-                            <TableHead>
-                              <TableRow>
-                                <StyledTableCell>Event Name</StyledTableCell>
-                                <StyledTableCell>Item</StyledTableCell>
-                                <StyledTableCell>Quantity</StyledTableCell>
-                                <StyledTableCell>Amount (INR)</StyledTableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody className="table_body_main">
-                              {getData?.Table2?.length &&
-                                getData?.Table2?.map((curData, index) => {
-                                  return (
-                                    <TableRow key={index}>
-                                      <StyledTableCell>
-                                        {curData?.Event_Name ?? ""}
-                                      </StyledTableCell>
-                                      <StyledTableCell>
-                                        {curData?.Item ?? ""}
-                                      </StyledTableCell>
-                                      <StyledTableCell>
-                                        {curData?.Quantity ?? 0}
-                                      </StyledTableCell>
-                                      <StyledTableCell>
-                                        {curData?.Amount
-                                          ? inrCurrency(curData?.Amount)
-                                          : 0}
-                                      </StyledTableCell>
-                                    </TableRow>
-                                  );
-                                })}
-                            </TableBody>
-                          </Table>
-                        </Box>
-                      )}
-                    </Stack>
-                  </div>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
 
                   {/* ====== extra ======= */}
                   {getData?.Table4?.length > 0 && (

@@ -13,7 +13,6 @@ import toast from "react-hot-toast";
 
 // Project-specific imports
 import { RestfulApiService } from "../../../config/service";
-import { decryptData } from "../../../utils/DataEncryption";
 import Loader from "../../../utils/BackdropLoader";
 import { MEDIA_URL } from "../../../config/url";
 import Swal from "sweetalert2";
@@ -386,7 +385,9 @@ function AddEventBanner({ handleStep, prevIndex }) {
                       ) : (
                         <div className="file-upload-banner">
                           <p className="text-14 text-reading fw-600">
-                            Desktop Cover Image : (Size 1920X1080)
+                            {/* Desktop Cover Image : (Size 1920X1080) */}
+                            The Banner image should have dimensions of at least
+                            800x400 pixels
                           </p>
                           <i className="fas fa-upload text-80 text-primary mt-30"></i>
                           <p className="text-16 text-reading fw-600 mt-20">

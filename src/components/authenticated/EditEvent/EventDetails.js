@@ -557,7 +557,7 @@ function EventDetails() {
             submitDetailsForm(values);
           }}
         >
-          {({ setFieldValue, setFieldTouched, values }) => (
+          {({ setFieldValue, setFieldTouched, values, errors }) => (
             <Form>
               <div className="row y-gap-30 py-20">
                 <div className="col-lg-12 col-md-12">
@@ -730,7 +730,12 @@ function EventDetails() {
                     <label className="text-13 fw-500">
                       Event Venue <sup className="asc">*</sup>
                     </label>
-                    <div className="form-control">
+                    <div
+                      className="form-control"
+                      // className={`form-control${
+                      //   errors.Event_Venue ? " border-error" : ""
+                      // }`}
+                    >
                       <Field
                         disabled={!isEditing}
                         type="text"

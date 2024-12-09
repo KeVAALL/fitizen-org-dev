@@ -1,6 +1,6 @@
 // React imports
 import React, { createRef, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 // Third-party imports
@@ -16,9 +16,11 @@ import { RestfulApiService } from "../../../config/service";
 import { decryptData } from "../../../utils/DataEncryption";
 import Loader from "../../../utils/BackdropLoader";
 import { MEDIA_URL } from "../../../config/url";
+import Swal from "sweetalert2";
 
 function EventBanner() {
   const { event_id } = useParams();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.user.userProfile);
   const [loadingBanner, setLoadingBanner] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -349,7 +351,8 @@ function EventBanner() {
                       ) : (
                         <div className="file-upload-banner">
                           <p className="text-14 text-reading fw-600">
-                            Desktop Cover Image : (Size 1920X1080)
+                            The Banner image should have dimensions of at least
+                            800x400 pixels
                           </p>
                           <i className="fas fa-upload text-80 text-primary mt-30"></i>
                           <p className="text-16 text-reading fw-600 mt-20">
@@ -409,19 +412,25 @@ function EventBanner() {
 
                   <div className="col-md-8"></div>
 
-                  {/* <div className="col-auto relative">
-                    <button
-                      disabled={submitForm}
-                      type="submit"
-                      className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
-                    >
-                      {!submitForm ? (
-                        `Save`
-                      ) : (
-                        <span className="btn-spinner"></span>
-                      )}
+                  <div
+                    className="col-md-12 relative d-flex justify-end"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      Swal.fire({
+                        text: "Event details have been successfully updated!",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000,
+                      });
+                      setTimeout(() => {
+                        window.location.replace("/dashboard/all-events");
+                      }, 1000);
+                    }}
+                  >
+                    <button className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button">
+                      Save
                     </button>
-                  </div> */}
+                  </div>
                 </div>
               </Form>
             )}

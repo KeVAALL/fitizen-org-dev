@@ -25,7 +25,6 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
   const newEventId = useSelector((state) => state.newEvent.currentEventId);
   const [initialValues, setInitialValues] = useState(initialFormValues);
   const [fetchingDescription, setFetchingDescription] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [submitForm, setSubmitForm] = useState(false);
 
   const validationSchema = Yup.object().shape({
@@ -138,7 +137,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
             <Form>
               <div className="row y-gap-30 py-20">
                 <div className="col-12">
-                  <div className="single-field w-full y-gap-10">
+                  <div className="single-field w-full y-gap-15">
                     <label className="text-13 fw-500">Description</label>
                     <Field name="Event_Description">
                       {({ field, form }) => (
@@ -157,6 +156,16 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                         />
                       )}
                     </Field>
+                    <div className="d-flex items-center gap-5">
+                      <i
+                        class="fas fa-info-circle text-12"
+                        style={{ color: "#0009" }}
+                      ></i>
+                      <div className="text-12" style={{ color: "#0009" }}>
+                        Note: Tables from Excel are not supported. Tables can
+                        only be added from Word files.
+                      </div>
+                    </div>
                     <ErrorMessage
                       name="Event_Description"
                       component="div"
@@ -166,7 +175,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                 </div>
 
                 <div className="col-12">
-                  <div className="single-field w-full y-gap-10">
+                  <div className="single-field w-full y-gap-15">
                     <label className="text-13 fw-500">
                       Refund & Cancellation Policy
                     </label>
@@ -187,6 +196,16 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                         />
                       )}
                     </Field>
+                    <div className="d-flex items-center gap-5">
+                      <i
+                        class="fas fa-info-circle text-12"
+                        style={{ color: "#0009" }}
+                      ></i>
+                      <div className="text-12" style={{ color: "#0009" }}>
+                        Note: Tables from Excel are not supported. Tables can
+                        only be added from Word files.
+                      </div>
+                    </div>
                     <ErrorMessage
                       name="Refund_Cancellation"
                       component="div"
@@ -196,7 +215,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                 </div>
 
                 <div className="col-12">
-                  <div className="single-field w-full y-gap-10">
+                  <div className="single-field w-full y-gap-15">
                     <label className="text-13 fw-500">
                       Rules & Regulations
                     </label>
@@ -217,6 +236,16 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
                         />
                       )}
                     </Field>
+                    <div className="d-flex items-center gap-5">
+                      <i
+                        class="fas fa-info-circle text-12"
+                        style={{ color: "#0009" }}
+                      ></i>
+                      <div className="text-12" style={{ color: "#0009" }}>
+                        Note: Tables from Excel are not supported. Tables can
+                        only be added from Word files.
+                      </div>
+                    </div>
                     <ErrorMessage
                       name="Rules_Regulations"
                       component="div"

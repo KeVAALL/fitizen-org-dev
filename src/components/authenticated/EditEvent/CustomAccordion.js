@@ -36,6 +36,7 @@ import Swal from "sweetalert2";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { timePlaceholder } from "../../../utils/UtilityFunctions";
+import QuillEditor from "../../QuillEditor";
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -1535,23 +1536,39 @@ const CustomAccordion = ({
 
                 {values.Is_PriceMoneyAwarded === "Yes" ? (
                   <div className="col-12">
-                    <div className="single-field w-full y-gap-10">
+                    <div className="single-field w-full y-gap-15">
                       <label className="text-13 fw-500">
                         Enter Prizes <sup className="asc">*</sup>
                       </label>
                       <Field name="Event_Prize">
                         {({ field, form }) => (
-                          <ReactQuill
+                          // <ReactQuill
+                          //   readOnly={!isEditing}
+                          //   theme="snow"
+                          //   value={field.value}
+                          //   onChange={(content) =>
+                          //     setFieldValue("Event_Prize", content)
+                          //   }
+                          //   placeholder="Add Prizes"
+                          // />
+                          <QuillEditor
+                            name="Event_Prize"
                             readOnly={!isEditing}
-                            theme="snow"
                             value={field.value}
-                            onChange={(content) =>
-                              setFieldValue("Event_Prize", content)
-                            }
-                            placeholder="Add Prizes"
+                            setFieldValue={form.setFieldValue}
                           />
                         )}
                       </Field>
+                      <div className="d-flex items-center gap-5">
+                        <i
+                          class="fas fa-info-circle text-12"
+                          style={{ color: "#0009" }}
+                        ></i>
+                        <div className="text-12" style={{ color: "#0009" }}>
+                          Note: Tables from Excel are not supported. Tables can
+                          only be added from Word files.
+                        </div>
+                      </div>
                       <ErrorMessage
                         name="Event_Prize"
                         component="div"

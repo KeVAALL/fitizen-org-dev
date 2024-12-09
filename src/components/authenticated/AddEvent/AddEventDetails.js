@@ -1551,25 +1551,32 @@ function AddEventDetails({ handleStep, index }) {
                           disabled={submitForm}
                           onClick={async (e) => {
                             e.preventDefault();
-                            try {
-                              const baseUrl = window.location.href.includes(
-                                "uatorganizer"
-                              )
-                                ? "https://uat.fitizenindia.com"
-                                : "https://fitizenindia.com";
 
-                              const formattedEventName = newEventName
-                                .split(" ")
-                                .join("-");
-                              const eventUrl = `${baseUrl}/event-details/${formattedEventName}/${encryptData(
-                                newEventId
-                              )}`;
+                            toast(
+                              "Note: The event must be approved by the admin for the link to be accessible.",
+                              {
+                                icon: "⚠️",
+                              }
+                            );
+                            // try {
+                            //   const baseUrl = window.location.href.includes(
+                            //     "uatorganizer"
+                            //   )
+                            //     ? "https://uat.fitizenindia.com"
+                            //     : "https://fitizenindia.com";
 
-                              await navigator.clipboard.writeText(eventUrl);
-                              toast.success("Link copied to clipboard!");
-                            } catch (error) {
-                              toast.error("Failed to copy link.");
-                            }
+                            //   const formattedEventName = newEventName
+                            //     .split(" ")
+                            //     .join("-");
+                            //   const eventUrl = `${baseUrl}/event-details/${formattedEventName}/${encryptData(
+                            //     newEventId
+                            //   )}`;
+
+                            //   await navigator.clipboard.writeText(eventUrl);
+                            //   toast.success("Link copied to clipboard!");
+                            // } catch (error) {
+                            //   toast.error("Failed to copy link.");
+                            // }
                           }}
                           className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary text-12"
                         >

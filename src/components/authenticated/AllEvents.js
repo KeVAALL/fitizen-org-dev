@@ -657,6 +657,25 @@ function AllEvents() {
                               </div>
 
                               <div className="cardImage__wishlist d-flex">
+                                <div className="form-switch d-flex items-center">
+                                  <div className="switch">
+                                    <input
+                                      type="checkbox"
+                                      checked={ev?.Is_Active}
+                                      onChange={(e) => {
+                                        console.log(e.target.value);
+
+                                        toggleSwitch(
+                                          index,
+                                          ev?.Is_Active,
+                                          ev?.Event_Id
+                                        );
+                                      }}
+                                    />
+                                    <span className="switch__slider"></span>
+                                  </div>
+                                </div>
+
                                 <button
                                   onClick={(e) => {
                                     e.preventDefault();
@@ -695,6 +714,13 @@ function AllEvents() {
                                 </button>
                               </div>
                               <div className="cardImage__leftBadge">
+                                <div className="px-20 rounded-right-4 text-14 lh-16 fw-700 uppercase bg-white text-dark">
+                                  {ev?.Start_Date === ev?.End_Date
+                                    ? ev?.Start_Date
+                                    : ev?.Start_Date + " - " + ev?.End_Date}
+                                </div>
+                              </div>
+                              {/* <div className="cardImage__leftBadge">
                                 <div className="form-switch d-flex items-center">
                                   <div className="switch">
                                     <input
@@ -713,7 +739,7 @@ function AllEvents() {
                                     <span className="switch__slider"></span>
                                   </div>
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                           <a
@@ -751,16 +777,14 @@ function AllEvents() {
                                   );
                                 }
                               )}
-                              {/* <div className="bg-light-2 rounded-16 text-10 fw-500 text-dark-1 py-5 px-15 lh-1 uppercase mr-5">
-                                HALF MARATHON
-                              </div>
-                              <div className="bg-light-2 rounded-16 text-10 fw-500 text-dark-1 py-5 px-15 lh-1 uppercase">
-                                10KM RUN
-                              </div> */}
                             </div>
                             <div className="mt-15 pb-5 d-flex gap-15 border-bottom-light">
                               <p className="text-11">
-                                Date :{" "}
+                                Registrations{" "}
+                                {selectedTimeline.value === "Past"
+                                  ? "Closed"
+                                  : "Closing"}{" "}
+                                on{" "}
                                 <span className="text-primary">
                                   {ev?.Registration_Date}
                                 </span>
