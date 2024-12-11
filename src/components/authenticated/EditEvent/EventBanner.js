@@ -164,6 +164,44 @@ function EventBanner() {
       setSubmitForm(false);
     }
   };
+  const finalForm = async () => {
+    const reqdata = {
+      Method_Name: "Final",
+      Event_Id: decryptData(event_id),
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+    };
+
+    try {
+      const result = await RestfulApiService(reqdata, "organizer/SaveEvent");
+
+      if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+        toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
+        return;
+      }
+
+      if (result) {
+        toast.dismiss();
+
+        Swal.fire({
+          text: "Event details have been successfully updated!",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        // setTimeout(() => {
+        //   window.location.replace("/dashboard/all-events");
+        // }, 1000);
+        // toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+      }
+    } catch (err) {
+      toast.error(err?.Result?.Table1[0]?.Result_Description);
+    } finally {
+      // setSubmitForm(false);
+    }
+  };
   async function LoadBanners() {
     const reqdata = {
       Method_Name: "Assets",
@@ -416,15 +454,7 @@ function EventBanner() {
                     className="col-md-12 relative d-flex justify-end"
                     onClick={(e) => {
                       e.preventDefault();
-                      Swal.fire({
-                        text: "Event details have been successfully updated!",
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 2000,
-                      });
-                      setTimeout(() => {
-                        window.location.replace("/dashboard/all-events");
-                      }, 1000);
+                      finalForm();
                     }}
                   >
                     <button className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button">

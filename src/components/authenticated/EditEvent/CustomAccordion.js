@@ -150,12 +150,12 @@ const CustomAccordion = ({
       // ),
       EventCategory_Id: Yup.object().required("Event Category is required"),
       Race_Distance: Yup.string().when("EventCategory_Id", {
-        is: (value) => value?.value === "C007003",
+        is: (value) => value?.label === "Other",
         then: () => Yup.string().required("Race Distance is required"),
         otherwise: () => Yup.string().nullable(),
       }),
       Race_Distance_Unit: Yup.object().when("EventCategory_Id", {
-        is: (value) => value?.value === "C007003",
+        is: (value) => value?.label === "Other",
         then: () => Yup.object().required("Unit is required"),
         otherwise: () => Yup.object().nullable(),
       }),
@@ -321,7 +321,7 @@ const CustomAccordion = ({
     addRow("Race_Distance", data.Race_Distance);
     addRow(
       "Race_Distance_Unit",
-      data.EventCategory_Id.value === "C007003"
+      data.EventCategory_Id.label === "Other"
         ? data.Race_Distance_Unit?.value || data.Race_Distance_Unit
         : ""
     );
@@ -379,14 +379,14 @@ const CustomAccordion = ({
     addRow(
       "Pills_Name",
       `${
-        data.EventCategory_Id.value === "C007003"
+        data.EventCategory_Id.label === "Other"
           ? `${data.Race_Distance}`
           : data.EventCategory_Id.label
       }${
-        data.EventCategory_Id.value === "C007003" &&
+        data.EventCategory_Id.label === "Other" &&
         data.Race_Distance_Unit?.value
           ? ` ${data.Race_Distance_Unit?.value}`
-          : data.EventCategory_Id.value === "C007003" && data.Race_Distance_Unit
+          : data.EventCategory_Id.label === "Other" && data.Race_Distance_Unit
           ? ` ${data.Race_Distance_Unit}`
           : ""
       } ${pillData}`
@@ -933,7 +933,7 @@ const CustomAccordion = ({
                       value={values.EventCategory_Id}
                       onChange={(value) => {
                         setFieldValue("EventCategory_Id", value);
-                        if (value?.value !== "C007003") {
+                        if (value?.label !== "Other") {
                           setFieldValue("Race_Distance", "");
                           // setFieldValue("Race_Distance_Unit", null);
                         }
@@ -955,7 +955,7 @@ const CustomAccordion = ({
                     <div class="form-control">
                       <Field
                         disabled={
-                          values.EventCategory_Id?.value !== "C007003" ||
+                          values.EventCategory_Id?.label !== "Other" ||
                           !isEditing
                         }
                         type="text"
@@ -979,8 +979,7 @@ const CustomAccordion = ({
                     </label>
                     <Select
                       isDisabled={
-                        values.EventCategory_Id?.value !== "C007003" ||
-                        !isEditing
+                        values.EventCategory_Id?.label !== "Other" || !isEditing
                       }
                       isSearchable={false}
                       placeholder="Select Unit"
@@ -1976,7 +1975,9 @@ const CustomAccordion = ({
                       <div className="file-upload-ticket">
                         <i className="fas fa-upload text-20 text-primary"></i>
 
-                        <p className="text-reading mt-0">jpg, png, gif</p>
+                        <p className="text-reading mt-0">
+                          Supported formats: jpg, png, gif (Max: 2MB)
+                        </p>
                         <input
                           type="file"
                           accept="image/*"

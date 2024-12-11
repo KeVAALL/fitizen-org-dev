@@ -35,34 +35,95 @@ function AddEventBanner({ handleStep, prevIndex }) {
   const dispatch = useDispatch();
   const cropperRef = createRef();
 
+  // const handleCreate = () => {
+  //   Swal.fire({
+  //     title: "Are you sure you want to publish event?",
+  //     // text: "You won't be able to revert this!",
+  //     icon: "success",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#eb6400",
+  //     // cancelButtonColor: "#fff",
+  //     confirmButtonText: "Yes",
+  //     cancelButtonText: "No",
+  //     preConfirm: async () => {
+  //       // Show loading on the "Yes, delete it!" button
+  //       Swal.showLoading();
+
+  //       navigate("/dashboard/all-events");
+  //       dispatch(removeCurrentEventId());
+  //     },
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       // Show the success message after the deletion is confirmed
+  //       Swal.fire({
+  //         title: "Event Created!",
+  //         text: "Event has been created.",
+  //         icon: "success",
+  //       });
+  //     }
+  //   });
+  // };
   const handleCreate = () => {
     Swal.fire({
-      title: "Are you sure you want to publish event?",
-      // text: "You won't be able to revert this!",
-      icon: "success",
+      title: "Are you sure you want to publish this event?",
+      icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#eb6400",
-      // cancelButtonColor: "#fff",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, publish it",
+      cancelButtonText: "Cancel",
       preConfirm: async () => {
-        // Show loading on the "Yes, delete it!" button
+        // Show loading in SweetAlert
         Swal.showLoading();
 
-        navigate("/dashboard/all-events");
-        dispatch(removeCurrentEventId());
+        try {
+          const reqdata = {
+            Method_Name: "Final",
+            Event_Id: newEventId,
+            Session_User_Id: user?.User_Id,
+            Session_User_Name: user?.User_Display_Name,
+            Session_Organzier_Id: user?.Organizer_Id,
+            Org_Id: user?.Org_Id,
+          };
+
+          const result = await RestfulApiService(
+            reqdata,
+            "organizer/SaveEvent"
+          );
+
+          if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+            throw new Error(
+              result?.data?.Result?.Table1[0]?.Result_Description
+            );
+          }
+
+          // Success message if the API call succeeds
+          Swal.fire({
+            title: "Success!",
+            text: "Event has been successfully published.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+
+          // Navigate to the events dashboard after a short delay
+          setTimeout(() => {
+            navigate("/dashboard/all-events");
+            dispatch(removeCurrentEventId());
+          }, 2000);
+        } catch (err) {
+          // Show an error alert if the API fails
+          Swal.fire({
+            title: "Error!",
+            text: err.message || "Failed to publish the event.",
+            icon: "error",
+            confirmButtonColor: "#d33",
+          });
+        }
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Show the success message after the deletion is confirmed
-        Swal.fire({
-          title: "Event Created!",
-          text: "Event has been created.",
-          icon: "success",
-        });
-      }
     });
   };
+
   const handleFileChange = async (event) => {
     const file = event.currentTarget.files[0];
 
@@ -160,6 +221,44 @@ function AddEventBanner({ handleStep, prevIndex }) {
       }
     }
   };
+  // const finalForm = async () => {
+  //   const reqdata = {
+  //     Method_Name: "Final",
+  //     Event_Id: newEventId,
+  //     Session_User_Id: user?.User_Id,
+  //     Session_User_Name: user?.User_Display_Name,
+  //     Session_Organzier_Id: user?.Organizer_Id,
+  //     Org_Id: user?.Org_Id,
+  //   };
+
+  //   try {
+  //     const result = await RestfulApiService(reqdata, "organizer/SaveEvent");
+
+  //     if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+  //       toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
+  //       return;
+  //     }
+
+  //     if (result) {
+  //       toast.dismiss();
+
+  //       Swal.fire({
+  //         text: "Event details have been successfully updated!",
+  //         icon: "success",
+  //         showConfirmButton: false,
+  //         timer: 2000,
+  //       });
+  //       // setTimeout(() => {
+  //       //   window.location.replace("/dashboard/all-events");
+  //       // }, 1000);
+  //       // toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+  //     }
+  //   } catch (err) {
+  //     toast.error(err?.Result?.Table1[0]?.Result_Description);
+  //   } finally {
+  //     // setSubmitForm(false);
+  //   }
+  // };
   const submitBannerForm = async (values) => {
     const reqdata = {
       Method_Name: "Create",
@@ -467,7 +566,12 @@ function AddEventBanner({ handleStep, prevIndex }) {
                           type="button"
                           onClick={(e) => {
                             e.preventDefault();
-                            handleCreate();
+                            if (values.Image_Path) {
+                              handleCreate();
+                            } else {
+                              toast.dismiss();
+                              toast.error("Please upload Banner Image");
+                            }
                           }}
                           className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
                         >

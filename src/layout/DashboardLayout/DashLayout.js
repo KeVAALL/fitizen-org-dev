@@ -157,7 +157,7 @@ const ReactSidebar = ({ open, menu, navigate }) => {
   };
   async function Logout() {
     const shouldDelete = await Swal.fire({
-      title: "Are you sure you want to logout?",
+      title: "See you soon! Confirm if you’re logging out.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",

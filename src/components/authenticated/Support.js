@@ -10,10 +10,8 @@ const Support = () => {
             <div className="row justify-content-between align-items-end pb-3">
               <div className="col-auto pl-3">
                 <h1 className="text-16 lh-14 fw-600">
-                  Having an issue?{" "}
-                  <span className="text-primary">
-                    Raise a ticket for prompt resolution.
-                  </span>
+                  Got a question?{" "}
+                  <span className="text-primary">We're here to help!</span>
                 </h1>
               </div>
               <div className="col-auto"></div>

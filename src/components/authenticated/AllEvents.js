@@ -37,27 +37,42 @@ function AllEvents() {
   const [cloneEventDetails, setCloneEventDetails] = useState(null);
   const [submitModalForm, setSubmitModalForm] = useState(false);
   const [selectedTimeline, setSelectedTimeline] = useState({
-    label: "Future Events",
-    value: "Future",
+    label: "All Events",
+    value: "All",
   });
+  const [timelineCounts, setTimelineCounts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const eventFilter = [
     {
-      label: "Past Events",
+      label: `All Events: ${
+        timelineCounts["AllEvents"] ? timelineCounts["AllEvents"] : 0
+      }`,
+      value: "All",
+    },
+    {
+      label: `Past Events: ${
+        timelineCounts["Past"] ? timelineCounts["Past"] : 0
+      }`,
       value: "Past",
     },
     {
-      label: "Future Events",
+      label: `Future Events: ${
+        timelineCounts["Future"] ? timelineCounts["Future"] : 0
+      }`,
       value: "Future",
     },
     {
-      label: "In-active Events",
+      label: `In-active Events: ${
+        timelineCounts["InactiveEvent"] ? timelineCounts["InactiveEvent"] : 0
+      }`,
       value: 0,
     },
     {
-      label: "Draft Events",
+      label: `Draft Events: ${
+        timelineCounts["Draft"] ? timelineCounts["Draft"] : 0
+      }`,
       value: "Draft",
     },
   ];
@@ -118,7 +133,7 @@ function AllEvents() {
   }
   async function LoadDashboard() {
     const reqdata = {
-      Method_Name: "HomePage",
+      Method_Name: "All",
       SearchBy: "",
       TypeEvent: "",
       EventId: "",
@@ -132,8 +147,17 @@ function AllEvents() {
       setFetchingDashboard(true);
       const result = await RestfulApiService(reqdata, "organizer/dashboard");
       if (result) {
-        console.log(result?.data?.Result?.Table1);
+        console.log(result?.data?.Result);
         setEvents(result?.data?.Result?.Table1);
+        setTimelineCounts(result?.data?.Result?.Table2[0]);
+        setSelectedTimeline({
+          label: `All Events: ${
+            result?.data?.Result?.Table2[0]["AllEvents"]
+              ? result?.data?.Result?.Table2[0]["AllEvents"]
+              : 0
+          }`,
+          value: "All",
+        });
       }
     } catch (err) {
       console.log(err);
@@ -164,7 +188,11 @@ function AllEvents() {
           ? "Status"
           : eventTimeline === "Draft"
           ? "Draft"
-          : "HomePage",
+          : eventTimeline === "Past"
+          ? "Past"
+          : eventTimeline === "Future"
+          ? "Future"
+          : "All",
       SearchBy: "",
       TypeEvent: "",
       EventId: "",
@@ -190,7 +218,7 @@ function AllEvents() {
   const handleSearch = async (eventValue, selectedTimeline) => {
     const today = dayjs().format("YYYY-MM-DD");
     const reqdata = {
-      Method_Name: "HomePage",
+      Method_Name: "Search",
       SearchBy: eventValue, // Pass the search term here
       TypeEvent: "",
       EventId: "",
@@ -388,12 +416,7 @@ function AllEvents() {
                 </button>
               </div>
             </div>
-            <Modal
-              open={cloneModal}
-              onClose={() => {
-                setCloneModal(false);
-              }}
-            >
+            <Modal open={cloneModal}>
               <Box
                 sx={{
                   position: "absolute",
@@ -408,10 +431,23 @@ function AllEvents() {
                   p: 3,
                 }}
               >
-                <Stack direction="column" alignItems="center" spacing={4}>
-                  <div className="text-16 lh-16 fw-600 mt-5 text-primary">
-                    CLONE EVENT
-                  </div>
+                <Stack direction="column" alignItems="center" spacing={2}>
+                  <Stack
+                    style={{ width: "100%" }}
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <div className="text-16 lh-16 fw-600 text-primary">
+                      Clone Event
+                    </div>
+                    <i
+                      onClick={() => {
+                        setCloneModal(false);
+                      }}
+                      class="fas fa-times text-16 text-primary cursor-pointer"
+                    ></i>
+                  </Stack>
                   <Formik
                     enableReinitialize
                     initialValues={cloneEventValues}
@@ -646,7 +682,11 @@ function AllEvents() {
                             <div className="cardImage ratio ratio-2:1">
                               <div className="cardImage__content">
                                 <img
-                                  className="rounded-16 col-12"
+                                  className={`rounded-16 col-12${
+                                    ev.Approved === "Not Approved"
+                                      ? " img-approval-opacity"
+                                      : ""
+                                  }`}
                                   src={
                                     ev?.Image_Path
                                       ? `${MEDIA_URL}${ev?.Image_Path}`
@@ -720,6 +760,21 @@ function AllEvents() {
                                     : ev?.Start_Date + " - " + ev?.End_Date}
                                 </div>
                               </div>
+                              {ev?.Approved === "Not Approved" ? (
+                                <div className="cardImage__middleBadge w-full">
+                                  <div
+                                    className="px-20 text-14 lh-16 fw-700 uppercase bg-white text-dark d-flex justify-center"
+                                    style={{
+                                      boxShadow:
+                                        "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                                    }}
+                                  >
+                                    Approval Pending
+                                  </div>
+                                </div>
+                              ) : (
+                                <></>
+                              )}
                               {/* <div className="cardImage__leftBadge">
                                 <div className="form-switch d-flex items-center">
                                   <div className="switch">

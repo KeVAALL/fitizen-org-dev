@@ -28,6 +28,29 @@ import { RestfulApiService } from "../../config/service";
 import EventTitle from "./EventTitle";
 
 function Discount() {
+  const { event_id } = useParams();
+  const user = useSelector((state) => state.user.userProfile);
+  const [showDiscountForm, setShowDiscountForm] = useState(false);
+  const [eventCategories, setEventCategories] = useState([]);
+  const initialValues = useMemo(
+    () => ({
+      Discount_Name: "",
+      Discount_Type: null,
+      Category_Type: null,
+      Discount_Amount: "",
+      Max_count_for_Discount: "",
+      Discount_Start_Date: null,
+      Discount_End_Date: null,
+      Event_Category: [],
+    }),
+    []
+  );
+  const [showLoader, setShowLoader] = useState(false);
+  const [submittingForm, setSubmitForm] = useState(false);
+  const [eventDetailsList, setEventDetailsList] = useState([]);
+  const [TicketStartDate, setTicketStartDate] = useState(null);
+  const [TicketEndDate, setTicketEndDate] = useState(null);
+  const [getOneData, setGetOneData] = useState(initialValues);
   const validationSchema = Yup.object({
     Discount_Name: Yup.string().required("Discount Name is required"),
     Discount_Type: Yup.object().required("Discount Type is required"),
@@ -50,27 +73,6 @@ function Discount() {
       .of(Yup.string())
       .min(1, "At least one category must be selected"),
   });
-  const initialValues = useMemo(
-    () => ({
-      Discount_Name: "",
-      Discount_Type: null,
-      Category_Type: null,
-      Discount_Amount: "",
-      Max_count_for_Discount: "",
-      Discount_Start_Date: null,
-      Discount_End_Date: null,
-      Event_Category: [],
-    }),
-    []
-  );
-  const { event_id } = useParams();
-  const user = useSelector((state) => state.user.userProfile);
-  const [showDiscountForm, setShowDiscountForm] = useState(false);
-  const [eventCategories, setEventCategories] = useState([]);
-  const [getOneData, setGetOneData] = useState(initialValues);
-  const [showLoader, setShowLoader] = useState(false);
-  const [submittingForm, setSubmitForm] = useState(false);
-  const [eventDetailsList, setEventDetailsList] = useState([]);
 
   // const [getOneData, setGetOneData] = useState(initialValues);
 
@@ -141,6 +143,12 @@ function Discount() {
       if (result) {
         console.log(result?.data?.Result?.Table1);
         setEventDetailsList(result?.data?.Result?.Table1);
+        setTicketStartDate(
+          result?.data?.Result?.Table2[0]?.TicketSale_Min_StartDate
+        );
+        setTicketEndDate(
+          result?.data?.Result?.Table2[0]?.TicketSale_Max_EndDate
+        );
       }
     } catch (err) {
       console.log(err);
@@ -173,8 +181,6 @@ function Discount() {
           "organizer/EventDiscount"
         );
         if (result) {
-          console.log("testutl", result?.data?.Result?.Table1?.[0]);
-          // setGetOneData(result?.data?.Result?.Table1?.[0] ?? {});
           let value = result?.data?.Result?.Table1?.[0] ?? {};
           // debugger
           // if(value?.Result_Id!==1){
@@ -343,7 +349,7 @@ function Discount() {
       const reqdata = {
         Method_Name: values.EventDiscount_Id ? "Update" : "Create",
         Event_Id: decryptData(event_id),
-        DiscountType_Id: values.Category_Type.value, //%
+        DiscountType_Id: values.Category_Type?.value, //%
         EventDiscount_Id: values.EventDiscount_Id ?? "", //EventDiscount_Id blank for add
         XMLData: XMLData,
         CategoryXMLData: categoryXMLData,
@@ -490,9 +496,10 @@ function Discount() {
                                 //     option.value === values.Category_Type
                                 // )}
                                 value={values.Category_Type}
-                                onChange={(option) =>
-                                  setFieldValue("Category_Type", option)
-                                }
+                                onChange={(option) => {
+                                  setFieldValue("Category_Type", option);
+                                  setFieldValue("Discount_Amount", "");
+                                }}
                               />
                               <ErrorMessage
                                 name="Category_Type"
@@ -506,7 +513,11 @@ function Discount() {
                           <div className="col-lg-4 col-md-4">
                             <div className="single-field y-gap-10">
                               <label className="text-13 fw-500">
-                                Discount Amount (₹) <sup className="asc">*</sup>
+                                Discount Amount{" "}
+                                {values.Category_Type?.value === "C008001"
+                                  ? "(%)"
+                                  : "(₹)"}{" "}
+                                <sup className="asc">*</sup>
                               </label>
                               <div class="form-control">
                                 <Field
@@ -600,6 +611,7 @@ function Discount() {
                                     }
                                     format="DD/MM/YYYY"
                                     disablePast
+                                    maxDate={dayjs(TicketEndDate)}
                                     renderInput={(params) => (
                                       <TextField
                                         {...params}
@@ -617,6 +629,8 @@ function Discount() {
                               />
                             </div>
                           </div>
+
+                          {console.log(dayjs(TicketEndDate))}
 
                           <div className="col-lg-4 col-md-4">
                             <div className="single-field y-gap-10">
@@ -642,6 +656,7 @@ function Discount() {
                                     }
                                     format="DD/MM/YYYY"
                                     disablePast
+                                    maxDate={dayjs(TicketEndDate)}
                                     renderInput={(params) => (
                                       <TextField
                                         {...params}

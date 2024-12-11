@@ -30,6 +30,7 @@ import { decryptData } from "../../utils/DataEncryption";
 import EventTitle from "./EventTitle";
 import Loader from "../../utils/BackdropLoader";
 import { timePlaceholder } from "../../utils/UtilityFunctions";
+import { LightTooltip } from "../../utils/Tooltip";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -732,22 +733,28 @@ function BIBExpo() {
                                     ))}
 
                                     <div className="col-12 d-flex">
-                                      <button
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          push({
-                                            dayOne: null,
-                                            expoStartTime1: null,
-                                            expoEndTime1: null,
-                                            expoStartTime2: null,
-                                            expoEndTime2: null,
-                                          });
-                                        }}
-                                        className="button w-45 h-45 border-primary-bold text-20 fw-600 rounded-full"
+                                      <LightTooltip
+                                        arrow
+                                        title="Add more BIB Expo"
+                                        placement="right"
                                       >
-                                        +
-                                      </button>
-                                      {/* </div> */}
+                                        <button
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            push({
+                                              dayOne: null,
+                                              expoStartTime1: null,
+                                              expoEndTime1: null,
+                                              expoStartTime2: null,
+                                              expoEndTime2: null,
+                                            });
+                                          }}
+                                          className="button w-45 h-45 border-primary-bold text-20 fw-600 rounded-full"
+                                        >
+                                          +
+                                        </button>
+                                        {/* </div> */}
+                                      </LightTooltip>
                                     </div>
                                   </>
                                 )}

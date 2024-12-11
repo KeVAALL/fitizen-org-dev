@@ -62,8 +62,8 @@ function EventDetails() {
     External_Event_Url: "",
     Timezone: null,
     Is_Gst: {
-      label: "None",
-      value: "0",
+      label: "Participant",
+      value: "1",
     },
     GSTCalc_Type: {
       label: "Percent Based",
@@ -962,7 +962,7 @@ function EventDetails() {
                         }
                       }}
                     />
-                    <label className="text-14 fw-500">External Event</label>
+                    <label className="text-14 fw-500">Public Event</label>
                   </div>
                 </div>
 
@@ -979,7 +979,7 @@ function EventDetails() {
                         );
                       }}
                     />
-                    <label className="text-14 fw-500">Is Private event?</label>
+                    <label className="text-14 fw-500">Private event</label>
                   </div>
                 </div>
 
@@ -987,7 +987,7 @@ function EventDetails() {
                   <div className="col-lg-6 col-md-6">
                     <div className="single-field y-gap-10">
                       <label className="text-13 fw-500">
-                        External URL <sup className="asc">*</sup>
+                        Public URL <sup className="asc">*</sup>
                       </label>
                       <div className="form-control">
                         <Field

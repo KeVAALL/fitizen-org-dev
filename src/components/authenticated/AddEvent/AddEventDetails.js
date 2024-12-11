@@ -32,7 +32,6 @@ import {
   EventDetailTableCell,
   StyledTableCell,
 } from "../../../utils/ReactTable";
-import { encryptData } from "../../../utils/DataEncryption";
 
 function AddEventDetails({ handleStep, index }) {
   const dispatch = useDispatch();
@@ -64,8 +63,8 @@ function AddEventDetails({ handleStep, index }) {
     External_Event_Url: "",
     Timezone: null,
     Is_Gst: {
-      label: "None",
-      value: "0",
+      label: "Participant",
+      value: "1",
     },
     GSTCalc_Type: null,
     GSTCalc_Amount: 0,
@@ -443,8 +442,8 @@ function AddEventDetails({ handleStep, index }) {
           External_Event_Url: "",
           Timezone: result?.data?.Result?.Table1[0],
           Is_Gst: {
-            label: "None",
-            value: "0",
+            label: "Participant",
+            value: "1",
           },
           GSTCalc_Type: {
             label: "Percent Based",
@@ -1053,7 +1052,7 @@ function AddEventDetails({ handleStep, index }) {
                         }
                       }}
                     />
-                    <label className="text-14 fw-500">External Event</label>
+                    <label className="text-14 fw-500">Public Event</label>
                   </div>
                 </div>
 
@@ -1069,7 +1068,7 @@ function AddEventDetails({ handleStep, index }) {
                         );
                       }}
                     />
-                    <label className="text-14 fw-500">Is Private event?</label>
+                    <label className="text-14 fw-500">Private event</label>
                   </div>
                 </div>
 

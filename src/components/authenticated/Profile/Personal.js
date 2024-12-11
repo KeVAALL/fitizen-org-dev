@@ -671,76 +671,6 @@ function Personal({
                             name="Logo_Path"
                             className="upload-pf"
                             onChange={handleFileChange}
-                            // onChange={async (event) => {
-                            //   const file = event.currentTarget.files[0];
-
-                            //   if (file && !file.type.startsWith("image/")) {
-                            //     toast.error("Please upload an image.");
-                            //     event.target.value = ""; // Reset the input value
-                            //     return;
-                            //   }
-                            //   // Check if the file size is above 2MB (2 * 1024 * 1024 bytes)
-                            //   const maxSize = 2 * 1024 * 1024;
-                            //   if (file && file.size > maxSize) {
-                            //     toast.error("File size should not exceed 2MB.");
-                            //     event.target.value = ""; // Reset the input value
-                            //     return;
-                            //   }
-
-                            //   const reqdata = new FormData();
-                            //   reqdata.append(
-                            //     "ModuleName",
-                            //     "OrganizationProfile"
-                            //   );
-                            //   reqdata.append("File", file);
-
-                            //   // Start uploading
-
-                            //   try {
-                            //     await toast.promise(
-                            //       RestfulApiService(
-                            //         reqdata,
-                            //         "master/uploadfile"
-                            //       ),
-                            //       {
-                            //         loading: "Uploading...",
-                            //         success: (result) => {
-                            //           if (result) {
-                            //             console.log(
-                            //               result?.data?.Result,
-                            //               result?.data?.Description
-                            //             );
-
-                            //             // setFieldTouched("Image_Name", true);
-                            //             setFieldValue(
-                            //               "Logo_Path",
-                            //               result?.data?.Description
-                            //             );
-                            //             // setFieldTouched("ImagePath", true);
-                            //           }
-                            //           return "Uploaded successfully!";
-                            //         },
-                            //         error: (err) => {
-                            //           const errorMessage =
-                            //             err?.Result?.Table1[0]
-                            //               ?.Result_Description ||
-                            //             "Upload failed";
-                            //           return errorMessage;
-                            //         },
-                            //       },
-                            //       {
-                            //         success: {
-                            //           duration: 2000,
-                            //         },
-                            //       }
-                            //     );
-                            //   } catch (error) {
-                            //     console.error("Upload failed:", error);
-                            //   } finally {
-                            //     // End uploading
-                            //     event.target.value = "";
-                            //   }
-                            // }}
                           />
                         </div>
                         {/* {!values?.Logo_Path && ( */}
@@ -757,11 +687,11 @@ function Personal({
                           </p>
                         </div>
                         {/* )} */}
-                        {values?.Logo_Path && (
+                        {/* {values?.Logo_Path && (
                           <p className="text-light-1 text-10 text-center">
                             {values?.Logo_Path?.split("/")[3]}
                           </p>
-                        )}
+                        )} */}
                         <ErrorMessage
                           name="Logo_Path"
                           component="div"

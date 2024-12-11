@@ -4104,7 +4104,11 @@ h6 {
   top: 0;
   left: 0;
 }
-
+.cardImage__middleBadge {
+  position: absolute;
+  bottom: 45%;
+  left: 0;
+}
 .footer.-dashboard {
   border-top: 1px solid var(--color-border);
 }
@@ -13917,7 +13921,7 @@ input:-webkit-autofill::first-line {
   font-size: 1.2rem !important;
 }
 .parent {
-  width: 200px;
+  width: 375px;
   height: 43px;
   padding: 8px 16px;
   cursor: pointer;
@@ -14006,4 +14010,7 @@ input:-webkit-autofill::first-line {
 .border-error {
   border-color: #f1622d;
   border-width: 2px;
+}
+.img-approval-opacity {
+  opacity: 0.5;
 }
