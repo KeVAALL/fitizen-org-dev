@@ -17,7 +17,7 @@ const Support = () => {
               <div className="col-auto"></div>
             </div>
             <div className="py-4 px-3 rounded bg-white">
-              <div className="row">
+              <div className="row gap-20">
                 {/* <div className="col-md-6 col-lg-3 mb-3">
             <div className="px-15 py-50 rounded-16 shadow-sm shadow-2 text-center">
               <img
@@ -45,14 +45,31 @@ const Support = () => {
                       alt="email"
                       className="d-block mx-auto"
                     />
-                    <div className="mt-3">
+                    <div className="mt-30">
+                      <div className="text-12 fw-400">
+                        For marketing or sponsorship inquiries, email us at
+                      </div>
                       <Link
                         className="text-14 fw-600"
                         to="mailto:marketing@fitizenindia.com"
                       >
                         marketing@fitizenindia.com
                       </Link>
-                      <br />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-lg-3 p-0">
+                  <div className="px-15 py-50 rounded-16 shadow-sm shadow-2 text-center">
+                    <img
+                      src={email}
+                      width="150"
+                      alt="email"
+                      className="d-block mx-auto"
+                    />
+                    <div className="mt-30">
+                      <div className="text-12 fw-400">
+                        For event-related support, reach out to
+                      </div>
                       <Link
                         className="text-14 fw-600"
                         to="mailto:supportevents@fitizenindia.com"

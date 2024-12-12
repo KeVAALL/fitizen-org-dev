@@ -62,8 +62,8 @@ function EventDetails() {
     External_Event_Url: "",
     Timezone: null,
     Is_Gst: {
-      label: "Participant",
-      value: "1",
+      label: "None",
+      value: "0",
     },
     GSTCalc_Type: {
       label: "Percent Based",
@@ -142,7 +142,7 @@ function EventDetails() {
     RaceDay_Takeaways: Yup.array(),
     RaceDay_Facilities: Yup.array(),
     Pincode: Yup.object().required("Pincode is required"),
-    Contact_User_Id: Yup.object().required("Contact Person is required"),
+    Contact_User_Id: Yup.object().nullable(),
     Country: Yup.object().required("Country is required"),
     State: Yup.string().required("State is required"),
     City: Yup.string().required("City is required"),
@@ -154,7 +154,7 @@ function EventDetails() {
       then: () =>
         Yup.string()
           .url("Enter a valid URL")
-          .required("External URL is required"),
+          .required("External Event URL is required"),
       otherwise: () => Yup.string().notRequired().nullable(),
     }),
     Timezone: Yup.object().required("Timezone is required"),
@@ -263,7 +263,7 @@ function EventDetails() {
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>Contact_User_Id</FN><FV>" +
-      values?.Contact_User_Id.value +
+      values?.Contact_User_Id?.value +
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>Event_Venue</FN><FV>" +
@@ -384,6 +384,7 @@ function EventDetails() {
         values?.RaceDay_Facilities?.length > 0
           ? convertToFacilityXML(values)
           : "",
+      QuestionMandatoryXMLData: "",
       QuestionXMLData: "",
       Event_Description: "",
       Rules_Regulations: "",
@@ -428,6 +429,11 @@ function EventDetails() {
       const result = await RestfulApiService(reqdata, "organizer/GetEvent");
       if (result) {
         const result1 = result?.data?.Result?.Table1[0];
+        console.log(
+          result?.data?.Result?.Table8?.filter(
+            (type) => type.value === result1?.Contact_User_Id
+          )[0]
+        );
         const apiResponse = {
           categorySelected: result?.data?.Result?.Table3?.filter(
             (type) => type.value === result1?.EventType_Id
@@ -450,9 +456,11 @@ function EventDetails() {
             label: result1?.Pincode,
             value: result1?.Pincode_Id,
           },
-          Contact_User_Id: result?.data?.Result?.Table8?.filter(
-            (type) => type.value === result1?.Contact_User_Id
-          )[0],
+          Contact_User_Id:
+            result?.data?.Result?.Table8?.filter(
+              (type) => type.value === result1?.Contact_User_Id
+            )[0] ?? null,
+          // Contact_User_Id: null,
           Country: { label: "India", value: "India" },
           State: result1?.State,
           City: result1?.City,
@@ -923,14 +931,15 @@ function EventDetails() {
                 <div className="col-lg-6 col-md-6">
                   <div className="y-gap-10">
                     <label className="text-13 fw-500">
-                      Contact Person <sup className="asc">*</sup>
+                      Contact Person (Add Contact person from profile page)
                     </label>
                     <Select
+                      placeholder="Select Contact person"
                       isDisabled={!isEditing}
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={contactUserDropdown}
-                      value={values.Contact_User_Id}
+                      value={values?.Contact_User_Id}
                       onChange={(value) =>
                         setFieldValue("Contact_User_Id", value)
                       }
@@ -962,7 +971,7 @@ function EventDetails() {
                         }
                       }}
                     />
-                    <label className="text-14 fw-500">Public Event</label>
+                    <label className="text-14 fw-500">External Event</label>
                   </div>
                 </div>
 
@@ -987,7 +996,7 @@ function EventDetails() {
                   <div className="col-lg-6 col-md-6">
                     <div className="single-field y-gap-10">
                       <label className="text-13 fw-500">
-                        Public URL <sup className="asc">*</sup>
+                        External Event URL <sup className="asc">*</sup>
                       </label>
                       <div className="form-control">
                         <Field
@@ -1066,9 +1075,15 @@ function EventDetails() {
                                   styles={selectCustomStyle}
                                   options={chargesDropdown}
                                   value={values.Is_Gst}
-                                  onChange={(value) =>
-                                    setFieldValue("Is_Gst", value)
-                                  }
+                                  onChange={(value) => {
+                                    setFieldValue("Is_Gst", value);
+                                    if (value.value === "0") {
+                                      setFieldValue("GSTCalc_Amount", 0);
+                                    }
+                                    if (value.value === "1") {
+                                      setFieldValue("GSTCalc_Amount", 18);
+                                    }
+                                  }}
                                 />
 
                                 <ErrorMessage
@@ -1104,8 +1119,8 @@ function EventDetails() {
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
-                                  // disabled={!isEditing}
-                                  disabled={true}
+                                  disabled={!isEditing}
+                                  // disabled={true}
                                   type="number"
                                   className="form-control"
                                   placeholder="Add Value"
@@ -1486,9 +1501,9 @@ function EventDetails() {
                             toast.error("Failed to copy link.");
                           }
                         }}
-                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary text-12"
+                        className="button bg-white w-200 h-40 rounded-24 px-15 text-primary border-primary text-12"
                       >
-                        Copy Link
+                        Copy Private Event Link
                       </button>
                     </div>
                     {isEditing && (
@@ -1509,6 +1524,11 @@ function EventDetails() {
                           <button
                             disabled={submitForm}
                             type="submit"
+                            // type="button"
+                            // onClick={(e) => {
+                            //   e.preventDefault();
+                            //   console.log(errors);
+                            // }}
                             className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
                           >
                             {!submitForm ? (

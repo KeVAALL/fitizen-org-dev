@@ -955,8 +955,9 @@ const CustomAccordion = ({
                     <div class="form-control">
                       <Field
                         disabled={
-                          values.EventCategory_Id?.label !== "Other" ||
-                          !isEditing
+                          values.EventCategory_Id?.label !== "Other"
+                          // ||
+                          // !isEditing
                         }
                         type="text"
                         className="form-control"
@@ -979,7 +980,8 @@ const CustomAccordion = ({
                     </label>
                     <Select
                       isDisabled={
-                        values.EventCategory_Id?.label !== "Other" || !isEditing
+                        values.EventCategory_Id?.label !== "Other"
+                        // || !isEditing
                       }
                       isSearchable={false}
                       placeholder="Select Unit"

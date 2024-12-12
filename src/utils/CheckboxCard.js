@@ -1,9 +1,15 @@
 import React from "react";
-import { Checkbox } from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
 import Select from "react-select";
 import { selectCustomStyle } from "./ReactSelectStyles";
 
-function CheckboxCard({ fieldName, fieldPlaceholder, fieldType }) {
+function CheckboxCard({
+  fieldName,
+  fieldPlaceholder,
+  fieldType,
+  isMandatory,
+  onToggleMandatory,
+}) {
   return (
     <div class="col-lg-12 col-md-12">
       <div
@@ -14,22 +20,19 @@ function CheckboxCard({ fieldName, fieldPlaceholder, fieldType }) {
       >
         <div className="row">
           <div className="col-1 d-flex">
-            <Checkbox />
+            <Checkbox disabled checked />
           </div>
           <div className="col-3">
             <div class="y-gap-5">
-              <label class="text-13 fw-500">
-                {fieldName} <sup className="asc">*</sup>
-              </label>
+              <label class="text-13 fw-500">{fieldName}</label>
               <div class="d-flex gap-20">
                 <label class="text-error-2 text-13">Mandatory Field</label>
                 <div className="form-switch d-flex ">
                   <div className="switch">
                     <input
                       type="checkbox"
-                      onChange={(e) => {
-                        console.log(e);
-                      }}
+                      checked={isMandatory}
+                      onChange={onToggleMandatory}
                     />
                     <span className="switch__slider"></span>
                   </div>

@@ -44,6 +44,8 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import Loader from "../../../utils/BackdropLoader";
+import CheckboxCard from "../../../utils/CheckboxCard";
 
 const DraggableQuestion = ({
   qkey,
@@ -169,9 +171,123 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
   const newEventId = useSelector((state) => state.newEvent.currentEventId);
   const user = useSelector((state) => state.user.userProfile);
   const [isOtherInfoAccordion, setOtherInfoAccordion] = useState(false);
+  const [personalInfoAccordion, setPersonalInfoAccordion] = useState(false);
+  const [addressInfoAccordion, setAddressInfoAccordion] = useState(false);
+  const toggleAccordion = (accordionType) => {
+    setOtherInfoAccordion((prevState) =>
+      accordionType === "otherInfo" ? !prevState : false
+    );
+    setPersonalInfoAccordion((prevState) =>
+      accordionType === "personalInfo" ? !prevState : false
+    );
+    setAddressInfoAccordion((prevState) =>
+      accordionType === "addressInfo" ? !prevState : false
+    );
+  };
   const [loadingQuestionForm, setLoadingQuestionForm] = useState(false);
+  const [loadingPersonalForm, setLoadingPersonalForm] = useState(false);
+
   const [infoQuestions, setInfoQuestions] = useState([]);
+
+  const [personalQuestions, setPersonalQuestions] = useState([
+    {
+      fieldName: "Participant Name",
+      fieldPlaceholder: "Add Name",
+      fieldType: "text",
+      fieldId: "PQ001",
+      Is_Mandatory: true,
+    },
+    {
+      fieldName: "Email ID",
+      fieldPlaceholder: "Add Email ID",
+      fieldType: "text",
+      fieldId: "PQ002",
+      Is_Mandatory: true,
+    },
+    {
+      fieldName: "Phone Number",
+      fieldPlaceholder: "9893399393",
+      fieldType: "text",
+      fieldId: "PQ003",
+      Is_Mandatory: true,
+    },
+    {
+      fieldName: "Date of Birth",
+      fieldPlaceholder: "Date of Birth",
+      fieldType: "text",
+      fieldId: "PQ004",
+      Is_Mandatory: true,
+    },
+    {
+      fieldName: "Gender",
+      fieldPlaceholder: "Gender",
+      fieldType: "select",
+      fieldId: "PQ005",
+      Is_Mandatory: true,
+    },
+    {
+      fieldName: "Blood Group",
+      fieldPlaceholder: "Add Blood Group",
+      fieldType: "select",
+      fieldId: "PQ006",
+      Is_Mandatory: true,
+    },
+  ]);
+  const [addressQuestions, setAddressQuestions] = useState([
+    {
+      fieldName: "Pincode",
+      fieldPlaceholder: "Add Pincode",
+      fieldType: "text",
+      fieldId: "AQ001",
+      Is_Mandatory: false,
+    },
+    {
+      fieldName: "Country",
+      fieldPlaceholder: "Country",
+      fieldType: "select",
+      fieldId: "AQ002",
+      Is_Mandatory: false,
+    },
+    {
+      fieldName: "Address",
+      fieldPlaceholder: "Add Address",
+      fieldType: "text",
+      fieldId: "AQ003",
+      Is_Mandatory: false,
+    },
+    {
+      fieldName: "State",
+      fieldPlaceholder: "State",
+      fieldType: "select",
+      fieldId: "AQ004",
+      Is_Mandatory: false,
+    },
+    {
+      fieldName: "City",
+      fieldPlaceholder: "City",
+      fieldType: "select",
+      fieldId: "AQ005",
+      Is_Mandatory: false,
+    },
+    {
+      fieldName: "Street",
+      fieldPlaceholder: "Add Street",
+      fieldType: "text",
+      fieldId: "AQ006",
+      Is_Mandatory: false,
+    },
+    {
+      fieldName: "Landmark",
+      fieldPlaceholder: "Add Landmark",
+      fieldType: "text",
+      fieldId: "AQ007",
+      Is_Mandatory: false,
+    },
+  ]);
   const [submitQuestionForm, setSubmitQuestionForm] = useState(false);
+  const [submitPersonalForm, setSubmitPersonalForm] = useState(false);
+  const [submitAddressForm, setSubmitAddressForm] = useState(false);
+  // add new question
   const [addQuestionModal, setAddQuestionModal] = useState(false);
   const [submitAddQuestion, setSubmitAddQuestion] = useState(false);
   const [isEditingQuestion, setIsEditingQuestion] = useState(false);
@@ -182,14 +298,13 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
     Is_Mandatory: false,
     Mandatory_Msg: "",
   };
-  const [addQuestionValue, setAddQuestionValue] = useState(initialValues);
-
   const InputTypeOptions = [
     { label: "Text", value: "text" },
     { label: "Dropdown", value: "dropdown" },
     { label: "Radio", value: "radio" },
     { label: "Checkbox", value: "checkbox" },
   ];
+  const [addQuestionValue, setAddQuestionValue] = useState(initialValues);
   const QuestionValidationSchema = Yup.object().shape({
     Question: Yup.string().required("Question Name is required"),
     Input_Type: Yup.object().required("Input Type is required"),
@@ -207,42 +322,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
     }),
   });
 
-  const handleCancelClick = (event) => {
-    event.stopPropagation(); // Prevent accordion from toggling
-    setOtherInfoAccordion(false); // Close the accordion
-  };
-  const handleEditClick = async (event, eventCategoryId) => {
-    event.stopPropagation(); // Prevent accordion from toggling
-
-    const reqdata = {
-      Method_Name: "Question",
-      Event_Id: newEventId,
-      Session_User_Id: user?.User_Id,
-      Session_User_Name: user?.User_Display_Name,
-      Session_Organzier_Id: user?.Organizer_Id,
-      Org_Id: user?.Org_Id,
-      EventCategoryEntry_Id: eventCategoryId,
-    };
-    try {
-      setLoadingQuestionForm(true);
-
-      const result = await RestfulApiService(reqdata, "organizer/GetEvent");
-      if (result) {
-        const result1 = JSON.parse(
-          result?.data?.Result?.Table1[0]?.Question
-        )?.map((res) => {
-          return { ...res, checked: res?.Event_Question_Id ? true : false };
-        });
-        setInfoQuestions(result1);
-
-        setOtherInfoAccordion(true);
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoadingQuestionForm(false);
-    }
-  };
+  // For dragging questions
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -281,6 +361,197 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
       setInfoQuestions(updatedQuestions); // Pass the updated order back to the parent component
     }
   };
+  // For toggling personal form
+  const togglePersonalMandatory = (index) => {
+    setPersonalQuestions((prevQuestions) =>
+      prevQuestions.map((question, idx) =>
+        idx === index
+          ? { ...question, Is_Mandatory: !question.Is_Mandatory }
+          : question
+      )
+    );
+  };
+  // For toggling address form
+  const toggleAddressMandatory = (index) => {
+    setAddressQuestions((prevQuestions) =>
+      prevQuestions.map((question, idx) =>
+        idx === index
+          ? { ...question, Is_Mandatory: !question.Is_Mandatory }
+          : question
+      )
+    );
+  };
+  // For saving personal & address form
+  const generatePersonalXMLData = (personalQuestions) => {
+    let PersonalXMLData = "";
+
+    // Filter questions where Is_Mandatory is true
+    personalQuestions.forEach((question) => {
+      if (question.Is_Mandatory) {
+        PersonalXMLData += "<R>";
+        PersonalXMLData += `<QID>${question.fieldId}</QID>`; // Assuming Question_Id exists
+        PersonalXMLData += `<EQID></EQID>`; // Placeholder for additional data
+        PersonalXMLData += `<ON></ON>`; // Placeholder for additional data
+        PersonalXMLData += `<DOC></DOC>`; // Placeholder for additional data
+        PersonalXMLData += "</R>";
+      }
+    });
+
+    // Wrap the individual question XML strings into a root element
+    PersonalXMLData = `<D>${PersonalXMLData}</D>`;
+    console.log(PersonalXMLData);
+    return PersonalXMLData;
+  };
+  const handlePersonalEditClick = async (event, eventCategoryId) => {
+    const reqdata = {
+      Method_Name: "QuestionMan",
+      Event_Id: newEventId,
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      EventCategoryEntry_Id: eventCategoryId,
+    };
+    try {
+      setLoadingPersonalForm(true);
+      const result = await RestfulApiService(reqdata, "organizer/GetEvent");
+      if (result) {
+        console.log(result?.data?.Result?.Table1);
+        setPersonalQuestions((prevQuestions) =>
+          prevQuestions.map((question) => ({
+            ...question,
+            Is_Mandatory: result?.data?.Result?.Table1?.some(
+              (data) => data.Question_Id === question.fieldId
+            ),
+          }))
+        );
+        setAddressQuestions((prevQuestions) =>
+          prevQuestions.map((question) => ({
+            ...question,
+            Is_Mandatory: result?.data?.Result?.Table1?.some(
+              (data) => data.Question_Id === question.fieldId
+            ),
+          }))
+        );
+        console.log(
+          addressQuestions.map((question) => ({
+            ...question,
+            Is_Mandatory: result?.data?.Result?.Table1?.some(
+              (data) => data.Question_Id === question.fieldId
+            ),
+          }))
+        );
+
+        // setPersonalInfoAccordion(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoadingPersonalForm(false);
+    }
+  };
+  const handlePersonalInfoSave = async (e) => {
+    e.preventDefault();
+
+    const isAnyChecked =
+      personalQuestions.some((question) => question.Is_Mandatory) ||
+      addressQuestions.some((question) => question.Is_Mandatory);
+
+    if (!isAnyChecked) {
+      toast.error("At least one field should be mandatory");
+      return;
+    }
+
+    const reqdata = {
+      Method_Name: "QuestionMan",
+      Event_Id: newEventId,
+      Event_Name: "",
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      XMLData: "",
+      TakeAwayXMLData: "",
+      FacilityXMLData: "",
+      QuestionXMLData: "",
+      QuestionMandatoryXMLData: generatePersonalXMLData([
+        ...personalQuestions,
+        ...addressQuestions,
+      ]), // Updated function
+      Event_Description: "",
+      Rules_Regulations: "",
+      Refund_Cancellation: "",
+    };
+
+    try {
+      if (personalInfoAccordion) {
+        setSubmitPersonalForm(true);
+      } else {
+        setSubmitAddressForm(true);
+      }
+
+      const result = await RestfulApiService(reqdata, "organizer/SaveEvent");
+
+      if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+        toast.error(result?.data?.Result?.Table1[0]?.Result_Description);
+        return;
+      }
+
+      if (result) {
+        toast.dismiss();
+        toast.success(result?.data?.Result?.Table1[0]?.Result_Description);
+        if (personalInfoAccordion) {
+          toggleAccordion("personalInfo");
+        } else {
+          toggleAccordion("addressInfo");
+        }
+      }
+    } catch (err) {
+      toast.error(err?.Result?.Table1[0]?.Result_Description);
+    } finally {
+      setSubmitPersonalForm(false);
+      setSubmitAddressForm(false);
+    }
+  };
+
+  // For saving question form order
+  const handleCancelClick = (event) => {
+    event.stopPropagation(); // Prevent accordion from toggling
+    toggleAccordion("otherInfo");
+  };
+  const handleEditClick = async (event, eventCategoryId) => {
+    event.stopPropagation(); // Prevent accordion from toggling
+
+    const reqdata = {
+      Method_Name: "Question",
+      Event_Id: newEventId,
+      Session_User_Id: user?.User_Id,
+      Session_User_Name: user?.User_Display_Name,
+      Session_Organzier_Id: user?.Organizer_Id,
+      Org_Id: user?.Org_Id,
+      EventCategoryEntry_Id: eventCategoryId,
+    };
+    try {
+      setLoadingQuestionForm(true);
+
+      const result = await RestfulApiService(reqdata, "organizer/GetEvent");
+      if (result) {
+        const result1 = JSON.parse(
+          result?.data?.Result?.Table1[0]?.Question
+        )?.map((res) => {
+          return { ...res, checked: res?.Event_Question_Id ? true : false };
+        });
+        setInfoQuestions(result1);
+
+        setOtherInfoAccordion(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoadingQuestionForm(false);
+    }
+  };
+
   const toggleChecked = (id) => {
     console.log(id);
     const updatedQuestions = infoQuestions.map((q) =>
@@ -313,7 +584,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
     QuestionXMLData = `<D>${QuestionXMLData}</D>`;
     return QuestionXMLData; // You can return or log this
   };
-  const handleSaveClick = async (e) => {
+  const handleOtherInfoSaveClick = async (e) => {
     e.preventDefault();
 
     const isAnyChecked = infoQuestions.some((question) => question.checked);
@@ -335,6 +606,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
       XMLData: "",
       TakeAwayXMLData: "",
       FacilityXMLData: "",
+      QuestionMandatoryXMLData: "",
       QuestionXMLData: generateQuestionXMLData(infoQuestions),
       Event_Description: "",
       Rules_Regulations: "",
@@ -485,6 +757,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
       top: 0,
       behavior: "smooth", // Smooth scrolling
     });
+    handlePersonalEditClick();
   }, []);
 
   return (
@@ -492,258 +765,135 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
       className="py-30 px-30 border-light rounded-8"
       style={{ boxShadow: "2px 2px 7.5px 0px #0000000D" }}
     >
-      <div className="row y-gap-30 py-20">
-        <div className="col-12">
-          <Modal open={addQuestionModal}>
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: 600,
-                bgcolor: "background.paper",
-                border: "none",
-                borderRadius: 2,
-                boxShadow: 24,
-                p: 3,
-              }}
-            >
-              <Stack direction="column" alignItems="center" spacing={2}>
-                <Stack
-                  style={{ width: "100%" }}
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <div className="text-16 lh-16 fw-600 text-primary">
-                    {isEditingQuestion ? "Edit" : "Add"} Question
-                  </div>
-                  <i
-                    onClick={() => {
-                      setAddQuestionModal(false);
-                      setIsEditingQuestion(false);
-                      setAddQuestionValue(initialValues);
-                    }}
-                    class="fas fa-times text-16 text-primary cursor-pointer"
-                  ></i>
-                </Stack>
-
-                <Formik
-                  enableReinitialize
-                  initialValues={addQuestionValue}
-                  validationSchema={QuestionValidationSchema}
-                  onSubmit={async (values) => {
-                    const reqdata = {
-                      Method_Name: isEditingQuestion ? "Update" : "Create",
-                      Session_User_Id: user?.User_Id,
-                      Session_User_Name: user?.User_Display_Name,
-                      Session_Organzier_Id: user?.Organizer_Id,
-                      Org_Id: user?.Org_Id,
-                      Event_Id: newEventId,
-                      Question: values.Question,
-                      Input_Type: values.Input_Type.value,
-                      Option_Fileds:
-                        values.Option_Fileds.length > 0
-                          ? values.Option_Fileds?.map(
-                              (field) => field.value
-                            ).join(",")
-                          : "",
-                      Is_Mandatory: Number(values.Is_Mandatory),
-                      Mandatory_Msg: values.Mandatory_Msg,
-                      Event_Question_Id: isEditingQuestion
-                        ? values.Event_Question_Id
-                        : "",
-                    };
-
-                    try {
-                      setSubmitAddQuestion(true);
-
-                      const result = await RestfulApiService(
-                        reqdata,
-                        "organizer/save_question"
-                      );
-                      if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
-                        toast.error(
-                          result?.data?.Result?.Table1[0]?.Result_Description
-                        );
-                        return;
-                      }
-                      if (result) {
-                        toast.success(
-                          result?.data?.Result?.Table1[0]?.Result_Description
-                        );
-                        setIsEditingQuestion(false);
+      {loadingPersonalForm ? (
+        <Loader fetching={loadingPersonalForm} />
+      ) : (
+        <div className="row y-gap-30 py-20">
+          <div className="col-12">
+            <Modal open={addQuestionModal}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 600,
+                  bgcolor: "background.paper",
+                  border: "none",
+                  borderRadius: 2,
+                  boxShadow: 24,
+                  p: 3,
+                }}
+              >
+                <Stack direction="column" alignItems="center" spacing={2}>
+                  <Stack
+                    style={{ width: "100%" }}
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <div className="text-16 lh-16 fw-600 text-primary">
+                      {isEditingQuestion ? "Edit" : "Add"} Question
+                    </div>
+                    <i
+                      onClick={() => {
                         setAddQuestionModal(false);
+                        setIsEditingQuestion(false);
                         setAddQuestionValue(initialValues);
-                        const result1 = result?.data?.Result?.Table2?.map(
-                          (res) => {
-                            return {
-                              ...res,
-                              checked: isNaN(Number(res.Question_Id))
-                                ? res?.Question_Id
-                                  ? true
-                                  : false
-                                : res?.Event_Question_Id
-                                ? true
-                                : false,
-                            };
-                          }
-                        );
-                        setInfoQuestions(result1);
-                      }
-                    } catch (err) {
-                      console.log(err);
-                    } finally {
-                      setSubmitAddQuestion(false);
-                    }
-                  }}
-                >
-                  {({ setFieldValue, setFieldTouched, values }) => (
-                    <Form
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "16px",
                       }}
-                    >
-                      <div className="single-field w-full y-gap-10">
-                        <label className="text-13 text-reading fw-500">
-                          Question Name <sup className="asc">*</sup>
-                        </label>
-                        <div className="form-control">
-                          <Field
-                            type="text"
-                            name="Question"
-                            className="form-control"
-                            placeholder="Enter Question Name"
-                            onChange={(e) => {
-                              e.preventDefault();
-                              const { value } = e.target;
+                      class="fas fa-times text-16 text-primary cursor-pointer"
+                    ></i>
+                  </Stack>
 
-                              const regex = /^[^\s].*$/;
+                  <Formik
+                    enableReinitialize
+                    initialValues={addQuestionValue}
+                    validationSchema={QuestionValidationSchema}
+                    onSubmit={async (values) => {
+                      const reqdata = {
+                        Method_Name: isEditingQuestion ? "Update" : "Create",
+                        Session_User_Id: user?.User_Id,
+                        Session_User_Name: user?.User_Display_Name,
+                        Session_Organzier_Id: user?.Organizer_Id,
+                        Org_Id: user?.Org_Id,
+                        Event_Id: newEventId,
+                        Question: values.Question,
+                        Input_Type: values.Input_Type.value,
+                        Option_Fileds:
+                          values.Option_Fileds.length > 0
+                            ? values.Option_Fileds?.map(
+                                (field) => field.value
+                              ).join(",")
+                            : "",
+                        Is_Mandatory: Number(values.Is_Mandatory),
+                        Mandatory_Msg: values.Mandatory_Msg,
+                        Event_Question_Id: isEditingQuestion
+                          ? values.Event_Question_Id
+                          : "",
+                      };
 
-                              if (
-                                !value ||
-                                (regex.test(value.toString()) &&
-                                  value.length <= 50)
-                              ) {
-                                setFieldValue("Question", value);
-                              } else {
-                                return;
-                              }
-                            }}
-                          />
-                        </div>
-                        <ErrorMessage
-                          name="Question"
-                          component="div"
-                          className="text-error-2 text-13"
-                        />
-                      </div>
+                      try {
+                        setSubmitAddQuestion(true);
 
-                      {/* Input Type */}
-                      <div className="y-gap-10">
-                        <label className="text-13 text-reading fw-500">
-                          Input Type <sup className="asc">*</sup>
-                        </label>
-                        <div className="p-0">
-                          <Select
-                            isSearchable={false}
-                            placeholder="Select Input Type"
-                            options={InputTypeOptions}
-                            styles={selectCustomStyle}
-                            value={values.Input_Type}
-                            onChange={(option) => {
-                              setFieldValue("Input_Type", option);
-                              if (
-                                option?.value === "dropdown" ||
-                                option?.value === "radio"
-                              ) {
-                                setFieldValue("Options", []);
-                              }
-                            }}
-                          />
-                        </div>
-                        <ErrorMessage
-                          name="Input_Type"
-                          component="div"
-                          className="text-error-2 text-13"
-                        />
-                      </div>
-
-                      {/* Options */}
-                      {(values.Input_Type?.value === "dropdown" ||
-                        values.Input_Type?.value === "radio") && (
-                        <div className="y-gap-10">
-                          <label className="text-13 text-reading fw-500">
-                            Options <sup className="asc">*</sup>
-                          </label>
-                          <div className="p-0">
-                            <CreatableSelect
-                              placeholder="Type to add your own options"
-                              isMulti
-                              styles={{
-                                ...selectCustomStyle,
-                                multiValue: (base) => ({
-                                  ...base,
-                                  borderRadius: "4px",
-                                  backgroundColor: "#fff9e1",
-                                  color: "#000",
-                                }),
-                                multiValueLabel: (base) => ({
-                                  ...base,
-                                  padding: "0px 8px 0px 8px",
-                                  fontSize: "80%",
-                                }),
-                              }}
-                              options={values.Option_Fileds}
-                              value={values.Option_Fileds}
-                              onChange={(options) =>
-                                setFieldValue("Option_Fileds", options)
-                              }
-                            />
-                          </div>
-                          <ErrorMessage
-                            name="Option_Fileds"
-                            component="div"
-                            className="text-error-2 text-13"
-                          />
-                        </div>
-                      )}
-
-                      <div className="d-flex items-center gap-10">
-                        <Checkbox
-                          sx={{ paddingLeft: 0 }}
-                          checked={values.Is_Mandatory}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            setFieldValue(
-                              "Is_Mandatory",
-                              Number(e.target.checked)
-                            );
-                            if (!e.target.checked) {
-                              setFieldValue("Mandatory_Msg", "");
-                              setFieldTouched("Mandatory_Msg", false, false);
+                        const result = await RestfulApiService(
+                          reqdata,
+                          "organizer/save_question"
+                        );
+                        if (result?.data?.Result?.Table1[0]?.Result_Id === -1) {
+                          toast.error(
+                            result?.data?.Result?.Table1[0]?.Result_Description
+                          );
+                          return;
+                        }
+                        if (result) {
+                          toast.success(
+                            result?.data?.Result?.Table1[0]?.Result_Description
+                          );
+                          setIsEditingQuestion(false);
+                          setAddQuestionModal(false);
+                          setAddQuestionValue(initialValues);
+                          const result1 = result?.data?.Result?.Table2?.map(
+                            (res) => {
+                              return {
+                                ...res,
+                                checked: isNaN(Number(res.Question_Id))
+                                  ? res?.Question_Id
+                                    ? true
+                                    : false
+                                  : res?.Event_Question_Id
+                                  ? true
+                                  : false,
+                              };
                             }
-                          }}
-                        />
-                        <label className="text-14 fw-500">Is Mandatory?</label>
-                      </div>
-
-                      {/* Mandatory Name */}
-                      {values.Is_Mandatory ? (
+                          );
+                          setInfoQuestions(result1);
+                        }
+                      } catch (err) {
+                        console.log(err);
+                      } finally {
+                        setSubmitAddQuestion(false);
+                      }
+                    }}
+                  >
+                    {({ setFieldValue, setFieldTouched, values }) => (
+                      <Form
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "16px",
+                        }}
+                      >
                         <div className="single-field w-full y-gap-10">
                           <label className="text-13 text-reading fw-500">
-                            Error message <sup className="asc">*</sup>
+                            Question Name <sup className="asc">*</sup>
                           </label>
                           <div className="form-control">
                             <Field
                               type="text"
-                              name="Mandatory_Msg"
+                              name="Question"
                               className="form-control"
-                              placeholder="Enter Error message"
+                              placeholder="Enter Question Name"
                               onChange={(e) => {
                                 e.preventDefault();
                                 const { value } = e.target;
@@ -755,7 +905,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
                                   (regex.test(value.toString()) &&
                                     value.length <= 50)
                                 ) {
-                                  setFieldValue("Mandatory_Msg", value);
+                                  setFieldValue("Question", value);
                                 } else {
                                   return;
                                 }
@@ -763,236 +913,640 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
                             />
                           </div>
                           <ErrorMessage
-                            name="Mandatory_Msg"
+                            name="Question"
                             component="div"
                             className="text-error-2 text-13"
                           />
                         </div>
-                      ) : (
-                        <></>
-                      )}
 
-                      <Stack
-                        style={{ width: "100%" }}
-                        direction="row"
-                        justifyContent="flex-end"
-                        alignItems="center"
-                        className="mt-20"
-                      >
-                        <div className="col-auto relative">
-                          <button
-                            disabled={submitAddQuestion}
-                            type="submit"
-                            className="button bg-primary w-150 h-50 rounded-24 px-15 text-white border-light load-button"
-                          >
-                            {!submitAddQuestion ? (
-                              `Save`
-                            ) : (
-                              <span className="btn-spinner"></span>
-                            )}
-                          </button>
+                        {/* Input Type */}
+                        <div className="y-gap-10">
+                          <label className="text-13 text-reading fw-500">
+                            Input Type <sup className="asc">*</sup>
+                          </label>
+                          <div className="p-0">
+                            <Select
+                              isSearchable={false}
+                              placeholder="Select Input Type"
+                              options={InputTypeOptions}
+                              styles={selectCustomStyle}
+                              value={values.Input_Type}
+                              onChange={(option) => {
+                                setFieldValue("Input_Type", option);
+                                if (
+                                  option?.value === "dropdown" ||
+                                  option?.value === "radio"
+                                ) {
+                                  setFieldValue("Options", []);
+                                }
+                              }}
+                            />
+                          </div>
+                          <ErrorMessage
+                            name="Input_Type"
+                            component="div"
+                            className="text-error-2 text-13"
+                          />
                         </div>
-                      </Stack>
-                    </Form>
-                  )}
-                </Formik>
-              </Stack>
-            </Box>
-          </Modal>
 
-          <Stack spacing={3}>
-            <Accordion
-              className="event-category-accordion"
-              sx={{
-                borderRadius: 0, // Remove border radius
-                "&:before": {
-                  display: "none", // Remove default MUI border line
-                },
-                boxShadow: "none", // Remove default box shadow
-              }}
-              expanded={isOtherInfoAccordion}
-              onChange={() => setOtherInfoAccordion(!isOtherInfoAccordion)}
-            >
-              <AccordionSummary
-                style={{
-                  backgroundColor: "#FFF3C7", // Set the background color
-                }}
+                        {/* Options */}
+                        {(values.Input_Type?.value === "dropdown" ||
+                          values.Input_Type?.value === "radio") && (
+                          <div className="y-gap-10">
+                            <label className="text-13 text-reading fw-500">
+                              Options <sup className="asc">*</sup>
+                            </label>
+                            <div className="p-0">
+                              <CreatableSelect
+                                placeholder="Type to add your own options"
+                                isMulti
+                                styles={{
+                                  ...selectCustomStyle,
+                                  multiValue: (base) => ({
+                                    ...base,
+                                    borderRadius: "4px",
+                                    backgroundColor: "#fff9e1",
+                                    color: "#000",
+                                  }),
+                                  multiValueLabel: (base) => ({
+                                    ...base,
+                                    padding: "0px 8px 0px 8px",
+                                    fontSize: "80%",
+                                  }),
+                                }}
+                                options={values.Option_Fileds}
+                                value={values.Option_Fileds}
+                                onChange={(options) =>
+                                  setFieldValue("Option_Fileds", options)
+                                }
+                              />
+                            </div>
+                            <ErrorMessage
+                              name="Option_Fileds"
+                              component="div"
+                              className="text-error-2 text-13"
+                            />
+                          </div>
+                        )}
+
+                        <div className="d-flex items-center gap-10">
+                          <Checkbox
+                            sx={{ paddingLeft: 0 }}
+                            checked={values.Is_Mandatory}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              setFieldValue(
+                                "Is_Mandatory",
+                                Number(e.target.checked)
+                              );
+                              if (!e.target.checked) {
+                                setFieldValue("Mandatory_Msg", "");
+                                setFieldTouched("Mandatory_Msg", false, false);
+                              }
+                            }}
+                          />
+                          <label className="text-14 fw-500">
+                            Is Mandatory?
+                          </label>
+                        </div>
+
+                        {/* Mandatory Name */}
+                        {values.Is_Mandatory ? (
+                          <div className="single-field w-full y-gap-10">
+                            <label className="text-13 text-reading fw-500">
+                              Error message <sup className="asc">*</sup>
+                            </label>
+                            <div className="form-control">
+                              <Field
+                                type="text"
+                                name="Mandatory_Msg"
+                                className="form-control"
+                                placeholder="Enter Error message"
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  const { value } = e.target;
+
+                                  const regex = /^[^\s].*$/;
+
+                                  if (
+                                    !value ||
+                                    (regex.test(value.toString()) &&
+                                      value.length <= 50)
+                                  ) {
+                                    setFieldValue("Mandatory_Msg", value);
+                                  } else {
+                                    return;
+                                  }
+                                }}
+                              />
+                            </div>
+                            <ErrorMessage
+                              name="Mandatory_Msg"
+                              component="div"
+                              className="text-error-2 text-13"
+                            />
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+
+                        <Stack
+                          style={{ width: "100%" }}
+                          direction="row"
+                          justifyContent="flex-end"
+                          alignItems="center"
+                          className="mt-20"
+                        >
+                          <div className="col-auto relative">
+                            <button
+                              disabled={submitAddQuestion}
+                              type="submit"
+                              className="button bg-primary w-150 h-50 rounded-24 px-15 text-white border-light load-button"
+                            >
+                              {!submitAddQuestion ? (
+                                `Save`
+                              ) : (
+                                <span className="btn-spinner"></span>
+                              )}
+                            </button>
+                          </div>
+                        </Stack>
+                      </Form>
+                    )}
+                  </Formik>
+                </Stack>
+              </Box>
+            </Modal>
+
+            <Stack spacing={3}>
+              <Accordion
+                className="event-category-accordion"
                 sx={{
-                  pointerEvents: "none",
+                  borderRadius: 0, // Remove border radius
+                  "&:before": {
+                    display: "none", // Remove default MUI border line
+                  },
+                  boxShadow: "none", // Remove default box shadow
                 }}
-                expandIcon={
-                  isOtherInfoAccordion ? (
-                    <IconButton
-                      size="small"
-                      style={{
-                        backgroundColor: "#949494",
-                        padding: "4px",
-                        borderRadius: 0,
-                        pointerEvents: "auto",
-                        "&:hover": {
-                          backgroundColor: "#f05736",
-                        },
-                      }}
-                      onClick={handleCancelClick}
-                    >
-                      <ClearOutlinedIcon
-                        fontSize="inherit"
+                expanded={personalInfoAccordion}
+                onChange={() =>
+                  // setPersonalInfoAccordion(!personalInfoAccordion)
+                  toggleAccordion("personalInfo")
+                }
+              >
+                <AccordionSummary
+                  style={{
+                    backgroundColor: "#FFF3C7", // Set the background color
+                  }}
+                  sx={{
+                    pointerEvents: "none",
+                  }}
+                  expandIcon={
+                    personalInfoAccordion ? (
+                      <IconButton
+                        size="small"
                         style={{
-                          color: "#fff",
+                          backgroundColor: "#949494",
+                          padding: "4px",
+                          borderRadius: 0,
+                          pointerEvents: "auto",
+                          "&:hover": {
+                            backgroundColor: "#f05736",
+                          },
                         }}
-                      />
-                    </IconButton>
-                  ) : (
-                    <IconButton
-                      size="small"
-                      sx={{
-                        backgroundColor: "#949494",
-                        padding: "4px",
-                        borderRadius: 0,
-                        pointerEvents: "auto",
-                        "&:hover": {
-                          backgroundColor: "#f05736",
-                        },
-                      }}
-                      onClick={(e) => {
-                        handleEditClick(e);
-                      }}
-                    >
-                      {loadingQuestionForm ? (
-                        <CircularProgress
-                          style={{ color: "#fff", height: "1em", width: "1em" }}
+                        onClick={(event) => {
+                          event.stopPropagation(); // Prevent accordion from toggling
+                          // setPersonalInfoAccordion(false); // Close the accordion
+                          toggleAccordion("personalInfo");
+                        }}
+                      >
+                        <ClearOutlinedIcon
+                          fontSize="inherit"
+                          style={{
+                            color: "#fff",
+                          }}
                         />
-                      ) : (
+                      </IconButton>
+                    ) : (
+                      <IconButton
+                        size="small"
+                        sx={{
+                          backgroundColor: "#949494",
+                          padding: "4px",
+                          borderRadius: 0,
+                          pointerEvents: "auto",
+                          "&:hover": {
+                            backgroundColor: "#f05736",
+                          },
+                        }}
+                        onClick={(event) => {
+                          // handlePersonalEditClick(e);
+                          event.stopPropagation(); // Prevent accordion from toggling
+                          // setPersonalInfoAccordion(true); // Close the accordion
+                          toggleAccordion("personalInfo");
+                        }}
+                      >
                         <AddOutlinedIcon
                           fontSize="inherit"
                           style={{
                             color: "#fff",
                           }}
                         />
-                      )}
-                    </IconButton>
-                  )
-                }
-                aria-controls="panel1-content"
-                id="panel1-header"
-              >
-                <div className="text-14 fw-600">Other Information</div>
-              </AccordionSummary>
-              <AccordionDetails
-                style={{
-                  boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                }}
-              >
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
+                      </IconButton>
+                    )
+                  }
+                  aria-controls="panel1-content"
+                  id="panel1-header"
                 >
-                  <SortableContext
-                    items={infoQuestions?.map((q) =>
-                      isNaN(Number(q.Question_Id))
-                        ? q.Question_Id
-                        : q.Event_Question_Id
-                    )}
-                  >
-                    <div className="row y-gap-15 px-20 py-20">
-                      {infoQuestions?.map((question, index) => {
-                        return (
-                          <DraggableQuestion
-                            qkey={question.Question_Id}
-                            question={question}
-                            index={index}
-                            toggleChecked={toggleChecked}
-                            fetchEditQuestion={fetchEditQuestion}
-                            setIsEditingQuestion={setIsEditingQuestion}
-                            handleDeleteClick={handleDeleteClick}
-                          />
-                        );
-                      })}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-
-                <div className="mb-40 w-full d-flex justify-center">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-
-                      setAddQuestionModal(true);
-                    }}
-                    className="button w-200 border-dark-1 fw-400 rounded-22 px-20 py-10 text-dark-1 text-14 -primary-1 d-flex justify-center gap-10"
-                  >
-                    <i className="fas fa-plus" /> Add Question
-                  </button>
-                </div>
-
-                <div className="col-12 d-flex justify-end">
-                  <div className="row">
-                    <div className="col-auto relative">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setOtherInfoAccordion(false);
-                        }}
-                        className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                    <div className="col-auto relative">
-                      <button
-                        disabled={submitQuestionForm}
-                        onClick={handleSaveClick}
-                        className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
-                      >
-                        {!submitQuestionForm ? (
-                          `Save Order`
-                        ) : (
-                          <span className="btn-spinner"></span>
-                        )}
-                      </button>
+                  <div className="text-14 fw-600">Personal Information</div>
+                </AccordionSummary>
+                <AccordionDetails
+                  style={{
+                    boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                  }}
+                >
+                  <div className="row y-gap-30 py-20">
+                    {personalQuestions.map((question, index) => (
+                      <CheckboxCard
+                        key={index}
+                        fieldName={question.fieldName}
+                        fieldPlaceholder={question.fieldPlaceholder}
+                        fieldType={question.fieldType}
+                        isMandatory={question.Is_Mandatory}
+                        onToggleMandatory={() => togglePersonalMandatory(index)}
+                      />
+                    ))}
+                    <div className="col-12 d-flex justify-start">
+                      <div className="row">
+                        <div className="col-auto relative">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              // setPersonalInfoAccordion(false);
+                              toggleAccordion("personalInfo");
+                            }}
+                            className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        <div className="col-auto relative">
+                          <button
+                            disabled={submitPersonalForm}
+                            onClick={handlePersonalInfoSave}
+                            className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                          >
+                            {!submitPersonalForm ? (
+                              `Save`
+                            ) : (
+                              <span className="btn-spinner"></span>
+                            )}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </AccordionDetails>
-            </Accordion>
-          </Stack>
-        </div>
+                </AccordionDetails>
+              </Accordion>
 
-        {!isOtherInfoAccordion && (
-          <div className="col-12 d-flex justify-end">
-            <div className="row">
-              <div className="col-auto relative">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleStep(prevIndex);
+              <Accordion
+                className="event-category-accordion"
+                sx={{
+                  borderRadius: 0, // Remove border radius
+                  "&:before": {
+                    display: "none", // Remove default MUI border line
+                  },
+                  boxShadow: "none", // Remove default box shadow
+                }}
+                expanded={addressInfoAccordion}
+                onChange={() =>
+                  // setAddressInfoAccordion(!addressInfoAccordion)
+                  toggleAccordion("addressInfo")
+                }
+              >
+                <AccordionSummary
+                  style={{
+                    backgroundColor: "#FFF3C7", // Set the background color
                   }}
-                  className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
-                >
-                  Back
-                </button>
-              </div>
-              <div className="col-auto relative">
-                <button
-                  onClick={() => {
-                    if (!infoQuestions.some((item) => item.checked)) {
-                      toast.dismiss();
-                      toast.error("Add at least one question");
-                      return;
-                    }
-                    handleStep(nextIndex);
+                  sx={{
+                    pointerEvents: "none",
                   }}
-                  type="submit"
-                  className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                  expandIcon={
+                    addressInfoAccordion ? (
+                      <IconButton
+                        size="small"
+                        style={{
+                          backgroundColor: "#949494",
+                          padding: "4px",
+                          borderRadius: 0,
+                          pointerEvents: "auto",
+                          "&:hover": {
+                            backgroundColor: "#f05736",
+                          },
+                        }}
+                        onClick={(event) => {
+                          event.stopPropagation(); // Prevent accordion from toggling
+                          // setAddressInfoAccordion(false); // Close the accordion
+                          toggleAccordion("addressInfo");
+                        }}
+                      >
+                        <ClearOutlinedIcon
+                          fontSize="inherit"
+                          style={{
+                            color: "#fff",
+                          }}
+                        />
+                      </IconButton>
+                    ) : (
+                      <IconButton
+                        size="small"
+                        sx={{
+                          backgroundColor: "#949494",
+                          padding: "4px",
+                          borderRadius: 0,
+                          pointerEvents: "auto",
+                          "&:hover": {
+                            backgroundColor: "#f05736",
+                          },
+                        }}
+                        onClick={(event) => {
+                          // handlePersonalEditClick(e);
+                          event.stopPropagation(); // Prevent accordion from toggling
+                          // setAddressInfoAccordion(false); // Close the accordion
+                          toggleAccordion("addressInfo");
+                        }}
+                      >
+                        <AddOutlinedIcon
+                          fontSize="inherit"
+                          style={{
+                            color: "#fff",
+                          }}
+                        />
+                      </IconButton>
+                    )
+                  }
+                  aria-controls="panel1-content"
+                  id="panel1-header"
                 >
-                  Save & Next
-                </button>
+                  <div className="text-14 fw-600">Address Information</div>
+                </AccordionSummary>
+                <AccordionDetails
+                  style={{
+                    boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                  }}
+                >
+                  <div className="row y-gap-30 py-20">
+                    {addressQuestions.map((question, index) => (
+                      <CheckboxCard
+                        key={index}
+                        fieldName={question.fieldName}
+                        fieldPlaceholder={question.fieldPlaceholder}
+                        fieldType={question.fieldType}
+                        isMandatory={question.Is_Mandatory}
+                        onToggleMandatory={() => toggleAddressMandatory(index)} // Pass toggle function
+                      />
+                    ))}
+                    <div className="col-12 d-flex justify-start">
+                      <div className="row">
+                        <div className="col-auto relative">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              // setAddressInfoAccordion(false);
+                              toggleAccordion("addressInfo");
+                            }}
+                            className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        <div className="col-auto relative">
+                          <button
+                            disabled={submitAddressForm}
+                            onClick={handlePersonalInfoSave}
+                            className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                          >
+                            {!submitAddressForm ? (
+                              `Save`
+                            ) : (
+                              <span className="btn-spinner"></span>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+              <Accordion
+                className="event-category-accordion"
+                sx={{
+                  borderRadius: 0, // Remove border radius
+                  "&:before": {
+                    display: "none", // Remove default MUI border line
+                  },
+                  boxShadow: "none", // Remove default box shadow
+                }}
+                expanded={isOtherInfoAccordion}
+                onChange={() => toggleAccordion("otherInfo")}
+              >
+                <AccordionSummary
+                  style={{
+                    backgroundColor: "#FFF3C7", // Set the background color
+                  }}
+                  sx={{
+                    pointerEvents: "none",
+                  }}
+                  expandIcon={
+                    isOtherInfoAccordion ? (
+                      <IconButton
+                        size="small"
+                        style={{
+                          backgroundColor: "#949494",
+                          padding: "4px",
+                          borderRadius: 0,
+                          pointerEvents: "auto",
+                          "&:hover": {
+                            backgroundColor: "#f05736",
+                          },
+                        }}
+                        onClick={handleCancelClick}
+                      >
+                        <ClearOutlinedIcon
+                          fontSize="inherit"
+                          style={{
+                            color: "#fff",
+                          }}
+                        />
+                      </IconButton>
+                    ) : (
+                      <IconButton
+                        size="small"
+                        sx={{
+                          backgroundColor: "#949494",
+                          padding: "4px",
+                          borderRadius: 0,
+                          pointerEvents: "auto",
+                          "&:hover": {
+                            backgroundColor: "#f05736",
+                          },
+                        }}
+                        onClick={(e) => {
+                          handleEditClick(e);
+                        }}
+                      >
+                        {loadingQuestionForm ? (
+                          <CircularProgress
+                            style={{
+                              color: "#fff",
+                              height: "1em",
+                              width: "1em",
+                            }}
+                          />
+                        ) : (
+                          <AddOutlinedIcon
+                            fontSize="inherit"
+                            style={{
+                              color: "#fff",
+                            }}
+                          />
+                        )}
+                      </IconButton>
+                    )
+                  }
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                >
+                  <div className="text-14 fw-600">Other Information</div>
+                </AccordionSummary>
+                <AccordionDetails
+                  style={{
+                    boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                  }}
+                >
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={infoQuestions?.map((q) =>
+                        isNaN(Number(q.Question_Id))
+                          ? q.Question_Id
+                          : q.Event_Question_Id
+                      )}
+                    >
+                      <div className="row y-gap-15 px-20 py-20">
+                        {infoQuestions?.map((question, index) => {
+                          return (
+                            <DraggableQuestion
+                              qkey={question.Question_Id}
+                              question={question}
+                              index={index}
+                              toggleChecked={toggleChecked}
+                              fetchEditQuestion={fetchEditQuestion}
+                              setIsEditingQuestion={setIsEditingQuestion}
+                              handleDeleteClick={handleDeleteClick}
+                            />
+                          );
+                        })}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+
+                  <div className="mb-40 w-full d-flex justify-center">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+
+                        setAddQuestionModal(true);
+                      }}
+                      className="button w-200 border-dark-1 fw-400 rounded-22 px-20 py-10 text-dark-1 text-14 -primary-1 d-flex justify-center gap-10"
+                    >
+                      <i className="fas fa-plus" /> Add Question
+                    </button>
+                  </div>
+
+                  <div className="col-12 d-flex justify-end">
+                    <div className="row">
+                      <div className="col-auto relative">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleAccordion("otherInfo");
+                          }}
+                          className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <div className="col-auto relative">
+                        <button
+                          disabled={submitQuestionForm}
+                          onClick={handleOtherInfoSaveClick}
+                          className="button bg-primary w-150 h-40 rounded-24 px-15 text-white text-12 border-light load-button"
+                        >
+                          {!submitQuestionForm ? (
+                            `Save Order`
+                          ) : (
+                            <span className="btn-spinner"></span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+            </Stack>
+          </div>
+
+          {!isOtherInfoAccordion && (
+            <div className="col-12 d-flex justify-end">
+              <div className="row">
+                <div className="col-auto relative">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleStep(prevIndex);
+                    }}
+                    className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary fw-400 text-12 d-flex gap-25 load-button"
+                  >
+                    Back
+                  </button>
+                </div>
+                <div className="col-auto relative">
+                  <button
+                    onClick={() => {
+                      if (!infoQuestions.some((item) => item.checked)) {
+                        toast.dismiss();
+                        toast.error("Add at least one question");
+                        return;
+                      }
+                      if (
+                        !(
+                          personalQuestions.some((item) => item.Is_Mandatory) &&
+                          addressQuestions.some((item) => item.Is_Mandatory)
+                        )
+                      ) {
+                        toast.dismiss();
+                        toast.error(
+                          "Please make at least one field mandatory in both Personal and Address Information"
+                        );
+                        return;
+                      }
+                      handleStep(nextIndex);
+                    }}
+                    type="submit"
+                    className="button bg-primary w-150 h-40 rounded-24 px-15 text-white border-light fw-400 text-12 d-flex gap-25 load-button"
+                  >
+                    Save & Next
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

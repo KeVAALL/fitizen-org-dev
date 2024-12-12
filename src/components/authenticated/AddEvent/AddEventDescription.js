@@ -52,6 +52,7 @@ function AddEventDescription({ handleStep, prevIndex, nextIndex }) {
       TakeAwayXMLData: "",
       FacilityXMLData: "",
       QuestionXMLData: "",
+      QuestionMandatoryXMLData: "",
       Event_Description: values?.Event_Description,
       Rules_Regulations: values?.Rules_Regulations,
       Refund_Cancellation: values?.Refund_Cancellation,

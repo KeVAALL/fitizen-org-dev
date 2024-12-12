@@ -35,34 +35,6 @@ function AddEventBanner({ handleStep, prevIndex }) {
   const dispatch = useDispatch();
   const cropperRef = createRef();
 
-  // const handleCreate = () => {
-  //   Swal.fire({
-  //     title: "Are you sure you want to publish event?",
-  //     // text: "You won't be able to revert this!",
-  //     icon: "success",
-  //     showCancelButton: true,
-  //     confirmButtonColor: "#eb6400",
-  //     // cancelButtonColor: "#fff",
-  //     confirmButtonText: "Yes",
-  //     cancelButtonText: "No",
-  //     preConfirm: async () => {
-  //       // Show loading on the "Yes, delete it!" button
-  //       Swal.showLoading();
-
-  //       navigate("/dashboard/all-events");
-  //       dispatch(removeCurrentEventId());
-  //     },
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       // Show the success message after the deletion is confirmed
-  //       Swal.fire({
-  //         title: "Event Created!",
-  //         text: "Event has been created.",
-  //         icon: "success",
-  //       });
-  //     }
-  //   });
-  // };
   const handleCreate = () => {
     Swal.fire({
       title: "Are you sure you want to publish this event?",
@@ -327,13 +299,7 @@ function AddEventBanner({ handleStep, prevIndex }) {
       top: 0,
       behavior: "smooth", // Smooth scrolling
     });
-    // if (cropperRef.current) {
-    //   const cropper = cropperRef.current.cropper;
 
-    //   cropper.setCanvasData({
-    //     width: Math.min(cropper.getCanvasData().naturalWidth, 1000), // Set max width to 1000px
-    //   });
-    // }
     if (newEventId) {
       LoadBanners();
     }

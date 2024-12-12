@@ -416,18 +416,8 @@ function BIBExpo() {
                                                       newValue
                                                     )
                                                   }
-                                                  // maxDate={dayjs().subtract(8, "year")}
-                                                  // value={
-                                                  //   values.Date_Of_Birth
-                                                  //     ? dayjs(values.Date_Of_Birth)
-                                                  //     : null
-                                                  // }
-                                                  // onChange={(newValue) => {
-                                                  //   setFieldValue("Date_Of_Birth", newValue);
-                                                  // }}
-                                                  // open={open}
-                                                  // onOpen={() => setOpen(true)}
-                                                  // onClose={() => setOpen(false)}
+                                                  minDate={dayjs()}
+                                                  maxDate={dayjs(End_Date)}
                                                   renderInput={(params) => (
                                                     <TextField
                                                       {...params}
@@ -733,11 +723,12 @@ function BIBExpo() {
                                     ))}
 
                                     <div className="col-12 d-flex">
-                                      <LightTooltip
-                                        arrow
-                                        title="Add more BIB Expo"
-                                        placement="right"
-                                      >
+                                      <div className="d-flex gap-10 items-center">
+                                        {/* <LightTooltip
+                                          arrow
+                                          title="Add more BIB Expo Dates"
+                                          placement="right"
+                                        > */}
                                         <button
                                           onClick={(e) => {
                                             e.preventDefault();
@@ -753,8 +744,11 @@ function BIBExpo() {
                                         >
                                           +
                                         </button>
-                                        {/* </div> */}
-                                      </LightTooltip>
+                                        {/* </LightTooltip> */}
+                                        <div className="text-11 text-reading fw-400">
+                                          Add more BIB Expo Dates
+                                        </div>
+                                      </div>
                                     </div>
                                   </>
                                 )}

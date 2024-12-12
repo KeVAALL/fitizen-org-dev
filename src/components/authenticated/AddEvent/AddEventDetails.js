@@ -128,7 +128,8 @@ function AddEventDetails({ handleStep, index }) {
     RaceDay_Takeaways: Yup.array(),
     RaceDay_Facilities: Yup.array(),
     Pincode: Yup.object().required("Pincode is required"),
-    Contact_User_Id: Yup.object().required("Contact Person is required"),
+    // Contact_User_Id: Yup.object().required("Contact Person is required"),
+    Contact_User_Id: Yup.object().nullable(),
     Country: Yup.object().nullable(),
     State: Yup.string().required("State is required"),
     City: Yup.string().required("City is required"),
@@ -140,7 +141,7 @@ function AddEventDetails({ handleStep, index }) {
       then: () =>
         Yup.string()
           .url("Enter a valid URL")
-          .required("External URL is required"),
+          .required("External Event URL is required"),
       otherwise: () => Yup.string().notRequired().nullable(),
     }),
     Timezone: Yup.object().required("Timezone is required"),
@@ -249,7 +250,7 @@ function AddEventDetails({ handleStep, index }) {
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>Contact_User_Id</FN><FV>" +
-      values?.Contact_User_Id.value +
+      values?.Contact_User_Id?.value +
       "</FV><FT>Text</FT></R>";
     XMLData +=
       "<R><FN>Event_Venue</FN><FV>" +
@@ -371,6 +372,7 @@ function AddEventDetails({ handleStep, index }) {
         values?.RaceDay_Facilities?.length > 0
           ? convertToFacilityXML(values)
           : "",
+      QuestionMandatoryXMLData: "",
       QuestionXMLData: "",
       Event_Description: "",
       Rules_Regulations: "",
@@ -442,14 +444,14 @@ function AddEventDetails({ handleStep, index }) {
           External_Event_Url: "",
           Timezone: result?.data?.Result?.Table1[0],
           Is_Gst: {
-            label: "Participant",
-            value: "1",
+            label: "None",
+            value: "0",
           },
           GSTCalc_Type: {
             label: "Percent Based",
             value: "Percent",
           },
-          GSTCalc_Amount: 18,
+          GSTCalc_Amount: 0,
           PGCharges_Flag: {
             label: "None",
             value: "0",
@@ -542,9 +544,10 @@ function AddEventDetails({ handleStep, index }) {
             label: result1?.Pincode,
             value: result1?.Pincode_Id,
           },
-          Contact_User_Id: result?.data?.Result?.Table8?.filter(
-            (type) => type.value === result1?.Contact_User_Id
-          )[0],
+          Contact_User_Id:
+            result?.data?.Result?.Table8?.filter(
+              (type) => type.value === result1?.Contact_User_Id
+            )[0] ?? null,
           Country: { label: "India", value: "India" },
           State: result1?.State,
           City: result1?.City,
@@ -1014,10 +1017,11 @@ function AddEventDetails({ handleStep, index }) {
                 <div className="col-lg-6 col-md-6">
                   <div className="y-gap-10">
                     <label className="text-13 fw-500">
-                      Contact Person <sup className="asc">*</sup>
+                      Contact Person (Add Contact person from profile page)
                     </label>
                     <Select
                       // isDisabled={true}
+                      placeholder="Select Contact person"
                       isSearchable={false}
                       styles={selectCustomStyle}
                       options={contactUserDropdown}
@@ -1052,7 +1056,7 @@ function AddEventDetails({ handleStep, index }) {
                         }
                       }}
                     />
-                    <label className="text-14 fw-500">Public Event</label>
+                    <label className="text-14 fw-500">External Event</label>
                   </div>
                 </div>
 
@@ -1076,7 +1080,7 @@ function AddEventDetails({ handleStep, index }) {
                   <div className="col-lg-6 col-md-6">
                     <div className="single-field y-gap-10">
                       <label className="text-13 fw-500">
-                        External URL <sup className="asc">*</sup>
+                        External Event URL <sup className="asc">*</sup>
                       </label>
                       <div className="form-control">
                         <Field
@@ -1156,13 +1160,12 @@ function AddEventDetails({ handleStep, index }) {
                                   value={values?.Is_Gst}
                                   onChange={(value) => {
                                     setFieldValue("Is_Gst", value);
-                                    // if (value.value === "1") {
-                                    //   setFieldValue("GSTCalc_Type", {
-                                    //     label: "Percent Based",
-                                    //     value: "Percent",
-                                    //   });
-                                    //   setFieldValue("GSTCalc_Amount", 18);
-                                    // }
+                                    if (value.value === "0") {
+                                      setFieldValue("GSTCalc_Amount", 0);
+                                    }
+                                    if (value.value === "1") {
+                                      setFieldValue("GSTCalc_Amount", 18);
+                                    }
                                   }}
                                 />
 
@@ -1198,7 +1201,7 @@ function AddEventDetails({ handleStep, index }) {
                             <div class="single-field">
                               <div class="form-control">
                                 <Field
-                                  disabled={true}
+                                  // disabled={true}
                                   type="number"
                                   className="form-control"
                                   placeholder="Add Value"
@@ -1577,9 +1580,9 @@ function AddEventDetails({ handleStep, index }) {
                             //   toast.error("Failed to copy link.");
                             // }
                           }}
-                          className="button bg-white w-150 h-40 rounded-24 px-15 text-primary border-primary text-12"
+                          className="button bg-white w-200 h-40 rounded-24 px-15 text-primary border-primary text-12"
                         >
-                          Copy Event Link
+                          Copy Private Event Link
                         </button>
                       </div>
                     ) : (

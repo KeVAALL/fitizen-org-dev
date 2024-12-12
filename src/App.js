@@ -74,7 +74,7 @@ const theme = createTheme({
           color: "#bdbdbd", // Black for unselected state
           borderRadius: "4px",
           "&.Mui-checked": {
-            color: "#f05736", // White for selected state
+            color: "#f05736 !important", // White for selected state
           },
           "&.Mui-disabled": {
             cursor: "not-allowed !important", // Show not-allowed cursor when disabled

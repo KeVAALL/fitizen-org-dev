@@ -513,7 +513,10 @@ function Discount() {
                           <div className="col-lg-4 col-md-4">
                             <div className="single-field y-gap-10">
                               <label className="text-13 fw-500">
-                                Discount Amount{" "}
+                                Discount{" "}
+                                {values.Category_Type?.value === "C008001"
+                                  ? "Percentage"
+                                  : "Amount"}{" "}
                                 {values.Category_Type?.value === "C008001"
                                   ? "(%)"
                                   : "(₹)"}{" "}
@@ -524,7 +527,11 @@ function Discount() {
                                   type="number"
                                   name="Discount_Amount"
                                   className="form-control"
-                                  placeholder="Enter Discount Amount"
+                                  placeholder={`Enter Discount${
+                                    values.Category_Type?.value === "C008001"
+                                      ? " Percentage"
+                                      : " Amount"
+                                  }`}
                                   onWheel={(e) => e.target.blur()}
                                   onChange={(e) => {
                                     if (
