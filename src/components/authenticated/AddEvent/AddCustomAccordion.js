@@ -35,6 +35,7 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { timePlaceholder } from "../../../utils/UtilityFunctions";
 import QuillEditor from "../../QuillEditor";
+import { ShowFormErrorsToast } from "../../../utils/ScrollToFirstError";
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -945,7 +946,7 @@ const AddCustomAccordion = ({
             submitCategoryForm(values);
           }}
         >
-          {({ values, setFieldValue, setFieldTouched, handleChange }) => (
+          {({ values, setFieldValue, errors, submitCount }) => (
             <Form>
               <div className="row y-gap-30 py-20">
                 {!category.isNew &&
@@ -1103,7 +1104,9 @@ const AddCustomAccordion = ({
 
                 <div className="col-lg-3">
                   <div className="single-field y-gap-20">
-                    <label className="text-13 fw-500">Cut off time</label>
+                    <label className="text-13 fw-500">
+                      Cut off time <sup className="asc">*</sup>
+                    </label>
                     <div class="form-control">
                       <Field
                         disabled={category.isNew ? false : !isEditing}
@@ -1572,6 +1575,7 @@ const AddCustomAccordion = ({
                     />
                   </div>
                 </div>
+
                 {values.Is_PriceMoneyAwarded === "Yes" ? (
                   <div className="col-12">
                     <div className="single-field w-full y-gap-15">
@@ -1802,6 +1806,7 @@ const AddCustomAccordion = ({
                     />
                   </div>
                 </div>
+
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
@@ -1860,6 +1865,7 @@ const AddCustomAccordion = ({
                     />
                   </div>
                 </div>
+
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
@@ -1921,6 +1927,7 @@ const AddCustomAccordion = ({
                     />
                   </div>
                 </div>
+
                 <div className="col-3">
                   <div className="single-field y-gap-20">
                     <label className="text-13 fw-500">
@@ -2090,6 +2097,10 @@ const AddCustomAccordion = ({
                   </div>
                 </div>
 
+                <ShowFormErrorsToast
+                  errors={errors}
+                  submitCount={submitCount}
+                />
                 {category.isNew || isEditing ? (
                   <div className="col-12 d-flex justify-end">
                     <div className="row">

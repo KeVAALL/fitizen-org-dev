@@ -37,7 +37,7 @@ const Support = () => {
               </div>
             </div>
           </div> */}
-                <div className="col-md-6 col-lg-3 p-0">
+                <div className="col-md-6 col-lg-4 p-0">
                   <div className="px-15 py-50 rounded-16 shadow-sm shadow-2 text-center">
                     <img
                       src={email}
@@ -58,7 +58,7 @@ const Support = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-6 col-lg-3 p-0">
+                <div className="col-md-6 col-lg-4 p-0">
                   <div className="px-15 py-50 rounded-16 shadow-sm shadow-2 text-center">
                     <img
                       src={email}

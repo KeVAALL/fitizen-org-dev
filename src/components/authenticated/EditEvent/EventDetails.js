@@ -33,12 +33,16 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { ScrollToFieldError } from "../../../utils/ScrollToFirstError";
 
 function EventDetails() {
   const { event_id } = useParams();
   const [newEventName, setNewEventName] = useState("");
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userProfile);
+  const selectedEvent = useSelector(
+    (state) => state.selectedEvent.currentEvent
+  );
   const [fetchingDetails, setFetchingDetails] = useState(false);
   const [eventTypeDropdown, setEventTypeDropdown] = useState([]);
   const [takeawayDropdown, setTakeawayDropdown] = useState([]);
@@ -565,7 +569,13 @@ function EventDetails() {
             submitDetailsForm(values);
           }}
         >
-          {({ setFieldValue, setFieldTouched, values, errors }) => (
+          {({
+            setFieldValue,
+            setFieldTouched,
+            values,
+            errors,
+            submitCount,
+          }) => (
             <Form>
               <div className="row y-gap-30 py-20">
                 <div className="col-lg-12 col-md-12">
@@ -1476,6 +1486,7 @@ function EventDetails() {
                   </Box>
                 </div>
 
+                <ScrollToFieldError errors={errors} submitCount={submitCount} />
                 <div className="col-12 d-flex justify-end">
                   <div className="row">
                     <div className="col-auto relative">
@@ -1483,22 +1494,31 @@ function EventDetails() {
                         disabled={submitForm}
                         onClick={async (e) => {
                           e.preventDefault();
-                          try {
-                            const baseUrl = window.location.href.includes(
-                              "uatorganizer"
-                            )
-                              ? "https://uat.fitizenindia.com"
-                              : "https://fitizenindia.com";
+                          if (selectedEvent?.Is_Approved) {
+                            try {
+                              const baseUrl = window.location.href.includes(
+                                "uatorganizer"
+                              )
+                                ? "https://uat.fitizenindia.com"
+                                : "https://fitizenindia.com";
 
-                            const formattedEventName = newEventName
-                              .split(" ")
-                              .join("-");
-                            const eventUrl = `${baseUrl}/event-details/${formattedEventName}/${event_id}`;
+                              const formattedEventName = newEventName
+                                .split(" ")
+                                .join("-");
+                              const eventUrl = `${baseUrl}/event-details/${formattedEventName}/${event_id}`;
 
-                            await navigator.clipboard.writeText(eventUrl);
-                            toast.success("Link copied to clipboard!");
-                          } catch (error) {
-                            toast.error("Failed to copy link.");
+                              await navigator.clipboard.writeText(eventUrl);
+                              toast.success("Link copied to clipboard!");
+                            } catch (error) {
+                              toast.error("Failed to copy link.");
+                            }
+                          } else {
+                            toast(
+                              "Event approval is pending. The link will be available once approved.",
+                              {
+                                icon: "⚠️",
+                              }
+                            );
                           }
                         }}
                         className="button bg-white w-200 h-40 rounded-24 px-15 text-primary border-primary text-12"

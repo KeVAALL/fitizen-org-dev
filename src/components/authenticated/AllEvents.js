@@ -36,10 +36,11 @@ function AllEvents() {
   const [events, setEvents] = useState([]);
   const [cloneEventDetails, setCloneEventDetails] = useState(null);
   const [submitModalForm, setSubmitModalForm] = useState(false);
-  const [selectedTimeline, setSelectedTimeline] = useState({
-    label: "All Events",
-    value: "All",
-  });
+  const [selectedTimeline, setSelectedTimeline] = useState(null);
+  // {
+  //   label: "All Events",
+  //   value: "All",
+  // }
   const [timelineCounts, setTimelineCounts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [fromDate, setFromDate] = useState(null);
@@ -76,6 +77,55 @@ function AllEvents() {
       value: "Draft",
     },
   ];
+  const returnEventFilter = (result, selectedTimeline, setSelectedTimeline) => {
+    handleDateFilter(selectedTimeline.value);
+    if (!selectedTimeline?.value) {
+      return setSelectedTimeline({
+        label: `In-active Events: ${
+          result?.data?.Result?.Table2[0]["InactiveEvent"]
+            ? result?.data?.Result?.Table2[0]["InactiveEvent"]
+            : 0
+        }`,
+        value: 0,
+      });
+    } else if (selectedTimeline?.value === "All") {
+      return setSelectedTimeline({
+        label: `All Events: ${
+          result?.data?.Result?.Table2[0]["AllEvents"]
+            ? result?.data?.Result?.Table2[0]["AllEvents"]
+            : 0
+        }`,
+        value: "All",
+      });
+    } else if (selectedTimeline?.value === "Past") {
+      return setSelectedTimeline({
+        label: `Past Events: ${
+          result?.data?.Result?.Table2[0]["Past"]
+            ? result?.data?.Result?.Table2[0]["Past"]
+            : 0
+        }`,
+        value: "Past",
+      });
+    } else if (selectedTimeline?.value === "Future") {
+      return setSelectedTimeline({
+        label: `Future Events: ${
+          result?.data?.Result?.Table2[0]["Future"]
+            ? result?.data?.Result?.Table2[0]["Future"]
+            : 0
+        }`,
+        value: "Future",
+      });
+    } else {
+      return setSelectedTimeline({
+        label: `Draft Events: ${
+          result?.data?.Result?.Table2[0]["Draft"]
+            ? result?.data?.Result?.Table2[0]["Draft"]
+            : 0
+        }`,
+        value: "Draft",
+      });
+    }
+  };
   const initialValues = {
     Event_Name: "",
     checkboxes: {
@@ -148,16 +198,22 @@ function AllEvents() {
       const result = await RestfulApiService(reqdata, "organizer/dashboard");
       if (result) {
         console.log(result?.data?.Result);
-        setEvents(result?.data?.Result?.Table1);
-        setTimelineCounts(result?.data?.Result?.Table2[0]);
-        setSelectedTimeline({
-          label: `All Events: ${
-            result?.data?.Result?.Table2[0]["AllEvents"]
-              ? result?.data?.Result?.Table2[0]["AllEvents"]
-              : 0
-          }`,
-          value: "All",
-        });
+
+        if (selectedTimeline) {
+          setTimelineCounts(result?.data?.Result?.Table2[0]);
+          returnEventFilter(result, selectedTimeline, setSelectedTimeline);
+        } else {
+          setEvents(result?.data?.Result?.Table1);
+          setTimelineCounts(result?.data?.Result?.Table2[0]);
+          setSelectedTimeline({
+            label: `All Events: ${
+              result?.data?.Result?.Table2[0]["AllEvents"]
+                ? result?.data?.Result?.Table2[0]["AllEvents"]
+                : 0
+            }`,
+            value: "All",
+          });
+        }
       }
     } catch (err) {
       console.log(err);
@@ -291,7 +347,9 @@ function AllEvents() {
               : event
           )
         );
-        // console.log(isActive ? "Event deactivated successfully!" : "Event activated successfully!");
+        setTimeout(() => {
+          LoadDashboard();
+        });
       } else {
         console.log("Action completed!");
       }

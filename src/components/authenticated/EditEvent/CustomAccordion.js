@@ -37,6 +37,7 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { timePlaceholder } from "../../../utils/UtilityFunctions";
 import QuillEditor from "../../QuillEditor";
+import { ShowFormErrorsToast } from "../../../utils/ScrollToFirstError";
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -858,7 +859,7 @@ const CustomAccordion = ({
             submitCategoryForm(values);
           }}
         >
-          {({ values, setFieldValue, setFieldTouched, handleChange }) => (
+          {({ values, setFieldValue, errors, submitCount }) => (
             <Form>
               <div className="row y-gap-30 py-20">
                 {!category.isNew &&
@@ -2051,6 +2052,10 @@ const CustomAccordion = ({
                   </div>
                 </div>
 
+                <ShowFormErrorsToast
+                  errors={errors}
+                  submitCount={submitCount}
+                />
                 {category.isNew || isEditing ? (
                   <div className="col-12 d-flex justify-end">
                     <div className="row">

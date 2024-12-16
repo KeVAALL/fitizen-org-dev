@@ -888,7 +888,10 @@ function Personal({
                       }
                       if (result) {
                         toast.success(
-                          result?.data?.Result?.Table1[0]?.Result_Description
+                          editingUserDetails
+                            ? "User details updated successfully!"
+                            : result?.data?.Result?.Table1[0]
+                                ?.Result_Description
                         );
                         setOrganizerUserModal(false);
                         setUserDetailsInitialValues({

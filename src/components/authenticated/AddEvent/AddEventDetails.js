@@ -32,6 +32,7 @@ import {
   EventDetailTableCell,
   StyledTableCell,
 } from "../../../utils/ReactTable";
+import { ScrollToFieldError } from "../../../utils/ScrollToFirstError";
 
 function AddEventDetails({ handleStep, index }) {
   const dispatch = useDispatch();
@@ -662,7 +663,13 @@ function AddEventDetails({ handleStep, index }) {
             submitDetailsForm(values);
           }}
         >
-          {({ setFieldValue, setFieldTouched, values }) => (
+          {({
+            setFieldValue,
+            setFieldTouched,
+            values,
+            errors,
+            submitCount,
+          }) => (
             <Form>
               <div className="row y-gap-30 py-20">
                 <div className="col-lg-12 col-md-12">
@@ -1545,6 +1552,7 @@ function AddEventDetails({ handleStep, index }) {
                   </Box>
                 </div>
 
+                <ScrollToFieldError errors={errors} submitCount={submitCount} />
                 <div className="col-12 d-flex justify-end">
                   <div className="row">
                     {newEventId ? (

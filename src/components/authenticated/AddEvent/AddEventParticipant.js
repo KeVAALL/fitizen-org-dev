@@ -1467,7 +1467,7 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
                     </button>
                   </div>
 
-                  <div className="col-12 d-flex justify-end">
+                  <div className="col-12 d-flex justify-start">
                     <div className="row">
                       <div className="col-auto relative">
                         <button
@@ -1517,11 +1517,6 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
                 <div className="col-auto relative">
                   <button
                     onClick={() => {
-                      if (!infoQuestions.some((item) => item.checked)) {
-                        toast.dismiss();
-                        toast.error("Add at least one question");
-                        return;
-                      }
                       if (
                         !(
                           personalQuestions.some((item) => item.Is_Mandatory) &&
@@ -1532,6 +1527,11 @@ function AddEventParticipant({ handleStep, prevIndex, nextIndex }) {
                         toast.error(
                           "Please make at least one field mandatory in both Personal and Address Information"
                         );
+                        return;
+                      }
+                      if (!infoQuestions.some((item) => item.checked)) {
+                        toast.dismiss();
+                        toast.error("Add at least one question");
                         return;
                       }
                       handleStep(nextIndex);
