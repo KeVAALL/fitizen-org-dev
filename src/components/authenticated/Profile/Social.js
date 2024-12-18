@@ -13,11 +13,12 @@ import YoutubeIcon from "../../../assets/img/icons/youtube.png";
 import GlobeIcon from "../../../assets/img/icons/globe.png";
 
 const validationSchema = Yup.object().shape({
-  Org_Facebook: Yup.string().url("Enter a valid URL").nullable(),
-  Org_Instagram: Yup.string().url("Enter a valid URL").nullable(),
-  Org_LinkedIn: Yup.string().url("Enter a valid URL").nullable(),
-  Org_Youtube: Yup.string().url("Enter a valid URL").nullable(),
-  Org_Website: Yup.string().url("Enter a valid URL").nullable(),
+  Org_Facebook: Yup.string().nullable(),
+  Org_Instagram: Yup.string().nullable(),
+  Org_LinkedIn: Yup.string().nullable(),
+  Org_Youtube: Yup.string().nullable(),
+  Org_Website: Yup.string().nullable(),
+  // .url("Enter a valid URL")
 });
 
 function Social({ updateTab, prevIndex, UpdateProfile }) {
@@ -75,22 +76,22 @@ function Social({ updateTab, prevIndex, UpdateProfile }) {
                         className="form-control"
                         placeholder="Add Url"
                         name="Org_Facebook"
-                        // onChange={(e) => {
-                        //   e.preventDefault();
-                        //   const { value } = e.target;
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
 
-                        //   const regex = /^[A-Za-z]+$/;
+                          const regex = /^\S*$/;
 
-                        //   if (
-                        //     !value ||
-                        //     (regex.test(value.toString()) &&
-                        //       value.length <= 500)
-                        //   ) {
-                        //     setFieldValue("Org_Facebook", value);
-                        //   } else {
-                        //     return;
-                        //   }
-                        // }}
+                          if (
+                            !value ||
+                            (regex.test(value) && value.length <= 500)
+                          ) {
+                            setFieldValue("Org_Facebook", value);
+                          } else {
+                            // Optionally, provide feedback to the user
+                            console.log("Spaces are not allowed.");
+                          }
+                        }}
                       />
                     </div>
                     <ErrorMessage
@@ -166,6 +167,19 @@ function Social({ updateTab, prevIndex, UpdateProfile }) {
                         className="form-control"
                         placeholder="Add Url"
                         name="Org_Youtube"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+
+                          const regex = /^\S*$/;
+
+                          if (
+                            !value ||
+                            (regex.test(value) && value.length <= 500)
+                          ) {
+                            setFieldValue("Org_Youtube", value);
+                          }
+                        }}
                       />
                     </div>
                     <ErrorMessage
@@ -187,6 +201,19 @@ function Social({ updateTab, prevIndex, UpdateProfile }) {
                         className="form-control"
                         placeholder="Add Url"
                         name="Org_Website"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          const { value } = e.target;
+
+                          const regex = /^\S*$/;
+
+                          if (
+                            !value ||
+                            (regex.test(value) && value.length <= 500)
+                          ) {
+                            setFieldValue("Org_Website", value);
+                          }
+                        }}
                       />
                     </div>
                     <ErrorMessage

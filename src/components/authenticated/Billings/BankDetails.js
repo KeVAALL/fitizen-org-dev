@@ -716,10 +716,14 @@ function BankDetails({ handleShowBankDetails }) {
                                         );
                                         return;
                                       }
-                                      handleDelete(curBank?.Bank_Id);
+                                      setIsEditingBank(true);
+                                      handleEdit(curBank);
+                                      return setShowBankModal(
+                                        (previous) => !previous
+                                      );
                                     }}
                                   >
-                                    <i className="far fa-trash-alt text-18"></i>
+                                    <i className="fas fa-pen action-button"></i>
                                   </button>
                                   <button
                                     className="px-10"
@@ -733,14 +737,10 @@ function BankDetails({ handleShowBankDetails }) {
                                         );
                                         return;
                                       }
-                                      setIsEditingBank(true);
-                                      handleEdit(curBank);
-                                      return setShowBankModal(
-                                        (previous) => !previous
-                                      );
+                                      handleDelete(curBank?.Bank_Id);
                                     }}
                                   >
-                                    <i className="far fa-edit text-18"></i>
+                                    <i className="far fa-trash-alt action-button"></i>
                                   </button>
                                 </td>
                               </tr>

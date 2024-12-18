@@ -70,7 +70,7 @@ export const WhiteTooltip = styled(({ className, ...props }) => (
     justifyContent: "center",
     boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Added box shadow
     // overflow: "auto", // Add scroll if content overflows
-    height: "110px", // Limit the height of the tooltip
+    height: "100px", // Limit the height of the tooltip
     padding: "8px 16px",
     position: "relative", // Ensure the tooltip container is positioned
   },

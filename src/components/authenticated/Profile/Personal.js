@@ -1198,7 +1198,7 @@ function Personal({
                                 }}
                               >
                                 <i
-                                  className="fas fa-pencil-alt"
+                                  className="fas fa-pen"
                                   onClick={() => {
                                     setEditingUserDetails(true);
                                     console.log(user);

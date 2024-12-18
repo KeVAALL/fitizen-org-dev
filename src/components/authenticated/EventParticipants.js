@@ -2393,13 +2393,16 @@ function EventParticipants() {
                                 // open={true}
                                 placement="bottom-start"
                                 title={
-                                  <Stack spacing={2}>
+                                  <Stack>
                                     <Stack
                                       className="text-14 cursor-pointer"
                                       direction="row"
                                       alignItems="center"
                                       justifyContent="space-between"
                                       spacing={2}
+                                      style={{
+                                        paddingBottom: "8px",
+                                      }}
                                       onClick={async () => {
                                         console.log("click");
                                         if (downloadingMaster) {
@@ -2511,6 +2514,10 @@ function EventParticipants() {
                                       alignItems="center"
                                       justifyContent="space-between"
                                       spacing={2}
+                                      style={{
+                                        borderTop: "1px solid #dddddd",
+                                        paddingTop: "8px",
+                                      }}
                                       onClick={async () => {
                                         if (downloadingPersonal) {
                                           return;
@@ -2988,7 +2995,6 @@ function EventParticipants() {
                           <div className="row w-full">
                             <div className="col-xl-4 col-md-6">
                               <PieChart
-                                className="pie-chart"
                                 colors={cityColors}
                                 series={[
                                   {

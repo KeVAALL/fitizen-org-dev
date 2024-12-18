@@ -26,6 +26,7 @@ import { ErrorMessage, Field, Formik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
 import dayjs from "dayjs";
+import { CustomIcon } from "../../utils/UtilityFunctions";
 
 function AllEvents() {
   const user = useSelector((state) => state.user.userProfile);
@@ -395,7 +396,23 @@ function AllEvents() {
       // setFetchingDashboard(false);
     }
   };
-  const shareContent = async (eventId, displayName) => {
+  const shareContent = async (isActive, eventId, displayName) => {
+    if (!isActive) {
+      toast.dismiss();
+      toast(
+        "Event sharing is disabled at the moment. Please ensure the event is active.",
+        {
+          // icon: "⚠️",
+          icon: <CustomIcon />,
+          style: {
+            width: "500px", // Custom width for the toast
+            maxWidth: "500px", // Ensures the toast does not grow beyond this
+            whiteSpace: "normal", // Allows text wrapping if needed
+          },
+        }
+      );
+      return;
+    }
     const encryptedParam = encryptData(eventId);
 
     const baseUrl = window.location.href.includes("uatorganizer")
@@ -540,12 +557,14 @@ function AllEvents() {
                                     e.preventDefault();
                                     const { value } = e.target;
 
-                                    const regex = /^[^\s].*$/;
+                                    // const regex = /^[^\s].*$/;
+                                    const regex = /^[^\s.](?!.*\.$)(?!.*\.).*$/;
 
                                     if (
                                       !value ||
                                       (regex.test(value.toString()) &&
-                                        value.length <= 50)
+                                        value.length <= 50 &&
+                                        value !== ".")
                                     ) {
                                       setFieldValue("Event_Name", value);
                                     } else {
@@ -802,6 +821,7 @@ function AllEvents() {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     shareContent(
+                                      ev?.Is_Active,
                                       ev?.Event_Id,
                                       ev?.Display_Name
                                     );
@@ -821,7 +841,7 @@ function AllEvents() {
                               {ev?.Approved === "Not Approved" ? (
                                 <div className="cardImage__middleBadge w-full">
                                   <div
-                                    className="px-20 text-14 lh-16 fw-700 uppercase bg-white text-dark d-flex justify-center"
+                                    className="px-20 text-13 lh-16 fw-500 uppercase bg-white text-primary d-flex justify-center"
                                     style={{
                                       boxShadow:
                                         "rgba(0, 0, 0, 0.16) 0px 1px 4px",

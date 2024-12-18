@@ -33,6 +33,7 @@ import {
   StyledTableCell,
 } from "../../../utils/ReactTable";
 import { ScrollToFieldError } from "../../../utils/ScrollToFirstError";
+import { CustomIcon } from "../../../utils/UtilityFunctions";
 
 function AddEventDetails({ handleStep, index }) {
   const dispatch = useDispatch();
@@ -1565,7 +1566,12 @@ function AddEventDetails({ handleStep, index }) {
                             toast(
                               "Note: The event must be approved by the admin for the link to be accessible.",
                               {
-                                icon: "⚠️",
+                                icon: <CustomIcon />,
+                                style: {
+                                  width: "500px", // Custom width for the toast
+                                  maxWidth: "500px", // Ensures the toast does not grow beyond this
+                                  whiteSpace: "normal", // Allows text wrapping if needed
+                                },
                               }
                             );
                             // try {

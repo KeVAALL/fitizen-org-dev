@@ -842,7 +842,7 @@ function Discount() {
                                   }}
                                 >
                                   <i
-                                    className="fas fa-pencil-alt"
+                                    className="fas fa-pen"
                                     onClick={() => {
                                       handleEdit(cur?.EventDiscount_Id);
                                     }}

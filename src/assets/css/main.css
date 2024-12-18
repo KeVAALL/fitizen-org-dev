@@ -13829,6 +13829,7 @@ input:-webkit-autofill::first-line {
   display: flex;
   /* justify-content: space-between; Adjust spacing as needed */
   gap: 16px;
+  align-items: center;
 }
 .boxes p:nth-child(2) {
   color: black;
@@ -13836,7 +13837,7 @@ input:-webkit-autofill::first-line {
 .color-box {
   width: 25px;
   /* width: 12%; */
-  height: 50px; /* Adjust width as needed */
+  height: 60px; /* Adjust width as needed */
   text-align: center;
 }
 .pink {

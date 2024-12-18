@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CustomIcon } from "./UtilityFunctions";
 
 const OtpInput = ({
   verifyingDevice = "false",
@@ -63,7 +64,7 @@ const OtpInput = ({
   const handleChange = (index, e) => {
     const value = e.target.value;
     // if (isNaN(value) || isOtpExpired) return;
-    if (isNaN(value)) return;
+    if (isNaN(value) || value === " ") return;
 
     const newOtp = [...otp];
     // Allow only one input
@@ -117,7 +118,7 @@ const OtpInput = ({
         }
       } else {
         toast("Please enter exactly 6 digits for the OTP", {
-          icon: "⚠️",
+          icon: <CustomIcon />,
           iconTheme: {
             primary: "#FFA500",
             secondary: "#000000",
@@ -131,7 +132,7 @@ const OtpInput = ({
       }
     } else {
       toast("Please enter only numeric characters for the OTP", {
-        icon: "⚠️",
+        icon: <CustomIcon />,
         iconTheme: {
           primary: "#FFA500",
           secondary: "#000000",

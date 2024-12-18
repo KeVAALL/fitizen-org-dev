@@ -626,7 +626,7 @@ function Reports() {
                           <div className="col-xl-12 col-md-12 mt-20">
                             <Stack
                               direction="column"
-                              alignItems="center"
+                              alignItems="flex-start"
                               spacing={4}
                               className="py-30 px-30 border-light rounded-8"
                             >
@@ -634,7 +634,11 @@ function Reports() {
                                 Breakup of Tickets Sold
                               </div>
 
-                              <Stack direction="column" alignItems="center">
+                              <Stack
+                                direction="column"
+                                alignItems="flex-start"
+                                className="w-full"
+                              >
                                 <PieChart
                                   className="pie-chart-report w-200"
                                   colors={["#FBCDC3", "#C0462B", "#F3795E"]}
@@ -657,11 +661,7 @@ function Reports() {
                                   slotProps={{ legend: { hidden: true } }}
                                 />
 
-                                <div
-                                  className="row y-gap-10 mt-20"
-                                  // direction="row"
-                                  // spacing={2}
-                                >
+                                <div className="row y-gap-20 mt-20 w-full">
                                   {getData?.Table3?.map((curData, index) => {
                                     // const randomColor = getRandomColor(); // Get random color for each category
                                     const ageColors = [
@@ -683,7 +683,7 @@ function Reports() {
                                             }}
                                           />
 
-                                          <Stack spacing={0.2}>
+                                          <Stack>
                                             <p
                                               className="text-12"
                                               style={{
@@ -732,6 +732,7 @@ function Reports() {
                                             </p>
 
                                             <p className="text-12 fw-600">
+                                              Tickets Sold:{" "}
                                               {curData?.Quantity ?? 0}
                                             </p>
                                           </Stack>

@@ -34,6 +34,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { ScrollToFieldError } from "../../../utils/ScrollToFirstError";
+import { CustomIcon } from "../../../utils/UtilityFunctions";
 
 function EventDetails() {
   const { event_id } = useParams();
@@ -1516,7 +1517,12 @@ function EventDetails() {
                             toast(
                               "Event approval is pending. The link will be available once approved.",
                               {
-                                icon: "⚠️",
+                                icon: <CustomIcon />,
+                                style: {
+                                  width: "500px", // Custom width for the toast
+                                  maxWidth: "500px", // Ensures the toast does not grow beyond this
+                                  whiteSpace: "normal", // Allows text wrapping if needed
+                                },
                               }
                             );
                           }

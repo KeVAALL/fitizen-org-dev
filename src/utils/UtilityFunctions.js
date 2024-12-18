@@ -100,3 +100,18 @@ export const timePlaceholder = {
   fieldMinutesPlaceholder: () => "--",
   fieldMeridiemPlaceholder: () => "",
 };
+
+export const CustomIcon = () => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "40px", // Adjust width
+      height: "40px", // Adjust height
+      fontSize: "24px", // Adjust font size for better scaling
+    }}
+  >
+    ⚠️
+  </div>
+);

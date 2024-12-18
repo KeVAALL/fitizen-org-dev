@@ -494,7 +494,7 @@ function Polls() {
                                           setPollModal(true);
                                         }}
                                       >
-                                        <i className="fas fa-pencil-alt"></i>
+                                        <i className="fas fa-pen"></i>
                                       </button>
                                     </div>
                                   </div>
