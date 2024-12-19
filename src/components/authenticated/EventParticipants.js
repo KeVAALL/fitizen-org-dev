@@ -223,8 +223,10 @@ function EventParticipants() {
 
     data.forEach((participant) => {
       xml += `  <Emails>\n`;
-      xml += `    <ToName>${participant.Attendee_Name}</ToName>\n`;
-      xml += `    <ToEmail>${participant.Attendee_Email}</ToEmail>\n`;
+      // xml += `    <ToName>${participant.Attendee_Name}</ToName>\n`;
+      xml += `    <ToName>${participant.Participant_Name}</ToName>\n`;
+      // xml += `    <ToEmail>${participant.Attendee_Email}</ToEmail>\n`;
+      xml += `    <ToEmail>${participant.Participant_Email}</ToEmail>\n`;
       xml += `    <CCName></CCName>\n`;
       xml += `    <CCEmail></CCEmail>\n`;
       xml += `    <BCCName></BCCName>\n`;
@@ -1750,9 +1752,10 @@ function EventParticipants() {
                                 Message: Yup.string().required(
                                   "Message is required"
                                 ),
-                                Attach_Details: Yup.object().required(
-                                  "Please attach a document"
-                                ),
+                                Attach_Details: Yup.object().nullable(),
+                                //   .required(
+                                //   "Please attach a document"
+                                // ),
                               })}
                               onSubmit={async (values) => {
                                 console.log(
@@ -1764,12 +1767,14 @@ function EventParticipants() {
                                     : selectedFlatRows
                                         ?.map((row) => row.original)
                                         .reduce((acc, current) => {
-                                          const email = current.Attendee_Email;
+                                          // const email = current.Attendee_Email;
+                                          const email =
+                                            current.Participant_Email;
 
                                           // Check if the email is already in the accumulator
                                           const exists = acc.some(
                                             (participant) =>
-                                              participant.Attendee_Email ===
+                                              participant.Participant_Email ===
                                               email
                                           );
 
@@ -1780,15 +1785,21 @@ function EventParticipants() {
 
                                           return acc;
                                         }, []);
-
+                                console.log(selectedFlatRows);
+                                console.log(uniqueEmails);
+                                console.log(generateEmailXML(uniqueEmails));
                                 const reqdata = {
                                   Method_Name: "Send",
                                   To_Email_Id_Xml:
                                     generateEmailXML(uniqueEmails),
-                                  Attachment_Path:
-                                    values?.Attach_Details?.Description,
-                                  Attachment_Name:
-                                    values?.Attach_Details?.Result,
+                                  Attachment_Path: values?.Attach_Details
+                                    ?.Description
+                                    ? values?.Attach_Details?.Description
+                                    : "",
+                                  Attachment_Name: values?.Attach_Details
+                                    ?.Result
+                                    ? values?.Attach_Details?.Result
+                                    : "",
                                   Subject: values.Subject,
                                   Html_Body: values.Message,
                                   Text_Body: values.Message.replace(
