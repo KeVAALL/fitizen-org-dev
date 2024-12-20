@@ -506,7 +506,11 @@ function EventDetails() {
           ConvenienceFee2_Type: calculationTypeDropdown?.filter(
             (c) => c.value === result1?.ConvenienceFee2_Type
           )[0],
-          GSTCalc_Amount: result1?.GSTCalc_Amount ? result1?.GSTCalc_Amount : 0,
+          GSTCalc_Amount: !result1?.Is_Gst
+            ? 0
+            : result1?.GSTCalc_Amount
+            ? result1?.GSTCalc_Amount
+            : 0,
           PlatformFee_Value: result1?.PlatformFee_Value
             ? result1?.PlatformFee_Value
             : 0,

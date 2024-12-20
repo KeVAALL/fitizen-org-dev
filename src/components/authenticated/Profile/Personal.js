@@ -659,9 +659,11 @@ function Personal({
                         <div className="d-flex w-150 h-140 rounded-full border-primary overflow-hidden profile-img pl-0 pr-0">
                           <img
                             src={
-                              values?.Logo_Path
+                              values?.Logo_Path !== "null"
                                 ? `${MEDIA_URL}${values?.Logo_Path}`
-                                : UploadIcon
+                                : // : values?.Logo_Path
+                                  // ? `${MEDIA_URL}${values?.Logo_Path}`
+                                  UploadIcon
                             }
                             alt="image-upload"
                             className="w-full"
