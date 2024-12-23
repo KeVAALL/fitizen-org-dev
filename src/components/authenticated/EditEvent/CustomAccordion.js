@@ -18,18 +18,14 @@ import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import Select from "react-select";
-import {
-  disabledCustomStyle,
-  selectCustomStyle,
-} from "../../../utils/ReactSelectStyles";
+import { selectCustomStyle } from "../../../utils/ReactSelectStyles";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import { decryptData } from "../../../utils/DataEncryption";
 import { RestfulApiService } from "../../../config/service";
 import * as Yup from "yup";
 import dayjs from "dayjs";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
@@ -234,6 +230,13 @@ const CustomAccordion = ({
             const { Event_Start_Date } = this.parent;
             const currentDate = dayjs().startOf("day");
             const eventStartDate = dayjs(Event_Start_Date);
+
+            console.log(dayjs(value));
+            console.log(dayjs(value).isSameOrAfter(currentDate));
+            // Skip validation if Ticket_Sale_Start_Date has passed today
+            if (value && dayjs(value).isSameOrBefore(currentDate)) {
+              return true;
+            }
 
             return (
               value &&
@@ -1711,7 +1714,14 @@ const CustomAccordion = ({
                     <div className="form-control">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker
-                          disabled={category.isNew ? false : !isEditing}
+                          disabled={
+                            category.isNew
+                              ? false
+                              : !isEditing ||
+                                dayjs(
+                                  values.Ticket_Sale_Start_Date
+                                ).isSameOrBefore(dayjs())
+                          }
                           className="form-control"
                           name="Ticket_Sale_Start_Date"
                           format="DD/MM/YYYY"
