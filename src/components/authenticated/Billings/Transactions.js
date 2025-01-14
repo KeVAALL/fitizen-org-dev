@@ -247,7 +247,7 @@ function Transactions({ setShowTransactions }) {
               }}
               className="button rounded-24 w-200 h-40 py-3 px-20 text-reading border-light -primary-1 fw-400 text-12 d-flex gap-20"
             >
-              Download Invoices
+              Download
               <i className="fas fa-download text-14"></i>
             </button>
 

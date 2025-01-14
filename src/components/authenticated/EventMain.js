@@ -14,7 +14,7 @@ import EventTitle from "./EventTitle";
 import Loader from "../../utils/BackdropLoader";
 
 // React Router imports
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 // Redux imports
 import { useDispatch, useSelector } from "react-redux";
@@ -164,17 +164,22 @@ function EventMain() {
                         <div className="col-2">
                           <img src={DIcon5} alt="icon" />
                         </div>
-                        <div className="col-8">
+                        <div className="col-8 text-center">
                           <a
                             href="#"
                             className="button w-150 border-primary rounded-22 px-20 py-10 text-primary text-12 -primary-1 mx-auto mb-10"
                           >
                             Promote Event
                           </a>
-                          <div className="text-16 lh-16 fw-500 text-center">
-                            Lorem ipsum dolor sit amet consectetur. Fermentum
-                            sed facilisis urna feugiat fringilla{" "}
+                          <div className="text-14 lh-16 fw-400 text-center">
+                            To promote your event reach out to us
                           </div>
+                          <Link
+                            className="text-15 fw-600"
+                            to="mailto:marketing@fitizenindia.com"
+                          >
+                            marketing@fitizenindia.com
+                          </Link>
                         </div>
                         <div className="col-2">
                           <img src={DIcon4} alt="icon" />

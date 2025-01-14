@@ -275,6 +275,8 @@ function EventParticipants() {
           const [isEditing, setIsEditing] = useState(false);
           const [isResending, setIsResending] = useState(false);
           const [isDownloadingTicket, setIsDownloadingTicket] = useState(false);
+          const [isDownloadingInvoice, setIsDownloadingInvoice] =
+            useState(false);
 
           return (
             <Stack direction="row" justifyContent="space-between" spacing={4}>
@@ -404,7 +406,7 @@ function EventParticipants() {
               <WhiteTooltip
                 placement="left"
                 title={
-                  <Stack spacing={2}>
+                  <Stack spacing={1.5} sx={{ height: "100%" }}>
                     <Stack
                       className="action-button"
                       direction="row"
@@ -521,6 +523,89 @@ function EventParticipants() {
                         style={{ marginRight: "12px" }}
                       ></i>
                       Download Ticket
+                    </Stack>
+                    <Stack
+                      className="action-button"
+                      direction="row"
+                      alignItems="center"
+                      spacing={2}
+                      onClick={async () => {
+                        if (isDownloadingInvoice) {
+                          return;
+                        }
+                        toast.promise(
+                          new Promise(async (resolve, reject) => {
+                            try {
+                              setIsDownloadingInvoice(true);
+
+                              const result = await RestfulApiServiceDownload(
+                                `organizer/downloadinvoice?Booking_Id=${row?.original?.Booking_Id}`
+                              );
+
+                              if (result) {
+                                const base64PDF = result.data; // assuming result.data contains the base64 string
+
+                                // Decode base64 string to binary string
+                                const binaryString = atob(base64PDF);
+
+                                // Convert binary string to Uint8Array
+                                const arrayBuffer = new Uint8Array(
+                                  binaryString.length
+                                );
+                                for (let i = 0; i < binaryString.length; i++) {
+                                  arrayBuffer[i] = binaryString.charCodeAt(i);
+                                }
+
+                                // Create Blob from Uint8Array
+                                const blob = new Blob([arrayBuffer], {
+                                  type: "application/pdf",
+                                });
+
+                                // Create URL for the Blob
+                                const url = window.URL.createObjectURL(blob);
+
+                                // Create a link element, set the href and download attributes
+                                const link = document.createElement("a");
+                                link.href = url;
+                                link.setAttribute(
+                                  "download",
+                                  `invoice${row?.original?.Booking_Id}.pdf`
+                                );
+
+                                // Append the link to the DOM and trigger the download
+                                document.body.appendChild(link);
+                                link.click();
+
+                                // Clean up: remove the link from the DOM
+                                document.body.removeChild(link);
+
+                                // Resolve the promise to trigger the success toast
+                                resolve();
+                              } else {
+                                // If the result is not valid, reject the promise to show the error toast
+                                reject(new Error("Failed to download invoice"));
+                              }
+                            } catch (err) {
+                              // Reject the promise to trigger the error toast
+                              reject(err);
+                            } finally {
+                              setIsDownloadingInvoice(false);
+                            }
+                          }),
+                          {
+                            loading: "Downloading invoice...",
+                            success: "Invoice downloaded successfully!",
+                            error:
+                              "Failed to download invoice. Please try again later.",
+                          }
+                        );
+                      }}
+                    >
+                      <i
+                        className="fas fa-download"
+                        style={{ marginRight: "12px" }}
+                      ></i>
+                      Download Invoice
                     </Stack>
                   </Stack>
                 }

@@ -79,7 +79,7 @@ function BankDetails({ handleShowBankDetails }) {
             label: "Saving",
             value: "saving",
           },
-      Branch_Name: values?.Bank_Name ?? "",
+      Branch_Name: values?.Branch_Name ?? "",
     });
   };
   const handleGetBankDetails = useCallback(async () => {

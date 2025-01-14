@@ -61,8 +61,8 @@ export const WhiteTooltip = styled(({ className, ...props }) => (
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: "#fff",
     color: "#000",
-    maxWidth: 250,
-    // height: 30,
+    maxWidth: 300,
+    height: "145px !important",
     fontSize: theme.typography.pxToRem(12),
     fontFamily: '"Inter", sans-serif',
     display: "flex",
@@ -70,7 +70,6 @@ export const WhiteTooltip = styled(({ className, ...props }) => (
     justifyContent: "center",
     boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Added box shadow
     // overflow: "auto", // Add scroll if content overflows
-    height: "100px", // Limit the height of the tooltip
     padding: "8px 16px",
     position: "relative", // Ensure the tooltip container is positioned
   },
