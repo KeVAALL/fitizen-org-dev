@@ -497,6 +497,7 @@ function BIBExpo() {
                                                       className="form-control"
                                                     />
                                                   )}
+                                                  timeSteps={{ minutes: 1 }}
                                                   slotProps={{
                                                     inputAdornment: {
                                                       position: "end",
@@ -558,6 +559,7 @@ function BIBExpo() {
                                                       className="form-control"
                                                     />
                                                   )}
+                                                  timeSteps={{ minutes: 1 }}
                                                   slotProps={{
                                                     inputAdornment: {
                                                       position: "end",
@@ -619,6 +621,7 @@ function BIBExpo() {
                                                       className="form-control"
                                                     />
                                                   )}
+                                                  timeSteps={{ minutes: 1 }}
                                                   slotProps={{
                                                     inputAdornment: {
                                                       position: "end",
@@ -680,6 +683,7 @@ function BIBExpo() {
                                                       className="form-control"
                                                     />
                                                   )}
+                                                  timeSteps={{ minutes: 1 }}
                                                   slotProps={{
                                                     inputAdornment: {
                                                       position: "end",

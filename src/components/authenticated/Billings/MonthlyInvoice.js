@@ -174,6 +174,9 @@ function MonthlyInvoice({ setShowMonthlyInvoice }) {
     } else if (timeRange === "Year") {
       From_Date = dayjs().subtract(1, "year").format("YYYY-MM-DD");
       To_Date = today;
+    } else if (timeRange === "All") {
+      From_Date = dayjs().subtract(1, "year").format("YYYY-MM-DD");
+      To_Date = today;
     }
 
     // API request data
@@ -209,8 +212,10 @@ function MonthlyInvoice({ setShowMonthlyInvoice }) {
   async function LoadMonthlyInvoice() {
     const reqdata = {
       Method_Name: "MonthlyInvoice",
-      From_Date: "",
-      To_Date: "",
+      // From_Date: "",
+      From_Date: dayjs().subtract(1, "year").format("YYYY-MM-DD"),
+      // To_Date: "",
+      To_Date: dayjs().format("YYYY-MM-DD"),
       Event_Id: decryptData(event_id),
       Organizer_Id: user?.Organizer_Id,
       Session_User_Id: user?.User_Id,

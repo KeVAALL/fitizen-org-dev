@@ -1233,6 +1233,7 @@ const AddCustomAccordion = ({
                               className="form-control"
                             />
                           )}
+                          timeSteps={{ minutes: 1 }}
                           slotProps={{
                             inputAdornment: {
                               position: "end",
@@ -1340,6 +1341,7 @@ const AddCustomAccordion = ({
                               className="form-control"
                             />
                           )}
+                          timeSteps={{ minutes: 1 }}
                           slotProps={{
                             inputAdornment: {
                               position: "end",
@@ -1839,6 +1841,7 @@ const AddCustomAccordion = ({
                               className="form-control"
                             />
                           )}
+                          timeSteps={{ minutes: 1 }}
                           slotProps={{
                             inputAdornment: {
                               position: "end",
@@ -1960,6 +1963,7 @@ const AddCustomAccordion = ({
                               className="form-control"
                             />
                           )}
+                          timeSteps={{ minutes: 1 }}
                           slotProps={{
                             inputAdornment: {
                               position: "end",
